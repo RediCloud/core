@@ -3,8 +3,9 @@ plugins {
 }
 
 group = "com.dustrean.api"
-version = "1.0.0"
 
-repositories {
-    mavenCentral()
+dependencies {
+    implementation(project(":api"))
+
+    implementation("org.redisson:redisson:3.18.0")
 }
