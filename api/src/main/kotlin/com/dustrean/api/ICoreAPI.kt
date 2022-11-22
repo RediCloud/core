@@ -5,7 +5,6 @@ import com.dustrean.api.network.INetworkComponentInfo
 import com.dustrean.api.tasks.Scheduler
 
 interface ICoreAPI {
-
     fun getNetworkComponentInfo(): INetworkComponentInfo
 
     fun getCoreVersion(): String
@@ -13,5 +12,4 @@ interface ICoreAPI {
     fun getScheduler(): Scheduler<*, *>
 
     fun getModuleHandler(): IModuleManager
-
 }
