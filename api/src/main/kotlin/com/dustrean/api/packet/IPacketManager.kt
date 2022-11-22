@@ -3,11 +3,11 @@ package com.dustrean.api.packet
 import com.dustrean.api.network.INetworkComponentInfo
 
 interface IPacketManager {
-    fun registerPacket(packet: IPacket)
+    fun registerPacket(packet: Packet)
 
-    fun unregisterPacket(packet: IPacket)
+    fun unregisterPacket(packet: Packet)
 
-    fun isRegistered(packet: IPacket): Boolean
+    fun isRegistered(packet: Packet): Boolean
 
-    fun sendPacket(packet: IPacket, receivers: Array<INetworkComponentInfo>)
+    fun sendPacket(packet: Packet, receivers: Array<INetworkComponentInfo>)
 }
