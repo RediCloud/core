@@ -6,6 +6,5 @@ group = "com.dustrean.api"
 
 dependencies {
     implementation(project(":api"))
-
     implementation("org.redisson:redisson:3.18.0")
 }
