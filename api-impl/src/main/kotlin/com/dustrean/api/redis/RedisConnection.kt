@@ -5,8 +5,7 @@ import org.redisson.api.RedissonClient
 import org.redisson.config.Config
 
 class RedisConnection(
-    val credentials: RedisCredentials,
-    val configuration: RedisConfiguration = RedisConfiguration()
+    val credentials: RedisCredentials, val configuration: RedisConfiguration = RedisConfiguration()
 ) {
     lateinit var redisClient: RedissonClient
 
@@ -14,7 +13,7 @@ class RedisConnection(
         val config = Config()
         config.useSingleServer().setConnectionPoolSize(configuration.connectionPoolSize)
             .setConnectionMinimumIdleSize(configuration.connectionMinimumIdleSize)
-            .setAddress("redis://${credentials.host}:${credentials.port}").setPassword(credentials.password)
+            .setAddress("redis://${credentials.host}:${credentials.port}").password = credentials.password
 
         redisClient = Redisson.create(config)
     }

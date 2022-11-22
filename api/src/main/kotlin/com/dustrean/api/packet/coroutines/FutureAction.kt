@@ -10,25 +10,26 @@ class FutureAction<T>() : CompletableFuture<T>() {
     var result: T? = null
     var throwable: Throwable? = null
 
-    constructor(result: T): this() {
+    constructor(result: T) : this() {
         complete(result)
         this.result = result
     }
 
-    constructor(throwable: Throwable): this() {
+    constructor(throwable: Throwable) : this() {
         completeExceptionally(throwable)
         this.throwable = throwable
     }
 
-    fun isFinishedAnyway(): Boolean = (isDone || isCancelled || isCompletedExceptionally) || (result != null || throwable != null)
+    fun isFinishedAnyway(): Boolean =
+        (isDone || isCancelled || isCompletedExceptionally) || (result != null || throwable != null)
 
     fun getBlockOrNull(): T? {
-        try {
+        return try {
             result = get()
-            return result
-        }catch (e: Exception){
+            result
+        } catch (e: Exception) {
             throwable = e
-            return null
+            null
         }
     }
 
@@ -36,47 +37,42 @@ class FutureAction<T>() : CompletableFuture<T>() {
         val future = FutureAction<T>()
         Timer().schedule(object : TimerTask() {
             override fun run() {
-                if (!isDone && !isCancelled && !isCompletedExceptionally) {
-                    future.completeExceptionally(TimeoutException())
-                }
+                if (!isDone && !isCancelled && !isCompletedExceptionally) future.completeExceptionally(TimeoutException())
             }
         }, duration.inWholeMilliseconds)
         return future
     }
 
     fun onFailure(futureAction: FutureAction<T>): FutureAction<T> {
-        if(result != null) return this;
-        if(throwable != null) {
+        if (result != null) return this
+        if (throwable != null) {
             futureAction.completeExceptionally(throwable!!)
             return futureAction
         }
         futureAction.whenComplete { _, throwable ->
-            if (throwable != null) {
-                this.throwable = throwable
-                completeExceptionally(throwable)
-            }
+            if (throwable == null) return@whenComplete
+            this.throwable = throwable
+            completeExceptionally(throwable)
         }
-        return this;
+        return this
     }
 
     fun onFailure(consumer: (Throwable) -> Unit): FutureAction<T> {
-        if(result != null) return this
+        if (result != null) return this
         whenComplete { _, throwable ->
-            if (throwable != null) {
-                consumer(throwable)
-            }
+            if (throwable == null) return@whenComplete
+            consumer(throwable)
         }
         return this
     }
 
     fun onSuccess(consumer: (T) -> Unit): FutureAction<T> {
-        if(result != null) consumer(result!!)
-        if(throwable != null) return this
+        if (result != null) consumer(result!!)
+        if (throwable != null) return this
         whenComplete { result, _ ->
-            if (result != null) {
-                this.result = result
-                complete(result)
-            }
+            if (result == null) return@whenComplete
+            this.result = result
+            complete(result)
         }
         return this
     }
@@ -87,10 +83,11 @@ class FutureAction<T>() : CompletableFuture<T>() {
             if (throwable != null) {
                 this.throwable = throwable
                 futureAction.completeExceptionally(throwable)
-            } else {
-                this.result = result
-                futureAction.complete(mapper.map(result))
+                return@whenComplete
             }
+
+            this.result = result
+            futureAction.complete(mapper.map(result))
         }
         return futureAction
     }
@@ -104,7 +101,6 @@ class FutureAction<T>() : CompletableFuture<T>() {
         throwable = ex
         return super.completeExceptionally(ex)
     }
-
 
 
 }
