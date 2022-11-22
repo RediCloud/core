@@ -3,6 +3,7 @@ package com.dustrean.api.packet
 import com.dustrean.api.network.INetworkComponentInfo
 import com.dustrean.api.redis.RedisConnection
 import org.redisson.api.RTopic
+import java.util.UUID
 
 class PacketManager(
     val networkComponentInfo: INetworkComponentInfo,
@@ -11,22 +12,30 @@ class PacketManager(
 ) : IPacketManager {
 
     val packets = arrayListOf<Class<out Packet>>()
+    val waitingForResponse = hashMapOf<UUID, PacketData>()
+    var receiver: PacketReceiver = PacketReceiver(this)
 
     override fun isRegistered(packet: Packet): Boolean = packets.contains(packet::class.java)
 
     override fun registerPacket(packet: Packet) {
         packets.add(packet::class.java)
-        TODO("Connect to packet listener")
-    }
-
-    override fun sendPacket(packet: Packet, receivers: Array<INetworkComponentInfo>) {
-        if (!isRegistered(packet)) throw Exception("Packet is not registered")
-        packet.getPacketDescription()
-        topic.publish(packet)
+        receiver.connectPacketListener(packet::class.java)
     }
 
     override fun unregisterPacket(packet: Packet) {
-        TODO("Not yet implemented")
+        packets.remove(packet::class.java)
+        receiver.disconnectPacketListener(packet::class.java)
     }
+
+    override fun sendPacket(packet: Packet) {
+        if (!isRegistered(packet)) throw Exception("Packet is not registered")
+        topic.publish(packet)
+    }
+
+    override fun sendPacketAsync(packet: Packet) {
+        if (!isRegistered(packet)) throw Exception("Packet is not registered")
+        topic.publishAsync(packet)
+    }
+
 
 }
