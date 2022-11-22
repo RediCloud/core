@@ -1,18 +1,14 @@
 package com.dustrean.api.tasks
 
-import lombok.Getter
-import lombok.Setter
 import java.util.function.Consumer
 
-@Getter
 abstract class RepeatSchedulerTask<T> constructor(
     schedule: Scheduler<SchedulerTask<T>, RepeatSchedulerTask<*>>
 ): SchedulerTask<T>(schedule) {
 
-    private var filters: MutableList<TaskFilter> = mutableListOf()
+    private val filters: MutableList<TaskFilter> = mutableListOf()
 
-    @Setter
-    private val asyncFilters: Boolean = false
+    var asyncFilters: Boolean = false
 
     fun addFilter(filter: TaskFilter): TaskFilter {
         filters.add(filter)
