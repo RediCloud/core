@@ -2,7 +2,9 @@ package com.dustrean.api.packet
 
 import com.dustrean.api.network.INetworkComponentInfo
 import com.dustrean.api.packet.coroutines.FutureAction
+import com.dustrean.api.packet.response.PacketResponse
 import java.util.UUID
+import kotlin.time.Duration.Companion.seconds
 
 class PacketData {
     val packetId: UUID = UUID.randomUUID()
@@ -10,7 +12,7 @@ class PacketData {
     val receiverComponent: ArrayList<INetworkComponentInfo> = arrayListOf()
     var allowSenderAsReceiver: Boolean = false
     var responsePacketData: PacketData? = null
-    var futureResponse: FutureAction<*>? = null
+    var futureResponse: FutureAction<PacketResponse>? = null
 
     fun allowSenderAsReceiver() {
         allowSenderAsReceiver = true
@@ -24,8 +26,10 @@ class PacketData {
 
     fun clearReceiverComponent() = receiverComponent.clear()
 
-    fun waitForResponse(): FutureAction<*> {
-        TODO("Not yet implemented")
+    fun waitForResponse(): FutureAction<PacketResponse> {
+        futureResponse = FutureAction()
+        futureResponse!!.orTimeout(15.seconds)
+        return futureResponse!!
     }
 
     fun hasReceiver(componentInfo: INetworkComponentInfo): Boolean = receiverComponent.contains(componentInfo)
