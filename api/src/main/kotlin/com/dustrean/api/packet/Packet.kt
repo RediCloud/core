@@ -1,7 +1,8 @@
 package com.dustrean.api.packet
 
-class Packet(
+abstract class Packet(
     var packetData: PacketData = PacketData()
 ){
+    abstract fun received()
 
 }
