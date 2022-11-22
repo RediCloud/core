@@ -18,23 +18,22 @@ abstract class Scheduler<T: SchedulerTask<*>, K: RepeatSchedulerTask<*>> {
     fun createRepeatTask(schedulerTask: K, runnable: Runnable): Runnable{
         return Runnable {
             if((schedulerTask.asyncFilters && !isMainThread()) || !schedulerTask.asyncFilters) {
-                if(!schedulerTask.filter()) {
+                if (!schedulerTask.filter()) {
                     schedulerTask.cancel()
                     return@Runnable
                 }
                 runnable.run()
-            } else {
-                schedulerTask.filterAsync { filterState ->
-                    run {
-                        if (!filterState) {
-                            schedulerTask.cancel()
-                            return@filterAsync
-                        }
-                        runnable.run()
+                return@Runnable
+            }
+            schedulerTask.filterAsync { filterState ->
+                run {
+                    if (!filterState) {
+                        schedulerTask.cancel()
+                        return@filterAsync
                     }
+                    runnable.run()
                 }
             }
         }
     }
-
 }

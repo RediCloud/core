@@ -28,5 +28,4 @@ abstract class RepeatSchedulerTask<T> constructor(
             consumer.accept(filter())
         }
     }
-
 }
