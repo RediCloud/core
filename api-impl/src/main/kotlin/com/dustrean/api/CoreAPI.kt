@@ -1,4 +1,3 @@
 package com.dustrean.api
 
-abstract class CoreAPI {
-}
+abstract class CoreAPI
