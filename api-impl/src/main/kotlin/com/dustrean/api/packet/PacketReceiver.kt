@@ -2,6 +2,7 @@ package com.dustrean.api.packet
 
 import com.dustrean.api.packet.response.PacketResponse
 import org.redisson.api.RFuture
+import org.redisson.api.listener.MessageListener
 
 class PacketReceiver(
     val packetManager: PacketManager
@@ -9,7 +10,10 @@ class PacketReceiver(
 
     val listener: HashMap<Class<out Packet>, Int> = hashMapOf()
 
-    fun receive(packet: Packet) {
+    private fun<T: Packet> receive(packet: T) {
+
+        println("Received packet: $packet")
+
         if (!packetManager.isRegistered(packet)) {
             throw IllegalArgumentException("Packet " + packet::class.java.name + " is not registered")
         }
@@ -35,9 +39,10 @@ class PacketReceiver(
         packet.received()
     }
 
-    fun connectPacketListener(packetClass: Class<out Packet>) {
+    fun<T: Packet> connectPacketListener(packetClass: Class<T>) {
+        println("Connecting packet listener: $packetClass")
         val future: RFuture<Int> =
-            packetManager.topic.addListenerAsync(packetClass) { charSequence, packet: Packet -> receive(packet) }
+            packetManager.topic.addListenerAsync(packetClass, { _, packet -> receive(packet) })
 
         future.whenComplete(({ result, throwable ->
             run {
@@ -50,13 +55,13 @@ class PacketReceiver(
         }))
     }
 
-    fun disconnectPacketListener(packetClass: Class<out Packet>) {
+    fun<T: Packet> disconnectPacketListener(packetClass: Class<T>) {
         if (!isPacketListenerConnected(packetClass)) return
         val id = listener[packetClass]!!
         packetManager.topic.removeListenerAsync(id)
         listener.remove(packetClass)
     }
 
-    fun isPacketListenerConnected(packetClass: Class<out Packet>): Boolean = listener.containsKey(packetClass)
+    fun<T: Packet> isPacketListenerConnected(packetClass: Class<T>): Boolean = listener.containsKey(packetClass)
 
 }
