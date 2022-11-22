@@ -5,7 +5,6 @@ import java.util.function.Consumer
 abstract class RepeatSchedulerTask<T> constructor(
     schedule: Scheduler<SchedulerTask<T>, RepeatSchedulerTask<*>>
 ): SchedulerTask<T>(schedule) {
-
     private val filters: MutableList<TaskFilter> = mutableListOf()
 
     var asyncFilters: Boolean = false

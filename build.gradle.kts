@@ -8,19 +8,17 @@ group = "com.dustrean"
 version = "1.0-SNAPSHOT"
 
 allprojects {
-
-    apply(plugin = "java")
+    apply(plugin = "kotlin")
 
     repositories {
         mavenCentral()
     }
 
     dependencies {
-
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
     }
-
 }
