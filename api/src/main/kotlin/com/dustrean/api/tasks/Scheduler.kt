@@ -15,9 +15,26 @@ abstract class Scheduler<T: SchedulerTask<*>, K: RepeatSchedulerTask<*>> {
 
     abstract fun isMainThread(): Boolean
 
-    fun createRepeatTask(schedulerTask: K, runnable: Runnable): K{
-        //TODO: Implement
-        return schedulerTask
+    fun createRepeatTask(schedulerTask: K, runnable: Runnable): Runnable{
+        return Runnable {
+            if((schedulerTask.asyncFilters && !isMainThread()) || !schedulerTask.asyncFilters) {
+                if(!schedulerTask.filter()) {
+                    schedulerTask.cancel()
+                    return@Runnable
+                }
+                runnable.run()
+            } else {
+                schedulerTask.filterAsync { filterState ->
+                    run {
+                        if (!filterState) {
+                            schedulerTask.cancel()
+                            return@filterAsync
+                        }
+                        runnable.run()
+                    }
+                }
+            }
+        }
     }
 
 }
