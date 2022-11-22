@@ -1,10 +1,9 @@
 package com.dustrean.api.tasks
 
-import java.util.function.Consumer
 
 abstract class RepeatSchedulerTask<T> constructor(
     schedule: Scheduler<SchedulerTask<T>, RepeatSchedulerTask<*>>
-): SchedulerTask<T>(schedule) {
+) : SchedulerTask<T>(schedule) {
     private val filters: MutableList<TaskFilter> = mutableListOf()
 
     var asyncFilters: Boolean = false
@@ -18,13 +17,13 @@ abstract class RepeatSchedulerTask<T> constructor(
         return filters.all { it.filter() }
     }
 
-    fun filterAsync(consumer: Consumer<Boolean>) {
-        if(filters.isEmpty()) {
-            consumer.accept(true)
+    fun filterAsync(consumer: (Boolean) -> Unit) {
+        if (filters.isEmpty()) {
+            consumer(true)
             return
         }
         this.scheduler.runTaskAsync {
-            consumer.accept(filter())
+            consumer(filter())
         }
     }
 }
