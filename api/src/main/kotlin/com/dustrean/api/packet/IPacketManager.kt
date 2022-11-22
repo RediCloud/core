@@ -9,5 +9,7 @@ interface IPacketManager {
 
     fun isRegistered(packet: Packet): Boolean
 
-    fun sendPacket(packet: Packet, receivers: Array<INetworkComponentInfo>)
+    fun sendPacket(packet: Packet)
+
+    fun sendPacketAsync(packet: Packet)
 }
