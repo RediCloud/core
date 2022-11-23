@@ -1,5 +1,7 @@
 package com.dustrean.api.event
 
-interface IEvent {
+import java.io.Serializable
+
+interface IEvent : Serializable{
     val type: EventType
 }
