@@ -5,10 +5,11 @@ import com.dustrean.api.redis.RedisConnection
 import com.dustrean.api.redis.RedisCredentials
 import org.redisson.api.listener.MessageListener
 import packet.TestPacket
+import packet.TestPingPacket
+import packet.TestPingResponsePacket
 import java.util.*
 
 fun main(args: Array<String>){
-
 
     val networkComponentInfo1 = NetworkComponentInfo(NetworkComponentType.STANDALONE, UUID.fromString("75dfe2a8-6aa7-11ed-a1eb-0242ac120002"))
     val networkComponentInfo2 = NetworkComponentInfo(NetworkComponentType.STANDALONE, UUID.fromString("85dfe2a8-6aa7-11ed-a1eb-0242ac120002"))
@@ -24,6 +25,8 @@ fun main(args: Array<String>){
     val packetManager = PacketManager(networkComponentInfo2, connection)
 
     packetManager.registerPacket(TestPacket())
+    packetManager.registerPacket(TestPingPacket())
+    packetManager.registerPacket(TestPingResponsePacket())
 
     println("Waiting for packets...")
 }

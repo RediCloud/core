@@ -4,6 +4,8 @@ import com.dustrean.api.packet.PacketManager
 import com.dustrean.api.redis.RedisConnection
 import com.dustrean.api.redis.RedisCredentials
 import packet.TestPacket
+import packet.TestPingPacket
+import packet.TestPingResponsePacket
 import java.util.*
 
 fun main(args: Array<String>){
@@ -22,11 +24,13 @@ fun main(args: Array<String>){
     val packetManager = PacketManager(networkComponentInfo1, connection)
 
     packetManager.registerPacket(TestPacket())
+    packetManager.registerPacket(TestPingPacket())
+    packetManager.registerPacket(TestPingResponsePacket())
 
-    val packet = TestPacket()
-    packet.message = "Hello from test1"
+    val packet = TestPingPacket()
     packet.packetData.receiverComponent.add(networkComponentInfo2)
 
+    packet.start = System.currentTimeMillis()
     packetManager.sendPacket(packet)
 
     println("Packet sent")
