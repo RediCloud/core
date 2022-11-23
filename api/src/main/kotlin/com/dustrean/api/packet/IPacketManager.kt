@@ -1,13 +1,13 @@
 package com.dustrean.api.packet
 
-import com.dustrean.api.network.INetworkComponentInfo
-
 interface IPacketManager {
-    fun registerPacket(packet: IPacket)
+    fun<T: Packet> registerPacket(packet: T)
 
-    fun unregisterPacket(packet: IPacket)
+    fun<T: Packet> unregisterPacket(packet: T)
 
-    fun isRegistered(packet: IPacket): Boolean
+    fun<T: Packet> isRegistered(packet: T): Boolean
 
-    fun sendPacket(packet: IPacket, receivers: Array<INetworkComponentInfo>)
+    fun<T: Packet> sendPacket(packet: T)
+
+    fun<T: Packet> sendPacketAsync(packet: T)
 }

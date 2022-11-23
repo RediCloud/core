@@ -16,6 +16,7 @@ allprojects {
 
     dependencies {
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+        implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
     }
 
     tasks.withType<KotlinCompile> {
