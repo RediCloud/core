@@ -1,5 +1,5 @@
 package com.dustrean.api.event
 
 annotation class CoreListener(
-    val priority: Int = 0
+    val priority: Byte = 0
 )
