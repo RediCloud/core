@@ -1,4 +1,4 @@
-package com.dustrean.api.packet.coroutines
+package com.dustrean.api.packet.futures
 
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -6,7 +6,6 @@ import java.util.concurrent.TimeoutException
 import kotlin.time.Duration
 
 class FutureAction<T>() : CompletableFuture<T>() {
-
     var result: T? = null
     var throwable: Throwable? = null
 
@@ -101,6 +100,4 @@ class FutureAction<T>() : CompletableFuture<T>() {
         throwable = ex
         return super.completeExceptionally(ex)
     }
-
-
 }

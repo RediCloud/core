@@ -12,5 +12,4 @@ abstract class PacketResponse : Packet() {
     }
 
     override fun received() {}
-
 }

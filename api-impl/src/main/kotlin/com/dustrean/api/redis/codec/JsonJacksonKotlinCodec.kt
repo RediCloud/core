@@ -7,12 +7,10 @@ import org.redisson.codec.JsonJacksonCodec
 class JsonJacksonKotlinCodec(
     objectMapper: ObjectMapper
 ) : JsonJacksonCodec(objectMapper) {
-
     override fun initTypeInclusion(objectMapper: ObjectMapper) {
         objectMapper.activateDefaultTyping(
             BasicPolymorphicTypeValidator.builder().allowIfBaseType(Any::class.java).build(),
             ObjectMapper.DefaultTyping.EVERYTHING
         )
     }
-
 }

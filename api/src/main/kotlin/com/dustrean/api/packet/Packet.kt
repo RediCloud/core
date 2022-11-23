@@ -6,5 +6,4 @@ abstract class Packet(
     var packetData: PacketData = PacketData()
 ) : Serializable {
     abstract fun received()
-
 }

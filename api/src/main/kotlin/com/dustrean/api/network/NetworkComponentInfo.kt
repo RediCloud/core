@@ -3,8 +3,7 @@ package com.dustrean.api.network
 import java.io.Serializable
 import java.util.*
 
-class NetworkComponentInfo() : Serializable{
-
+class NetworkComponentInfo() : Serializable {
     lateinit var identifier: UUID
     lateinit var type: NetworkComponentType
 
