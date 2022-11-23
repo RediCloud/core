@@ -10,9 +10,18 @@ class PacketManager(
     val connection: RedisConnection,
     val topic: RTopic = connection.redisClient.getTopic("packet")
 ) : IPacketManager {
-    val packets = arrayListOf<Class<out Packet>>()
+
+    companion object {
+        lateinit var INSTANCE: PacketManager
+    }
+
+    init {
+        INSTANCE = this
+    }
+
+    private val packets = arrayListOf<Class<out Packet>>()
     val waitingForResponse = hashMapOf<UUID, PacketData>()
-    var receiver: PacketReceiver = PacketReceiver(this)
+    private var receiver: PacketReceiver = PacketReceiver(this)
 
     override fun <T : Packet> isRegistered(packet: T): Boolean = packets.contains(packet::class.java)
 
