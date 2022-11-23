@@ -12,8 +12,6 @@ class PacketReceiver(
 
     private fun<T: Packet> receive(packet: T) {
 
-        println("Received packet: $packet")
-
         if (!packetManager.isRegistered(packet)) {
             throw IllegalArgumentException("Packet " + packet::class.java.name + " is not registered")
         }
@@ -40,7 +38,6 @@ class PacketReceiver(
     }
 
     fun<T: Packet> connectPacketListener(packetClass: Class<T>) {
-        println("Connecting packet listener: $packetClass")
         val future: RFuture<Int> =
             packetManager.topic.addListenerAsync(packetClass, { _, packet -> receive(packet) })
 

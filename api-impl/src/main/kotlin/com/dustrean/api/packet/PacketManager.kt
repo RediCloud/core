@@ -19,7 +19,6 @@ class PacketManager(
     override fun<T: Packet> isRegistered(packet: T): Boolean = packets.contains(packet::class.java)
 
     override fun<T: Packet> registerPacket(packet: T) {
-        println("Registering packet: ${packet::class.java.simpleName}")
         packets.add(packet::class.java)
         receiver.connectPacketListener(packet::class.java)
     }
