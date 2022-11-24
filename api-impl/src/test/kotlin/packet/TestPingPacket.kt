@@ -11,7 +11,7 @@ class TestPingPacket : ResponseablePacket() {
         val response = TestPingResponsePacket()
         response.packetData.receiverComponent.add(packetData.senderComponent)
         response.start = start
-        PacketManager.instance.sendPacket(response)
+        PacketManager.INSTANCE.sendPacket(response)
     }
 
 }
