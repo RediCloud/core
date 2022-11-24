@@ -7,7 +7,7 @@ class EventInvoker(
     val method: Method
 ){
 
-    fun invoke(event: IEvent){
+    fun invoke(event: CoreEvent){
         method.invoke(listener, event)
     }
 
