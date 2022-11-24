@@ -22,7 +22,7 @@ class EventManager : IEventManager {
     val byEventBaked = mutableMapOf<Class<*>, Array<EventInvoker>>()
     val listenerLock = Mutex()
 
-    override suspend fun registerListener(listener: CoreListener) {
+    override suspend fun registerListener(listener: Any) {
         listenerLock.withLock {
             val handler = findHandlers(listener)
             handler.forEach { (event, methods) ->
@@ -36,7 +36,7 @@ class EventManager : IEventManager {
         }
     }
 
-    override suspend fun unregisterListener(listener: CoreListener) {
+    override suspend fun unregisterListener(listener: Any) {
         listenerLock.withLock {
             val handler = findHandlers(listener)
             handler.forEach { (event, methods) ->
@@ -55,11 +55,11 @@ class EventManager : IEventManager {
         }
     }
 
-    override fun callEvent(event: IEvent) {
+    override fun callEvent(event: CoreEvent) {
         callEvent0(event, false)
     }
 
-    fun callEvent0(event: IEvent, forceLocal: Boolean) {
+    fun callEvent0(event: CoreEvent, forceLocal: Boolean) {
         if(event.type == EventType.LOCAL || forceLocal) {
             val handlers = byEventBaked[event::class.java] ?: return
             handlers.forEach { invoker ->
@@ -117,7 +117,7 @@ class EventManager : IEventManager {
 
         do {
             val handlersByListener: MutableMap<Any, Array<Method>>? = handlersByPriority[value]
-            if(handlersByListener == null) return
+            if(handlersByListener == null) continue
             handlersByListener.forEach { (listener, methods) ->
                 methods.forEach { method ->
                     handlerList.add(EventInvoker(listener, method))

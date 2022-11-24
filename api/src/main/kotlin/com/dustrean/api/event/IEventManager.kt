@@ -1,9 +1,9 @@
 package com.dustrean.api.event
 
 interface IEventManager {
-    suspend fun registerListener(listener: CoreListener)
+    suspend fun registerListener(listener: Any)
 
-    suspend fun unregisterListener(listener: CoreListener)
+    suspend fun unregisterListener(listener: Any)
 
-    fun callEvent(event: IEvent)
+    fun callEvent(event: CoreEvent)
 }
