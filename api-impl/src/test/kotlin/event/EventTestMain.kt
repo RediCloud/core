@@ -1,4 +1,4 @@
-import com.dustrean.api.event.EventManager
+import net.dustrean.api.event.EventManager
 import com.dustrean.api.network.NetworkComponentInfo
 import com.dustrean.api.network.NetworkComponentType
 import com.dustrean.api.packet.PacketManager
@@ -18,7 +18,7 @@ suspend fun main(args: Array<String>) {
 
     val packetManager = PacketManager(networkComponentInfo1, connection)
 
-    val eventManager = EventManager()
+    val eventManager = net.dustrean.api.event.EventManager()
     eventManager.registerListener(TestListener())
     eventManager.registerListener(TestListener())
 

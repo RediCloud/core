@@ -5,7 +5,7 @@ plugins {
     kotlin("plugin.serialization") version "1.7.21"
 }
 
-group = "com.dustrean"
+group = "net.dustrean"
 version = "1.0-SNAPSHOT"
 
 allprojects {
