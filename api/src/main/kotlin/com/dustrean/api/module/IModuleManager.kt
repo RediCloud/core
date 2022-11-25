@@ -1,17 +1,19 @@
 package com.dustrean.api.module
 
 interface IModuleManager {
-    fun getModules(): List<IModule>
+    fun getModules(): List<Module>
 
-    fun getModule(name: String): IModule?
+    fun getModule(name: String): Module?
 
-    fun getModuleDescription(name: String): IModuleDescription?
+    fun getModuleDescription(name: String): ModuleDescription?
 
-    fun getModules(state: ModuleState) : List<IModule>
+    fun getModules(state: ModuleState) : List<Module>
 
-    fun canLoadModule(description: IModuleDescription): Boolean
 
-    fun loadModule(description: IModuleDescription): Boolean
+    fun loadModule(description: ModuleDescription): Boolean
 
     fun unloadModule(name: String): Boolean
+
+    fun enableModules()
+    fun disableModules()
 }
