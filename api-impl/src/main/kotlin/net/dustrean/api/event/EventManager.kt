@@ -7,19 +7,19 @@ import java.lang.IllegalArgumentException
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
-class EventManager : net.dustrean.api.event.IEventManager {
+class EventManager : IEventManager {
 
     companion object {
-        lateinit var INSTANCE: net.dustrean.api.event.EventManager
+        lateinit var INSTANCE: EventManager
     }
 
     init {
-        net.dustrean.api.event.EventManager.Companion.INSTANCE = this
-        PacketManager.INSTANCE.registerPacket(net.dustrean.api.event.EventPacket())
+        Companion.INSTANCE = this
+        PacketManager.INSTANCE.registerPacket(EventPacket())
     }
 
     val byListenerAndPriority = mutableMapOf<Class<*>, MutableMap<Byte, MutableMap<Any, Array<Method>>>>()
-    val byEventBaked = mutableMapOf<Class<*>, Array<net.dustrean.api.event.EventInvoker>>()
+    val byEventBaked = mutableMapOf<Class<*>, Array<EventInvoker>>()
     val listenerLock = Mutex()
 
     override suspend fun registerListener(listener: Any) {
@@ -55,12 +55,12 @@ class EventManager : net.dustrean.api.event.IEventManager {
         }
     }
 
-    override fun callEvent(event: net.dustrean.api.event.CoreEvent) {
+    override fun callEvent(event: CoreEvent) {
         callEvent0(event, false)
     }
 
-    fun callEvent0(event: net.dustrean.api.event.CoreEvent, forceLocal: Boolean) {
-        if(event.type == net.dustrean.api.event.EventType.LOCAL || forceLocal) {
+    fun callEvent0(event: CoreEvent, forceLocal: Boolean) {
+        if(event.type == EventType.LOCAL || forceLocal) {
             val handlers = byEventBaked[event::class.java] ?: return
             handlers.forEach { invoker ->
                 val time = System.nanoTime()
@@ -92,7 +92,7 @@ class EventManager : net.dustrean.api.event.IEventManager {
             addAll(listener::class.java.declaredMethods)
         }
         methods.forEach{ method ->
-            val annotation = method.getAnnotation(net.dustrean.api.event.CoreListener::class.java)
+            val annotation = method.getAnnotation(CoreListener::class.java)
             if (annotation == null) return@forEach
             val parameters = method.parameterTypes
             if (parameters.size != 1) return@forEach
@@ -112,7 +112,7 @@ class EventManager : net.dustrean.api.event.IEventManager {
             return
         }
 
-        val handlerList = ArrayList<net.dustrean.api.event.EventInvoker>(handlersByPriority.size * 2)
+        val handlerList = ArrayList<EventInvoker>(handlersByPriority.size * 2)
         var value = Byte.MIN_VALUE
 
         do {
@@ -120,7 +120,7 @@ class EventManager : net.dustrean.api.event.IEventManager {
             if(handlersByListener == null) continue
             handlersByListener.forEach { (listener, methods) ->
                 methods.forEach { method ->
-                    handlerList.add(net.dustrean.api.event.EventInvoker(listener, method))
+                    handlerList.add(EventInvoker(listener, method))
                 }
             }
         }while (value++ < Byte.MAX_VALUE)

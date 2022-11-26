@@ -1,7 +1,7 @@
 package packet
 
-import com.dustrean.api.packet.PacketManager
-import com.dustrean.api.packet.response.ResponseablePacket
+import net.dustrean.api.packet.PacketManager
+import net.dustrean.api.packet.response.ResponseablePacket
 
 class TestPingPacket : ResponseablePacket() {
 

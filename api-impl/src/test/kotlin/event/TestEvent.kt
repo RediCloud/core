@@ -1,7 +1,7 @@
 package event
 
-import com.dustrean.api.event.EventType
-import com.dustrean.api.event.CoreEvent
+import net.dustrean.api.event.EventType
+import net.dustrean.api.event.CoreEvent
 
 class TestEvent : CoreEvent(
     EventType.LOCAL

@@ -1,8 +1,8 @@
-import com.dustrean.api.network.NetworkComponentInfo
-import com.dustrean.api.network.NetworkComponentType
-import com.dustrean.api.packet.PacketManager
-import com.dustrean.api.redis.RedisConnection
-import com.dustrean.api.redis.RedisCredentials
+import net.dustrean.api.network.NetworkComponentInfo
+import net.dustrean.api.network.NetworkComponentType
+import net.dustrean.api.packet.PacketManager
+import net.dustrean.api.redis.RedisConnection
+import net.dustrean.api.redis.RedisCredentials
 import packet.TestPacket
 import packet.TestPingPacket
 import packet.TestPingResponsePacket
@@ -15,7 +15,7 @@ fun main(args: Array<String>){
 
     println("Network info: $networkComponentInfo1")
 
-    val credentials = RedisCredentials("168.119.60.230", 6379, "sOmE_sEcUrE_pAsS")
+    val credentials = RedisCredentials("168.119.60.230", 6379, "sOmE_sEcUrE_pAsS", 0)
     val connection = RedisConnection(credentials)
     connection.connect()
 

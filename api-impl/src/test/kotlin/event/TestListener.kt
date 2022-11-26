@@ -1,7 +1,7 @@
 package event
 
-import com.dustrean.api.event.CoreListener
-import com.dustrean.api.event.EventPriority
+import net.dustrean.api.event.CoreListener
+import net.dustrean.api.event.EventPriority
 
 class TestListener{
 

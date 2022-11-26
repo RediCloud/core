@@ -1,6 +1,6 @@
 package packet
 
-import com.dustrean.api.packet.Packet
+import net.dustrean.api.packet.Packet
 
 class TestPacket : Packet() {
 
