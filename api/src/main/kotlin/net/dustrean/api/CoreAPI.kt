@@ -1,8 +1,10 @@
 package net.dustrean.api
 
-import com.dustrean.api.module.IModuleManager
-import com.dustrean.api.network.NetworkComponentInfo
-import com.dustrean.api.tasks.Scheduler
+import net.dustrean.api.event.IEventManager
+import net.dustrean.api.module.IModuleManager
+import net.dustrean.api.network.NetworkComponentInfo
+import net.dustrean.api.packet.IPacketManager
+import net.dustrean.api.tasks.Scheduler
 
 interface CoreAPI {
     fun getNetworkComponentInfo(): NetworkComponentInfo
@@ -12,4 +14,8 @@ interface CoreAPI {
     fun getScheduler(): Scheduler<*, *>
 
     fun getModuleHandler(): IModuleManager
+
+    fun getPacketManager(): IPacketManager
+
+    fun getEventManager(): IEventManager
 }
