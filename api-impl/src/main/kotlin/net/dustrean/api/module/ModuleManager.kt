@@ -2,7 +2,7 @@ package net.dustrean.api.module
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import net.dustrean.api.CoreAPI
+import net.dustrean.api.ICoreAPI
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URLClassLoader
