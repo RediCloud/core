@@ -4,6 +4,7 @@ include("api")
 include("api-impl")
 include("api-paper")
 include("api-cloud")
+include("api-velocity")
 
 pluginManagement {
     repositories {
@@ -11,4 +12,3 @@ pluginManagement {
         maven("https://papermc.io/repo/repository/maven-public/")
     }
 }
-include("api-velocity")
