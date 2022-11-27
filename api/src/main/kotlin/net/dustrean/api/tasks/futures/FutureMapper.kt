@@ -1,4 +1,4 @@
-package net.dustrean.api.packet.futures
+package net.dustrean.api.tasks.futures
 
 interface FutureMapper<T, R> {
     fun map(t: T): R

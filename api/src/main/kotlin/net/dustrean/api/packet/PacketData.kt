@@ -1,7 +1,7 @@
 package net.dustrean.api.packet
 
 import net.dustrean.api.network.NetworkComponentInfo
-import net.dustrean.api.packet.futures.FutureAction
+import net.dustrean.api.tasks.futures.FutureAction
 import net.dustrean.api.packet.response.PacketResponse
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.io.Serializable

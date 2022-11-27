@@ -11,9 +11,9 @@ import net.dustrean.api.redis.RedisConnection
 import net.dustrean.api.utils.coreVersion
 import net.dustrean.api.utils.getModuleFolder
 
-abstract class CoreAPIImpl(
+abstract class CoreAPI(
     private val networkComponentInfo: NetworkComponentInfo
-) : CoreAPI{
+) : ICoreAPI{
 
     private var redisConnection: RedisConnection = RedisConnection()
     private var packetManager: PacketManager = PacketManager(networkComponentInfo, redisConnection)

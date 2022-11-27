@@ -8,7 +8,7 @@ abstract class Module {
     // The module description will be set by the module manager
     val description: ModuleDescription = null!!
 
-    abstract fun onLoad(api: CoreAPI)
-    abstract fun onEnable(api: CoreAPI)
-    abstract fun onDisable(api: CoreAPI)
+    abstract fun onLoad(api: ICoreAPI)
+    abstract fun onEnable(api: ICoreAPI)
+    abstract fun onDisable(api: ICoreAPI)
 }

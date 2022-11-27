@@ -1,4 +1,4 @@
-package net.dustrean.api.packet.futures
+package net.dustrean.api.tasks.futures
 
 import java.util.*
 import java.util.concurrent.CompletableFuture

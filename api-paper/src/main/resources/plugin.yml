@@ -1,0 +1,7 @@
+name: core
+main: net.dustrean.api.paper.bootstrap.PaperBootstrap
+version: 1.0-SNAPSHOT
+api-version: 1.19.2
+author: Dustrean-Team
+description: Core plugin for the Dustrean API
+website: https://dustrean.net

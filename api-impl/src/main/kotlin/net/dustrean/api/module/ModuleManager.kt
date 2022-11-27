@@ -9,7 +9,7 @@ import java.net.URLClassLoader
 import java.util.jar.JarFile
 
 class ModuleManager(
-    var api: CoreAPI
+    var api: ICoreAPI
 ) : IModuleManager {
 
     private val logger = LoggerFactory.getLogger(ModuleManager::class.java)
