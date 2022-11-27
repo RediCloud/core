@@ -11,3 +11,4 @@ pluginManagement {
         maven("https://papermc.io/repo/repository/maven-public/")
     }
 }
+include("api-velocity")
