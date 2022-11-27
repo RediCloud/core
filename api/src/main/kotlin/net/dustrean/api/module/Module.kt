@@ -1,12 +1,12 @@
 package net.dustrean.api.module
 
 import net.dustrean.api.CoreAPI
-import java.net.URLClassLoader
 
 abstract class Module{
     var state = ModuleState.DISABLED
-    lateinit var description: ModuleDescription
-    lateinit var classLoader: URLClassLoader
+
+    // The module description will be set by the module manager
+    val description: ModuleDescription = null!!
 
     abstract fun onLoad(api: CoreAPI)
     abstract fun onEnable(api: CoreAPI)
