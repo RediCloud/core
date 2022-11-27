@@ -12,6 +12,7 @@ repositories {
 dependencies {
     implementation(project(":api"))
     implementation(project(":api-impl"))
+    implementation(project(":api-cloud"))
 
     paperDevBundle("1.19.2-R0.1-SNAPSHOT")
 }
