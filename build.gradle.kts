@@ -16,6 +16,7 @@ allprojects {
         mavenCentral()
         gradlePluginPortal()
         maven("https://repo.cloudnetservice.eu/repository/releases/")
+        maven("https://jitpack.io")
     }
 
     dependencies {

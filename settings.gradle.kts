@@ -5,6 +5,7 @@ include("api-impl")
 include("api-paper")
 include("api-cloud")
 include("api-velocity")
+include("api-minestom")
 
 pluginManagement {
     repositories {
