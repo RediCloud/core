@@ -17,7 +17,7 @@ class CloudNetworkComponentInfoManager : NetworkComponentManager() {
             return it.map { serviceInfo ->
                 val type = translateServiceEnvironment(serviceInfo.serviceId().environment())
                 val key = type.prefix + serviceInfo.serviceId().uniqueId().toString()
-                if(components.containsKey(key)) return@map components[key]!!
+                if (components.containsKey(key)) return@map components[key]!!
                 val component = NetworkComponentInfo(type, serviceInfo.serviceId().uniqueId())
                 components[key] = component
                 return@map component
@@ -31,7 +31,7 @@ class CloudNetworkComponentInfoManager : NetworkComponentManager() {
             future.complete(it.map { serviceInfo ->
                 val type = translateServiceEnvironment(serviceInfo.serviceId().environment())
                 val key = type.prefix + serviceInfo.serviceId().uniqueId().toString()
-                if(components.containsKey(key)) return@map components[key]!!
+                if (components.containsKey(key)) return@map components[key]!!
                 val component = NetworkComponentInfo(type, serviceInfo.serviceId().uniqueId())
                 components[key] = component
                 return@map component
@@ -41,12 +41,12 @@ class CloudNetworkComponentInfoManager : NetworkComponentManager() {
     }
 
     override fun getComponentInfo(uniqueId: UUID): NetworkComponentInfo? {
-        if(components.containsKey(uniqueId.toString())) return components[uniqueId.toString()]
+        if (components.containsKey(uniqueId.toString())) return components[uniqueId.toString()]
         getServiceProvider().service(uniqueId).let {
-            if(it == null) throw NullPointerException("Service with UUID $uniqueId not found!")
+            if (it == null) throw NullPointerException("Service with UUID $uniqueId not found!")
             val type = translateServiceEnvironment(it.serviceId().environment())
             val key = type.prefix + it.serviceId().uniqueId().toString()
-            if(components.containsKey(key)) return components[key]!!
+            if (components.containsKey(key)) return components[key]!!
             val component = NetworkComponentInfo(type, it.serviceId().uniqueId())
             components[key] = component
             return component
@@ -55,12 +55,12 @@ class CloudNetworkComponentInfoManager : NetworkComponentManager() {
 
     override fun getComponentInfoAsync(key: String): FutureAction<NetworkComponentInfo> {
         val future = FutureAction<NetworkComponentInfo>()
-        if(components.containsKey(key)) {
+        if (components.containsKey(key)) {
             future.complete(components[key]!!)
             return future
         }
         val splits = key.split("@")
-        if(splits.size != 2) throw IllegalArgumentException("Invalid key format!")
+        if (splits.size != 2) throw IllegalArgumentException("Invalid key format!")
         try {
             val type = NetworkComponentType.valueOf(splits[0])
             val uniqueId = UUID.fromString(splits[1])
@@ -71,20 +71,20 @@ class CloudNetworkComponentInfoManager : NetworkComponentManager() {
                 components[key] = component
                 future.complete(component)
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             future.completeExceptionally(e)
         }
         return future
     }
 
     override fun getComponentInfo(key: String): NetworkComponentInfo? {
-        if(components.containsKey(key)) return components[key]
+        if (components.containsKey(key)) return components[key]
         val splits = key.split("@")
-        if(splits.size != 2) throw IllegalArgumentException("Invalid key format!")
+        if (splits.size != 2) throw IllegalArgumentException("Invalid key format!")
         val type = NetworkComponentType.valueOf(splits[0])
         val uniqueId = UUID.fromString(splits[1])
         getServiceProvider().service(uniqueId).let {
-            if(it == null) throw NullPointerException("Service with UUID $key not found!")
+            if (it == null) throw NullPointerException("Service with UUID $key not found!")
             val component = NetworkComponentInfo(type, it.serviceId().uniqueId())
             components[key] = component
             return component
@@ -93,15 +93,15 @@ class CloudNetworkComponentInfoManager : NetworkComponentManager() {
 
     override fun getComponentInfoAsync(uniqueId: UUID): FutureAction<NetworkComponentInfo> {
         val future = FutureAction<NetworkComponentInfo>()
-        if(components.containsKey(uniqueId.toString())) {
+        if (components.containsKey(uniqueId.toString())) {
             future.complete(components[uniqueId.toString()]!!)
             return future
         }
         getServiceProvider().serviceAsync(uniqueId).thenAccept {
-            if(it == null) throw NullPointerException("Service with UUID $uniqueId not found!")
+            if (it == null) throw NullPointerException("Service with UUID $uniqueId not found!")
             val type = translateServiceEnvironment(it.serviceId().environment())
             val key = type.prefix + it.serviceId().uniqueId().toString()
-            if(components.containsKey(key)) future.complete(components[key]!!)
+            if (components.containsKey(key)) future.complete(components[key]!!)
             val component = NetworkComponentInfo(type, it.serviceId().uniqueId())
             components[key] = component
             future.complete(component)
@@ -115,7 +115,7 @@ class CloudNetworkComponentInfoManager : NetworkComponentManager() {
                 translateServiceEnvironment(serviceInfo.serviceId().environment()) == type
             }.map { serviceInfo ->
                 val key = type.prefix + serviceInfo.serviceId().uniqueId().toString()
-                if(components.containsKey(key)) return@map components[key]!!
+                if (components.containsKey(key)) return@map components[key]!!
                 val component = NetworkComponentInfo(type, serviceInfo.serviceId().uniqueId())
                 components[key] = component
                 return@map component
@@ -130,7 +130,7 @@ class CloudNetworkComponentInfoManager : NetworkComponentManager() {
                 translateServiceEnvironment(serviceInfo.serviceId().environment()) == type
             }.map { serviceInfo ->
                 val key = type.prefix + serviceInfo.serviceId().uniqueId().toString()
-                if(components.containsKey(key)) return@map components[key]!!
+                if (components.containsKey(key)) return@map components[key]!!
                 val component = NetworkComponentInfo(type, serviceInfo.serviceId().uniqueId())
                 components[key] = component
                 return@map component
