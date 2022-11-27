@@ -1,13 +1,13 @@
 package net.dustrean.api.module
 
-import net.dustrean.api.CoreAPI
+import net.dustrean.api.ICoreAPI
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.jar.JarFile
 
 class ModuleManager(
-    var api: CoreAPI
+    var api: ICoreAPI
 ) : IModuleManager {
 
     private val modules: MutableList<Module> = mutableListOf<Module>()

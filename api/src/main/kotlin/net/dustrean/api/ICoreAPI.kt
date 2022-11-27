@@ -6,7 +6,7 @@ import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.packet.IPacketManager
 import net.dustrean.api.tasks.Scheduler
 
-interface CoreAPI {
+interface ICoreAPI {
     fun getNetworkComponentInfo(): NetworkComponentInfo
 
     fun getCoreVersion(): String

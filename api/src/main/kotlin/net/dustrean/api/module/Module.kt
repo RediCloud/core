@@ -1,6 +1,6 @@
 package net.dustrean.api.module
 
-import net.dustrean.api.CoreAPI
+import net.dustrean.api.ICoreAPI
 import java.net.URLClassLoader
 
 abstract class Module{
@@ -8,7 +8,7 @@ abstract class Module{
     lateinit var description: ModuleDescription
     lateinit var classLoader: URLClassLoader
 
-    abstract fun onLoad(api: CoreAPI)
-    abstract fun onEnable(api: CoreAPI)
-    abstract fun onDisable(api: CoreAPI)
+    abstract fun onLoad(api: ICoreAPI)
+    abstract fun onEnable(api: ICoreAPI)
+    abstract fun onDisable(api: ICoreAPI)
 }
