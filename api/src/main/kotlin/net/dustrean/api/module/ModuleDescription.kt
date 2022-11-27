@@ -1,12 +1,12 @@
 package net.dustrean.api.module
 
-import net.dustrean.api.network.NetworkComponentType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import net.dustrean.api.network.NetworkComponentType
 import java.io.File
 
 @Serializable
-data class ModuleDescription (
+data class ModuleDescription(
     val name: String,
     val description: String,
     val version: String,

@@ -2,7 +2,7 @@ package net.dustrean.api.module
 
 import net.dustrean.api.CoreAPI
 
-abstract class Module{
+abstract class Module {
     var state = ModuleState.DISABLED
 
     // The module description will be set by the module manager

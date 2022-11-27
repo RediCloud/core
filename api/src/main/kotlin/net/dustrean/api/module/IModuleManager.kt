@@ -6,7 +6,7 @@ interface IModuleManager {
 
     fun getModuleDescription(name: String): ModuleDescription?
 
-    fun getModules(state: ModuleState) : List<Module>
+    fun getModules(state: ModuleState): List<Module>
 
     fun loadModule(description: ModuleDescription): Boolean
 
