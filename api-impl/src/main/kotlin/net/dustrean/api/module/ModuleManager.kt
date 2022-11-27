@@ -14,7 +14,7 @@ class ModuleManager(
 
     private val logger = LoggerFactory.getLogger(ModuleManager::class.java)
 
-    val modules= mutableListOf<Module>()
+    val modules = mutableListOf<Module>()
 
     init {
         logger.info("Initializing module manager")
@@ -23,13 +23,13 @@ class ModuleManager(
 
     fun detectModules(folder: File) {
         folder.listFiles()?.forEach { file ->
-            if(file.isDirectory) return@forEach
-            if(file.extension != "jar") return@forEach
+            if (file.isDirectory) return@forEach
+            if (file.extension != "jar") return@forEach
 
             try {
                 val jar = JarFile(file)
                 val entry = jar.getJarEntry("module.json")
-                if(entry == null)  {
+                if (entry == null) {
                     logger.error("Module ${file.name} does not have a module.json file!")
                     return@forEach
                 }
@@ -42,13 +42,13 @@ class ModuleManager(
                     isAccessible = false
                 }
 
-                if(!loadModule(description)){
+                if (!loadModule(description)) {
                     logger.error("Failed to load module ${file.name}")
                     return@forEach
                 }
-               logger.info("Loaded module ${file.name}")
+                logger.info("Loaded module ${file.name}")
 
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 logger.error("Failed to load module ${file.name}", e)
                 e.printStackTrace()
             }
@@ -71,7 +71,8 @@ class ModuleManager(
 
         val loader = URLClassLoader(arrayListOf(description.file.toURI().toURL()).toTypedArray(), javaClass.classLoader)
 
-        val module = loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).newInstance() as Module
+        val module =
+            loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).newInstance() as Module
 
         module::class.java.getDeclaredField("description").apply {
             isAccessible = true
@@ -106,7 +107,8 @@ class ModuleManager(
     }
 
     override fun disableModules() {
-        modules.filter { it.state == ModuleState.LOADED || it.state == ModuleState.ENABLED }.forEach { it.onDisable(api) }
+        modules.filter { it.state == ModuleState.LOADED || it.state == ModuleState.ENABLED }
+            .forEach { it.onDisable(api) }
     }
 
     override fun reloadModules() {
