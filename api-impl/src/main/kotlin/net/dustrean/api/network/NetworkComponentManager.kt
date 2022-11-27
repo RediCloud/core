@@ -1,6 +1,6 @@
 package net.dustrean.api.network
 
-import net.dustrean.api.packet.futures.FutureAction
+import net.dustrean.api.tasks.futures.FutureAction
 import java.util.*
 
 open class NetworkComponentManager : INetworkComponentManager{

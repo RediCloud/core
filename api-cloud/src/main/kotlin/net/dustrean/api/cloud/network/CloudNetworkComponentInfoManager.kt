@@ -5,7 +5,7 @@ import net.dustrean.api.cloud.utils.translateServiceEnvironment
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentManager
 import net.dustrean.api.network.NetworkComponentType
-import net.dustrean.api.packet.futures.FutureAction
+import net.dustrean.api.tasks.futures.FutureAction
 import java.util.*
 
 class CloudNetworkComponentInfoManager : NetworkComponentManager() {
