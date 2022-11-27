@@ -14,5 +14,6 @@ dependencies {
     annotationProcessor("com.velocitypowered:velocity-api:3.1.1")
 
     implementation(project(":api-cloud"))
+    implementation(project(":api-impl"))
     implementation(project(":api"))
 }
