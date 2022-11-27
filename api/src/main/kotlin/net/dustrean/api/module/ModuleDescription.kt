@@ -1,16 +1,16 @@
 package net.dustrean.api.module
 
-import net.dustrean.api.network.NetworkComponentType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import net.dustrean.api.network.NetworkComponentType
 import java.io.File
 
 @Serializable
-class ModuleDescription {
-    lateinit var name: String
-    lateinit var description: String
-    lateinit var version: String
-    @Transient
-    lateinit var file: File
-    lateinit var mainClasses: HashMap<NetworkComponentType, String>
-}
+data class ModuleDescription(
+    val name: String,
+    val description: String,
+    val version: String,
+    val mainClasses: HashMap<NetworkComponentType, String>,
+
+    @Transient val file: File = null!!, // This will be set by the module manager
+)
