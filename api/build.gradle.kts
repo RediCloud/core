@@ -4,10 +4,10 @@ plugins {
     `maven-publish`
 }
 
-group = "net.dustrean.api"
 val projectVersion = "1.0.0"
-version = projectVersion
 val snapshot = false
+group = "net.dustrean.api"
+version = "$projectVersion${if (snapshot) "-SNAPSHOT" else "-RELEASE"}"
 
 repositories {
     mavenCentral()
