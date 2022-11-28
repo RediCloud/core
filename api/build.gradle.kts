@@ -28,7 +28,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "net.dustrean"
             artifactId = "api"
-            version = projectVersion
+            version = "$projectVersion${if (snapshot) "-SNAPSHOT" else ""}"
             from(components["java"])
         }
     }
