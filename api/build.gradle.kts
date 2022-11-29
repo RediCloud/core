@@ -17,7 +17,7 @@ publishing {
     repositories {
         maven {
             name = "dustrean"
-            url = uri( if (!snapshot)"https://repo.dustrean.net/releases" else "https://repo.dustrean.net/snapshots")
+            url = uri( if (!snapshot) "https://repo.dustrean.net/releases" else "https://repo.dustrean.net/snapshots")
             credentials(PasswordCredentials::class)
             authentication {
                 create<BasicAuthentication>("basic")
