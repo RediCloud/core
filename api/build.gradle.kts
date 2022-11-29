@@ -1,11 +1,10 @@
 plugins {
     kotlin("jvm") version "1.7.21"
-    signing
     `maven-publish`
 }
 
 val projectVersion = "1.0.0"
-val snapshot = false
+val snapshot = true
 group = "net.dustrean.api"
 version = "$projectVersion${if (snapshot) "-SNAPSHOT" else "-RELEASE"}"
 
@@ -32,11 +31,6 @@ publishing {
             from(components["java"])
         }
     }
-}
-
-
-signing {
-    sign(publishing.publications)
 }
 
 java {
