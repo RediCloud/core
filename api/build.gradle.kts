@@ -12,6 +12,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation("org.redisson:redisson:3.18.0")
+}
+
 publishing {
     repositories {
         maven {
