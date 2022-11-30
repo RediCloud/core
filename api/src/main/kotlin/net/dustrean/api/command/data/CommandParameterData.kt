@@ -7,5 +7,4 @@ class CommandParameterData(
     val provider: CommandSuggestionProvider,
     val name: String,
     val nullable: Boolean
-) {
-}
+)
