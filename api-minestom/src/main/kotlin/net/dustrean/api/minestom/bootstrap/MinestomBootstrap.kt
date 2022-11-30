@@ -7,5 +7,5 @@ fun main(args: Array<String>) {
     val server = MinecraftServer.init()
     server.start("0.0.0.0", System.getenv("service.bind.port").toInt())
 
-    MinestomCoreAPI()
+    MinestomCoreAPI.init(server)
 }
