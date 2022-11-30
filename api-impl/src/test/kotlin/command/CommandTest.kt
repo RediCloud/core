@@ -6,7 +6,7 @@ import java.util.*
 fun main() {
     val command = CoinsCommand
     TestCommandManager.registerCommand(command)
-    val player = TestCommandPlayer(UUID.randomUUID())
+    val player = TestCommandActor(UUID.randomUUID())
 
     command.execute(player, arrayOf())
     command.execute(player, arrayOf("100"))

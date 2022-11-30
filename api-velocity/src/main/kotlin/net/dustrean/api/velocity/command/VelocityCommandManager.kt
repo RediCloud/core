@@ -3,9 +3,9 @@ package net.dustrean.api.velocity.command
 import com.velocitypowered.api.proxy.Player
 import eu.cloudnetservice.modules.bridge.player.CloudPlayer
 import kotlinx.coroutines.DelicateCoroutinesApi
+import net.dustrean.api.command.CommandActor
 import net.dustrean.api.command.CommandManager
 import net.dustrean.api.command.ICommand
-import net.dustrean.api.command.ICommandPlayer
 import net.dustrean.api.velocity.VelocityCoreAPI
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -25,9 +25,9 @@ object VelocityCommandManager : CommandManager() {
         loadSubCommands(command)
     }
 
-    override fun getPlayer(clazz: Class<*>, player: ICommandPlayer): Any? {
+    override fun getPlayer(clazz: Class<*>, player: CommandActor): Any? {
 
-        if (player is VelocityCommandPlayer) {
+        if (player is VelocityCommandActor) {
             return player.player
         }
 

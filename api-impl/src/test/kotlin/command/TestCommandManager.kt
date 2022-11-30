@@ -1,8 +1,8 @@
 package command
 
+import net.dustrean.api.command.CommandActor
 import net.dustrean.api.command.CommandManager
 import net.dustrean.api.command.ICommand
-import net.dustrean.api.command.ICommandPlayer
 import net.dustrean.api.command.annotations.CommandArgument
 import net.dustrean.api.command.annotations.CommandSubPath
 import net.dustrean.api.command.data.CommandData
@@ -58,7 +58,7 @@ object TestCommandManager : CommandManager() {
         }
     }
 
-    override fun getPlayer(clazz: Class<*>, player: ICommandPlayer): Class<*>? {
+    override fun getPlayer(clazz: Class<*>, player: CommandActor): Class<*>? {
         return null
     }
 }

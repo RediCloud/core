@@ -17,7 +17,7 @@ class MinestomCommand(
             sender !is Player && return@setDefaultExecutor
 
             MinestomCommandManager.handleCommand(
-                MinestomCommandPlayer(sender as Player),
+                MinestomCommandActor(sender as Player),
                 this,
                 context.input.split(" ")
             )
