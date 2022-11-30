@@ -1,5 +1,6 @@
 package net.dustrean.api.velocity.boostrap
 
+import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.proxy.ProxyServer
 import net.dustrean.api.velocity.VelocityCoreAPI
@@ -21,6 +22,12 @@ class VelocityBootstrap(proxyServer: ProxyServer) {
             set(this@VelocityBootstrap, VelocityCoreAPI(proxyServer))
             isAccessible = false
         }
+        proxyServer.eventManager.register(this, this)
+    }
+
+    @Subscribe
+    fun onShutdown(event: com.velocitypowered.api.event.proxy.ProxyShutdownEvent) {
+        core?.shutdown()
     }
 
 }
