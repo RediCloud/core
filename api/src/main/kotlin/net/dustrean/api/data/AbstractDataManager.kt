@@ -1,13 +1,13 @@
 package net.dustrean.api.data
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.dustrean.api.CoreAPI
+import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.packet.DataActionType
 import net.dustrean.api.data.packet.DataObjectPacket
 import net.dustrean.api.data.packet.cache.DataCacheActionType
 import net.dustrean.api.data.packet.cache.DataCachePacket
 import net.dustrean.api.network.NetworkComponentInfo
-import net.dustrean.api.redis.RedisConnection
+import net.dustrean.api.redis.IRedisConnection
 import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
 import net.dustrean.api.tasks.futures.FutureAction
 import org.slf4j.LoggerFactory
@@ -15,7 +15,7 @@ import java.util.*
 
 abstract class AbstractDataManager<T : IDataObject>(
     private val prefix: String,
-    private val connection: RedisConnection,
+    private val connection: IRedisConnection,
     private val implClass: Class<T>
 ) : IDataManager<T> {
 
@@ -42,7 +42,7 @@ abstract class AbstractDataManager<T : IDataObject>(
         packet.managerPrefix = prefix
         packet.action = action
         packet.packetData.receiverComponent.addAll(components)
-        CoreAPI.INSTANCE.getPacketManager().sendPacket(packet)
+        ICoreAPI.INSTANCE.getPacketManager().sendPacket(packet)
     }
 
     fun sendPacket(dataObject: T, action: DataActionType): FutureAction<Unit> {
@@ -58,17 +58,17 @@ abstract class AbstractDataManager<T : IDataObject>(
                 return@whenComplete
             }
             packet.packetData.receiverComponent.addAll(components)
-            CoreAPI.INSTANCE.getPacketManager().sendPacket(packet)
+            ICoreAPI.INSTANCE.getPacketManager().sendPacket(packet)
             future.complete(Unit)
         }
         return future
     }
 
     override fun getCache(identifier: UUID): T? {
-        if(cachedObjects.containsKey(identifier)){
+        if (cachedObjects.containsKey(identifier)) {
             val cachedObject = cachedObjects[identifier]!!
-            if(cachedObject.getValidator() != null) {
-                if(cachedObject.getValidator()!!.isValid()) return cachedObject
+            if (cachedObject.getValidator() != null) {
+                if (cachedObject.getValidator()!!.isValid()) return cachedObject
                 cachedObjects.remove(identifier)
                 parkedObjects[identifier] = cachedObject
 
@@ -83,7 +83,7 @@ abstract class AbstractDataManager<T : IDataObject>(
                 return null
             }
             return cachedObject
-        }else if(parkedObjects.containsKey(identifier)) {
+        } else if (parkedObjects.containsKey(identifier)) {
             val parkedObject = parkedObjects[identifier]!!
             if (parkedObject.getValidator() != null) {
                 if (parkedObject.getValidator()!!.isValid()) {
@@ -93,8 +93,7 @@ abstract class AbstractDataManager<T : IDataObject>(
                     parkedObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
                         if (throwable != null) {
                             logger.error(
-                                "Error while getting cache network components for object $identifier",
-                                throwable
+                                "Error while getting cache network components for object $identifier", throwable
                             )
                             return@whenComplete
                         }
@@ -116,7 +115,10 @@ abstract class AbstractDataManager<T : IDataObject>(
 
             cachedObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
                 if (throwable != null) {
-                    logger.error("Error while getting cache network components for object ${cachedObject.getIdentifier()}", throwable)
+                    logger.error(
+                        "Error while getting cache network components for object ${cachedObject.getIdentifier()}",
+                        throwable
+                    )
                     return@whenComplete
                 }
                 sendPacket(cachedObject.getIdentifier(), DataCacheActionType.REMOVED, components)
@@ -140,12 +142,12 @@ abstract class AbstractDataManager<T : IDataObject>(
     override fun getObject(identifier: UUID): FutureAction<T> {
         val future = FutureAction<T>()
         val cache: T? = getCache(identifier)
-        if(cache != null){
+        if (cache != null) {
             future.complete(cache)
             return future
         }
         val key = "$prefix@$identifier"
-        val bucket = connection.redisClient.getBucket<T>(key)
+        val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.async.whenComplete { dataObject, throwable ->
             if (throwable != null) {
                 future.completeExceptionally(throwable)
@@ -159,20 +161,20 @@ abstract class AbstractDataManager<T : IDataObject>(
     override fun createObject(dataObject: T): FutureAction<T> {
         val future = FutureAction<T>()
         val key = "$prefix@${dataObject.getIdentifier()}"
-        val bucket = connection.redisClient.getBucket<T>(key)
+        val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.setAsync(dataObject).whenComplete { _, throwable ->
             if (throwable != null) {
                 future.completeExceptionally(throwable)
             }
             var updateCacheList = false
-            if(dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)){
+            if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
                 updateCacheList = true
                 cachedObjects[dataObject.getIdentifier()] = dataObject
-            }else{
+            } else {
                 parkedObjects[dataObject.getIdentifier()] = dataObject
             }
             sendPacket(dataObject, DataActionType.CREATE).whenComplete { _, throwable1 ->
-                if(throwable1 != null) {
+                if (throwable1 != null) {
                     future.completeExceptionally(throwable1)
                     return@whenComplete
                 }
@@ -185,7 +187,7 @@ abstract class AbstractDataManager<T : IDataObject>(
     override fun updateObject(dataObject: T): FutureAction<T> {
         val future = FutureAction<T>()
         val key = "$prefix@${dataObject.getIdentifier()}"
-        val bucket = connection.redisClient.getBucket<T>(key)
+        val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.isExistsAsync.whenComplete { exists, throwable ->
             if (throwable != null) {
                 future.completeExceptionally(throwable)
@@ -199,16 +201,16 @@ abstract class AbstractDataManager<T : IDataObject>(
                 }
                 var updateCacheList = false
 
-                if(dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)){
+                if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
                     updateCacheList = cachedObjects.containsKey(dataObject.getIdentifier())
                     cachedObjects[dataObject.getIdentifier()] = dataObject
                     parkedObjects.remove(dataObject.getIdentifier())
                     updateCacheList = true
-                }else{
+                } else {
                     parkedObjects[dataObject.getIdentifier()] = dataObject
                 }
                 sendPacket(dataObject, DataActionType.UPDATE).whenComplete { _, throwable2 ->
-                    if(throwable2 != null) {
+                    if (throwable2 != null) {
                         future.completeExceptionally(throwable2)
                         return@whenComplete
                     }
@@ -222,7 +224,7 @@ abstract class AbstractDataManager<T : IDataObject>(
     override fun deleteObject(dataObject: T): FutureAction<Unit> {
         val future = FutureAction<Unit>()
         val key = "$prefix@${dataObject.getIdentifier()}"
-        val bucket = connection.redisClient.getBucket<T>(key)
+        val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.isExistsAsync.whenComplete { exists, throwable ->
             if (throwable != null) {
                 future.completeExceptionally(throwable)
@@ -237,7 +239,7 @@ abstract class AbstractDataManager<T : IDataObject>(
                     cachedObjects.remove(dataObject.getIdentifier())
                     parkedObjects.remove(dataObject.getIdentifier())
                     sendPacket(dataObject, DataActionType.DELETE).whenComplete { _, throwable2 ->
-                        if(throwable2 != null) {
+                        if (throwable2 != null) {
                             future.completeExceptionally(throwable2)
                             return@whenComplete
                         }
@@ -254,11 +256,11 @@ abstract class AbstractDataManager<T : IDataObject>(
     }
 
     fun deserialize(identifier: UUID?, json: String): T {
-        if(identifier != null){
+        if (identifier != null) {
             var dataObject: T? = null
-            if(cachedObjects.containsKey(identifier)) dataObject = cachedObjects[identifier]
-            if(parkedObjects.containsKey(identifier)) dataObject = parkedObjects[identifier]
-            if(dataObject != null){
+            if (cachedObjects.containsKey(identifier)) dataObject = cachedObjects[identifier]
+            if (parkedObjects.containsKey(identifier)) dataObject = parkedObjects[identifier]
+            if (dataObject != null) {
                 codec.objectMapper.readerForUpdating(dataObject).readValue<T>(json)
                 return dataObject
             }
