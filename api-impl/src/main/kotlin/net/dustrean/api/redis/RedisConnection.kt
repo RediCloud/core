@@ -26,4 +26,7 @@ class RedisConnection(
     override fun disconnect() = redisClient.shutdown()
 
     override fun isConnected(): Boolean = redisClient.isShutdown
+    override fun getRedissonClient(): RedissonClient {
+        return redisClient
+    }
 }

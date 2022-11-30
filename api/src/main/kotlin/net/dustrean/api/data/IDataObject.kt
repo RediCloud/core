@@ -3,7 +3,7 @@ package net.dustrean.api.data
 import java.io.Serializable
 import java.util.*
 
-interface IDataObject : Serializable{
+interface IDataObject : Serializable {
 
     fun update()
 

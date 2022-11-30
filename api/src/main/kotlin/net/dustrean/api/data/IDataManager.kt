@@ -15,11 +15,11 @@ interface IDataManager<T : IDataObject> {
 
     fun unregisterCache()
 
-    fun createObject(dataObject: T) : FutureAction<T>
+    fun createObject(dataObject: T): FutureAction<T>
 
-    fun updateObject(dataObject: T) : FutureAction<T>
+    fun updateObject(dataObject: T): FutureAction<T>
 
-    fun deleteObject(dataObject: T) : FutureAction<Unit>
+    fun deleteObject(dataObject: T): FutureAction<Unit>
 
     fun getDataPrefix(): String
 
