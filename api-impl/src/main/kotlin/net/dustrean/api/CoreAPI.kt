@@ -1,5 +1,6 @@
 package net.dustrean.api
 
+import net.dustrean.api.data.AbstractDataManager
 import net.dustrean.api.event.EventManager
 import net.dustrean.api.event.IEventManager
 import net.dustrean.api.module.IModuleManager
@@ -15,13 +16,29 @@ abstract class CoreAPI(
     private val networkComponentInfo: NetworkComponentInfo
 ) : ICoreAPI{
 
+    companion object {
+        lateinit var INSTANCE: CoreAPI
+    }
+
     private var redisConnection: RedisConnection = RedisConnection()
     private var packetManager: PacketManager = PacketManager(networkComponentInfo, redisConnection)
     private var eventManager: EventManager = EventManager()
     private var moduleManager: ModuleManager = ModuleManager(this)
 
     init {
+        INSTANCE = this
         moduleManager.detectModules(getModuleFolder())
+    }
+
+    //TODO: impl
+    override fun shutdown() {
+        AbstractDataManager.MANAGERS.forEach { _, manager ->
+            manager.unregisterCache()
+        }
+
+        if(redisConnection.isConnected()) {
+            redisConnection.disconnect()
+        }
     }
 
     override fun getNetworkComponentInfo(): NetworkComponentInfo = networkComponentInfo
