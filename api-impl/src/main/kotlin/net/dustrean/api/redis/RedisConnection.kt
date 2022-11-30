@@ -8,11 +8,11 @@ import org.redisson.config.Config
 
 class RedisConnection(
     val configuration: RedisConfiguration = RedisConfiguration()
-) {
+): IRedisConnection{
     lateinit var redisClient: RedissonClient
     val credentials = configuration.credentials
 
-    fun connect() {
+    override fun connect() {
         val config = Config()
         config.useSingleServer().setConnectionPoolSize(configuration.connectionPoolSize)
             .setConnectionMinimumIdleSize(configuration.connectionMinimumIdleSize)
@@ -23,7 +23,7 @@ class RedisConnection(
         redisClient = Redisson.create(config)
     }
 
-    fun disconnect() = redisClient.shutdown()
+    override fun disconnect() = redisClient.shutdown()
 
-    fun isConnected(): Boolean = redisClient.isShutdown
+    override fun isConnected(): Boolean = redisClient.isShutdown
 }
