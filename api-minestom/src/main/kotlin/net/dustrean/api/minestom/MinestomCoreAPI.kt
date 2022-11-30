@@ -7,7 +7,7 @@ import net.minestom.server.MinecraftServer
 
 object MinestomCoreAPI : CloudCoreAPI() {
 
-    // instace of MinecraftServer will be initialized by Refections
+    // instance of MinecraftServer will be initialized by Refections
     val server: MinecraftServer = null!!
     val isInitialized: Boolean = false
 
