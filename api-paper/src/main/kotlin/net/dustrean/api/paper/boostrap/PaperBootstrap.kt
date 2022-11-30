@@ -11,7 +11,7 @@ class PaperBootstrap : JavaPlugin(){
     override fun onEnable() {
         this::class.java.getDeclaredField("coreAPI").apply {
             isAccessible = true
-            set(this@PaperBootstrap, CorePaperAPI())
+            set(this@PaperBootstrap, CorePaperAPI)
             isAccessible = false
         }
     }
