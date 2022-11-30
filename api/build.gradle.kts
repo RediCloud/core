@@ -25,7 +25,7 @@ publishing {
     }
     publications {
         create<MavenPublication>("reposilite-repository") {
-            groupId = "net.dustrean"
+            groupId = "net.dustrean.api"
             artifactId = "api"
             version = "$projectVersion${if (snapshot) "-SNAPSHOT" else "-RELEASE"}"
             from(components["java"])
