@@ -1,5 +1,7 @@
 package net.dustrean.api.redis
 
+import org.redisson.api.RedissonClient
+
 interface IRedisConnection {
 
     fun connect()
@@ -7,5 +9,7 @@ interface IRedisConnection {
     fun disconnect()
 
     fun isConnected(): Boolean
+
+    fun getRedissonClient(): RedissonClient
 
 }
