@@ -1,6 +1,6 @@
 package net.dustrean.api.command.provider
 
-import net.dustrean.api.command.CommandActor
+import net.dustrean.api.command.ICommandActor
 
 interface CommandSuggestionProvider {
 
@@ -11,5 +11,5 @@ interface CommandSuggestionProvider {
      * @param lastArgument the last argument of the [fullCommand]
      * @return a list with arguments to suggest
      */
-    fun getSuggestions(sender: CommandActor, fullCommand: String, lastArgument: String): List<String>
+    fun getSuggestions(sender: ICommandActor, fullCommand: String, lastArgument: String): List<String>
 }

@@ -1,9 +1,9 @@
 package net.dustrean.api.minestom.command
 
-import net.dustrean.api.command.CommandActor
+import net.dustrean.api.command.ICommandActor
 import net.minestom.server.entity.Player
 
-class MinestomCommandActor(val player: Player) : CommandActor {
+class MinestomCommandActor(val player: Player) : ICommandActor {
 
     override val uuid = player.uuid
 
