@@ -15,4 +15,6 @@ interface ICoreAPI {
     fun getPacketManager(): IPacketManager
 
     fun getEventManager(): IEventManager
+
+    fun shutdown()
 }
