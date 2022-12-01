@@ -1,9 +1,9 @@
 package command
 
-import net.dustrean.api.command.ICommandPlayer
+import net.dustrean.api.command.ICommandActor
 import java.util.*
 
-class TestCommandPlayer(override val uuid: UUID) : ICommandPlayer {
+class TestCommandActor(override val uuid: UUID) : ICommandActor {
 
     override fun hasPermission(permission: String): Boolean = true
 

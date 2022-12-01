@@ -2,7 +2,7 @@ package net.dustrean.api.command
 
 import java.util.*
 
-interface ICommandPlayer {
+interface ICommandActor {
 
     val uuid: UUID
 

@@ -17,7 +17,7 @@ open class PaperCommand(
         if (sender !is Player) {
             return false
         }
-        PaperCommandManager.handleCommand(PaperCommandPlayer(sender), this, args.toList())
+        PaperCommandManager.handleCommand(PaperCommandActor(sender), this, args.toList())
         return true
     }
 
@@ -26,7 +26,7 @@ open class PaperCommand(
             return mutableListOf()
         }
 
-        return PaperCommandManager.handleTabComplete(PaperCommandPlayer(sender), this, args.joinToString(" "))
+        return PaperCommandManager.handleTabComplete(PaperCommandActor(sender), this, args.joinToString(" "))
             .toMutableList()
     }
 

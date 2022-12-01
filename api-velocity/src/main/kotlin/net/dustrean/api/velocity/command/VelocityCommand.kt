@@ -16,7 +16,7 @@ open class VelocityCommand(
             return
         }
         VelocityCommandManager.handleCommand(
-            VelocityCommandPlayer(invocation as Player),
+            VelocityCommandActor(invocation as Player),
             this,
             invocation.arguments().split(" ")
         )
@@ -27,7 +27,7 @@ open class VelocityCommand(
             return emptyList()
         }
         return VelocityCommandManager.handleTabComplete(
-            VelocityCommandPlayer(invocation as Player),
+            VelocityCommandActor(invocation as Player),
             this,
             invocation.arguments()
         )
