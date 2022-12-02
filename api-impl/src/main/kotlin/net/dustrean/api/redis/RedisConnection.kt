@@ -7,15 +7,18 @@ import org.redisson.api.RedissonClient
 import org.redisson.config.Config
 
 class RedisConnection(
-    val configuration: RedisConfiguration = RedisConfiguration()
+    private val configuration: RedisConfiguration = RedisConfiguration()
 ): IRedisConnection{
     lateinit var redisClient: RedissonClient
-    val credentials = configuration.credentials
+    private val credentials = configuration.credentials
 
     override fun connect() {
         val config = Config()
-        config.useSingleServer().setConnectionPoolSize(configuration.connectionPoolSize)
+        config.useSingleServer()
+            .setConnectionPoolSize(configuration.connectionPoolSize)
             .setConnectionMinimumIdleSize(configuration.connectionMinimumIdleSize)
+            .setSubscriptionConnectionPoolSize(configuration.subscriptionConnectionPoolSize)
+            .setSubscriptionConnectionMinimumIdleSize(configuration.subscriptionConnectionMinimumIdleSize)
             .setAddress("redis://${credentials.host}:${credentials.port}").password = credentials.password
 
         config.codec = JsonJacksonKotlinCodec(ObjectMapper())
