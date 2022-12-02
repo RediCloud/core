@@ -26,6 +26,8 @@ abstract class AbstractDataManager<T : IDataObject>(
 
     init {
         MANAGERS[prefix] = this
+        ICoreAPI.INSTANCE.getPacketManager().registerPacket(DataCachePacket())
+        ICoreAPI.INSTANCE.getPacketManager().registerPacket(DataObjectPacket())
     }
 
     val cachedObjects = mutableMapOf<UUID, T>()
