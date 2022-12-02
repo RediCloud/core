@@ -23,6 +23,7 @@ abstract class CoreAPI(
 
     init {
         ICoreAPI.INSTANCE = this
+        redisConnection.connect()
         moduleManager.detectModules(getModuleFolder())
     }
 
