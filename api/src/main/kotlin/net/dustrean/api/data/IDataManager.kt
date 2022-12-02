@@ -3,7 +3,7 @@ package net.dustrean.api.data
 import net.dustrean.api.tasks.futures.FutureAction
 import java.util.*
 
-interface IDataManager<T : IDataObject> {
+interface IDataManager<T : AbstractDataObject> {
 
     fun isCached(identifier: UUID): Boolean
 

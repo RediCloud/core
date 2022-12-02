@@ -1,6 +1,6 @@
 package net.dustrean.api.data
 
-interface ICacheValidator<T : IDataObject> {
+interface ICacheValidator<T : AbstractDataObject> {
 
     fun isValid(): Boolean
 

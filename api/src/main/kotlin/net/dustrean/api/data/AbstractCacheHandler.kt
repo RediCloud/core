@@ -4,7 +4,7 @@ import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.tasks.futures.FutureAction
 import java.util.*
 
-abstract class AbstractCacheHandler<T : IDataObject> {
+abstract class AbstractCacheHandler<T : AbstractDataObject> {
 
     val currentCached = mutableListOf<NetworkComponentInfo>()
 

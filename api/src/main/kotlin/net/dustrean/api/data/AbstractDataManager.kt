@@ -13,14 +13,14 @@ import net.dustrean.api.tasks.futures.FutureAction
 import org.slf4j.LoggerFactory
 import java.util.*
 
-abstract class AbstractDataManager<T : IDataObject>(
+abstract class AbstractDataManager<T : AbstractDataObject>(
     private val prefix: String,
     private val connection: IRedisConnection,
     private val implClass: Class<T>
 ) : IDataManager<T> {
 
     companion object {
-        val MANAGERS = mutableMapOf<String, AbstractDataManager<out IDataObject>>()
+        val MANAGERS = mutableMapOf<String, AbstractDataManager<out AbstractDataObject>>()
         private val codec = JsonJacksonKotlinCodec(ObjectMapper())
     }
 
