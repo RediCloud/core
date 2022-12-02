@@ -28,7 +28,7 @@ abstract class CoreAPI(
     }
 
     override fun shutdown() {
-        AbstractDataManager.MANAGERS.forEach { _, manager ->
+        AbstractDataManager.MANAGERS.forEach { (_, manager) ->
             manager.unregisterCache()
         }
 
