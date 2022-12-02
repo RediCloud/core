@@ -8,5 +8,10 @@ data class RedisConfiguration(
     val subscriptionConnectionPoolSize: Int = 50,
     val connectionMinimumIdleSize: Int = 24,
     val connectionPoolSize: Int = 64,
-    val credentials: RedisCredentials = RedisCredentials("localhost", 6379, "password", 0),
+    val credentials: RedisCredentials = RedisCredentials(
+        System.getenv().getOrDefault("redis_hostname", "localhost"),
+        System.getenv().getOrDefault("redis_password", "6379").toInt(),
+        System.getenv().getOrDefault("redis_hostname", "password"),
+        System.getenv().getOrDefault("redis_database_id", "0").toInt()
+    )
 )
