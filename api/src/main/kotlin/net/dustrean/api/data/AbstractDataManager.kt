@@ -1,6 +1,11 @@
 package net.dustrean.api.data
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import kotlinx.serialization.json.JsonBuilder
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.packet.DataActionType
 import net.dustrean.api.data.packet.DataObjectPacket
@@ -21,7 +26,13 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     companion object {
         val MANAGERS = mutableMapOf<String, AbstractDataManager<out AbstractDataObject>>()
-        private val codec = JsonJacksonKotlinCodec(ObjectMapper())
+        private val objectMapper = JsonMapper.builder()
+            .addModule(KotlinModule.Builder().build())
+            .serializationInclusion(JsonInclude.Include.NON_NULL)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false)
+            .defaultMergeable(true)
+            .build()
+        private val codec = JsonJacksonKotlinCodec(objectMapper)
     }
 
     init {
@@ -155,6 +166,24 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
                 future.completeExceptionally(throwable)
                 return@whenComplete
             }
+            var cacheListUpdated = false
+            if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
+                cachedObjects[dataObject.getIdentifier()] = dataObject
+                cacheListUpdated = true
+            } else {
+                parkedObjects[dataObject.getIdentifier()] = dataObject
+            }
+            if(cacheListUpdated){
+                dataObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
+                    if (throwable != null) {
+                        future.completeExceptionally(throwable)
+                        return@whenComplete
+                    }
+                    sendPacket(identifier, DataCacheActionType.ADDED, components)
+                    future.complete(dataObject)
+                }
+                return@whenComplete
+            }
             future.complete(dataObject)
         }
         return future
@@ -168,9 +197,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             if (throwable != null) {
                 future.completeExceptionally(throwable)
             }
-            var updateCacheList = false
             if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
-                updateCacheList = true
                 cachedObjects[dataObject.getIdentifier()] = dataObject
             } else {
                 parkedObjects[dataObject.getIdentifier()] = dataObject
@@ -201,13 +228,9 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
                 if (throwable1 != null) {
                     future.completeExceptionally(throwable1)
                 }
-                var updateCacheList = false
-
                 if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
-                    updateCacheList = cachedObjects.containsKey(dataObject.getIdentifier())
                     cachedObjects[dataObject.getIdentifier()] = dataObject
                     parkedObjects.remove(dataObject.getIdentifier())
-                    updateCacheList = true
                 } else {
                     parkedObjects[dataObject.getIdentifier()] = dataObject
                 }
@@ -271,7 +294,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
     }
 
     fun serialize(dataObject: T): String {
-        return codec.objectMapper.writeValueAsString(dataObject)
+        return objectMapper.writeValueAsString(dataObject)
     }
 
     fun deserialize(identifier: UUID?, json: String): T {
@@ -280,11 +303,24 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             if (cachedObjects.containsKey(identifier)) dataObject = cachedObjects[identifier]
             if (parkedObjects.containsKey(identifier)) dataObject = parkedObjects[identifier]
             if (dataObject != null) {
-                codec.objectMapper.readerForUpdating(dataObject).readValue<T>(json)
+                objectMapper.readerForUpdating(dataObject).readValue<T>(json)
                 return dataObject
             }
         }
-        return codec.objectMapper.readValue(json, implClass)
+        val dataObject = objectMapper.readValue(json, implClass)
+        if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
+            cachedObjects[dataObject.getIdentifier()] = dataObject
+            dataObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
+                if (throwable != null) {
+                    logger.error("Failed to get cache network components for object with identifier ${dataObject.getIdentifier()}", throwable)
+                    return@whenComplete
+                }
+                sendPacket(dataObject.getIdentifier(), DataCacheActionType.ADDED, components)
+            }
+            return dataObject
+        }
+        parkedObjects[dataObject.getIdentifier()] = dataObject
+        return dataObject
     }
 
     override fun getDataPrefix(): String {
