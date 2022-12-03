@@ -7,23 +7,36 @@ import org.redisson.api.RedissonClient
 import org.redisson.config.Config
 
 class RedisConnection(
-    val configuration: RedisConfiguration = RedisConfiguration()
-) {
+    private val configuration: RedisConfiguration = RedisConfiguration()
+): IRedisConnection{
     lateinit var redisClient: RedissonClient
-    val credentials = configuration.credentials
+    private val credentials = configuration.credentials
 
-    fun connect() {
+    init {
+        connect()
+    }
+
+    override fun connect() {
         val config = Config()
-        config.useSingleServer().setConnectionPoolSize(configuration.connectionPoolSize)
+
+        config.useSingleServer()
+            .setConnectionPoolSize(configuration.connectionPoolSize)
             .setConnectionMinimumIdleSize(configuration.connectionMinimumIdleSize)
-            .setAddress("redis://${credentials.host}:${credentials.port}").password = credentials.password
+            .setSubscriptionConnectionPoolSize(configuration.subscriptionConnectionPoolSize)
+            .setSubscriptionConnectionMinimumIdleSize(configuration.subscriptionConnectionMinimumIdleSize)
+            .setAddress("redis://${credentials.host}:${credentials.port}")
+            .password = credentials.password
+
 
         config.codec = JsonJacksonKotlinCodec(ObjectMapper())
 
         redisClient = Redisson.create(config)
     }
 
-    fun disconnect() = redisClient.shutdown()
+    override fun disconnect() = redisClient.shutdown()
 
-    fun isConnected(): Boolean = redisClient.isShutdown
+    override fun isConnected(): Boolean = redisClient.isShutdown
+    override fun getRedissonClient(): RedissonClient {
+        return redisClient
+    }
 }

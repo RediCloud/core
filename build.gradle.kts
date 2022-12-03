@@ -25,6 +25,7 @@ allprojects {
         implementation(kotlin("reflect"))
 
         implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
 
         compileOnly("eu.cloudnetservice.cloudnet:driver:4.0.0-RC5")
         compileOnly("eu.cloudnetservice.cloudnet:bridge:4.0.0-RC5")

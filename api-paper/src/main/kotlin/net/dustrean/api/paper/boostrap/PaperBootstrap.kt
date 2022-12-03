@@ -16,4 +16,8 @@ class PaperBootstrap : JavaPlugin(){
         }
     }
 
+    override fun onDisable() {
+        coreAPI?.shutdown()
+    }
+
 }
