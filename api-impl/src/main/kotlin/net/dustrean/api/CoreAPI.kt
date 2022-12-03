@@ -16,14 +16,13 @@ abstract class CoreAPI(
     private val networkComponentInfo: NetworkComponentInfo
 ) : ICoreAPI{
 
-    private var redisConnection: RedisConnection = RedisConnection()
+    var redisConnection: RedisConnection = RedisConnection()
     private var packetManager: PacketManager = PacketManager(networkComponentInfo, redisConnection)
     private var eventManager: EventManager = EventManager()
     private var moduleManager: ModuleManager = ModuleManager(this)
 
     init {
         ICoreAPI.INSTANCE = this
-        redisConnection.connect()
         moduleManager.detectModules(getModuleFolder())
     }
 

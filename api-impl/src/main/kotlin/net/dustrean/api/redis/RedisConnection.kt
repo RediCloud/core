@@ -12,14 +12,21 @@ class RedisConnection(
     lateinit var redisClient: RedissonClient
     private val credentials = configuration.credentials
 
+    init {
+        connect()
+    }
+
     override fun connect() {
         val config = Config()
+
         config.useSingleServer()
             .setConnectionPoolSize(configuration.connectionPoolSize)
             .setConnectionMinimumIdleSize(configuration.connectionMinimumIdleSize)
             .setSubscriptionConnectionPoolSize(configuration.subscriptionConnectionPoolSize)
             .setSubscriptionConnectionMinimumIdleSize(configuration.subscriptionConnectionMinimumIdleSize)
-            .setAddress("redis://${credentials.host}:${credentials.port}").password = credentials.password
+            .setAddress("redis://${credentials.host}:${credentials.port}")
+            .password = credentials.password
+
 
         config.codec = JsonJacksonKotlinCodec(ObjectMapper())
 

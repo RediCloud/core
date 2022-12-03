@@ -3,7 +3,7 @@ package net.dustrean.api.utils
 import java.io.File
 
 fun getManageFolder(): File {
-    val manageFolder = File(System.getenv("dustrean.manage.folder"))
+    val manageFolder = File(System.getenv("dustrean_manage_folder"))
     if (!manageFolder.exists()) {
         manageFolder.mkdir()
     }
