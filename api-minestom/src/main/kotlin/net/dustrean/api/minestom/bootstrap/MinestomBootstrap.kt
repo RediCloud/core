@@ -8,9 +8,9 @@ fun main(args: Array<String>) {
 
     server.start("0.0.0.0", System.getenv("service.bind.port").toInt())
 
-    val core = MinestomCoreAPI()
+    MinestomCoreAPI.init(server)
 
     Runtime.getRuntime().addShutdownHook(Thread {
-        core.shutdown()
+        MinestomCoreAPI.shutdown()
     })
 }
