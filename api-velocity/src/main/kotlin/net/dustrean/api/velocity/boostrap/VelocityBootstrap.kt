@@ -14,8 +14,6 @@ import net.dustrean.api.velocity.VelocityCoreAPI
 )
 class VelocityBootstrap(proxyServer: ProxyServer) {
 
-    val core: VelocityCoreAPI = null!!
-
     init {
         VelocityBootstrap::class.java.getDeclaredField("core").apply {
             isAccessible = true
@@ -29,5 +27,5 @@ class VelocityBootstrap(proxyServer: ProxyServer) {
     fun onShutdown(event: com.velocitypowered.api.event.proxy.ProxyShutdownEvent) {
         core?.shutdown()
     }
-
 }
+
