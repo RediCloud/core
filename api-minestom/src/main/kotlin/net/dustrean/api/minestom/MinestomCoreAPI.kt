@@ -5,7 +5,7 @@ import net.dustrean.api.minestom.utils.parser.PlayerParser
 import net.dustrean.api.utils.parser.string.StringParser
 import net.minestom.server.MinecraftServer
 
-object MinestomCoreAPI : CloudCoreAPI() {
+class MinestomCoreAPI : CloudCoreAPI() {
 
     // instance of MinecraftServer will be initialized by Refections
     val server: MinecraftServer = null!!
