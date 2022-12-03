@@ -21,6 +21,8 @@ interface IDataManager<T : AbstractDataObject> {
 
     fun deleteObject(dataObject: T): FutureAction<Unit>
 
+    fun existsObject(identifier: UUID): FutureAction<Boolean>
+
     fun getDataPrefix(): String
 
 }

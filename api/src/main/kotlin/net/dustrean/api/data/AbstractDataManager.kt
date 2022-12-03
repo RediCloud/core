@@ -253,6 +253,23 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         return future
     }
 
+    override fun existsObject(identifier: UUID): FutureAction<Boolean> {
+        val future = FutureAction<Boolean>()
+        if(isCached(identifier)) {
+            future.complete(true)
+            return future
+        }
+        val key = "$prefix@$identifier"
+        val bucket = connection.getRedissonClient().getBucket<T>(key)
+        bucket.isExistsAsync.whenComplete { exists, throwable ->
+            if (throwable != null) {
+                future.completeExceptionally(throwable)
+            }
+            future.complete(exists)
+        }
+        return future
+    }
+
     fun serialize(dataObject: T): String {
         return codec.objectMapper.writeValueAsString(dataObject)
     }
