@@ -1,8 +1,16 @@
+import net.dustrean.libloader.plugin.LibraryLoader
+
 plugins {
     kotlin("jvm") version "1.7.21"
 }
 
 group = "net.dustrean.api.minestom"
+
+the(LibraryLoader.LibraryLoaderConfig::class).apply {
+    this.libraryFolder.set(project.projectDir.path + "/libraries")
+    this.configurationName.set("runtimeClasspath")
+    this.mainClass.set("net.dustrean.api.minestom.bootstrap.MinestomBootstrap")
+}
 
 dependencies {
     implementation(project(":api"))
