@@ -21,7 +21,10 @@ publishing {
         maven {
             name = "dustrean"
             url = uri( if (!snapshot) "https://repo.dustrean.net/releases" else "https://repo.dustrean.net/snapshots")
-            credentials(PasswordCredentials::class)
+            credentials {
+                username = System.getenv("DUSTREAN_REPO_USERNAME")
+                password = System.getenv("DUSTREAN_REPO_PASSWORD")
+            }
             authentication {
                 create<BasicAuthentication>("basic")
             }
