@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig
 
 plugins {
     kotlin("jvm") version "1.7.21"
     kotlin("plugin.serialization") version "1.7.21"
+    id("net.dustrean.libloader") version "1.0.0"
 }
 
 group = "net.dustrean"
@@ -11,12 +13,25 @@ version = "1.0-SNAPSHOT"
 allprojects {
     apply(plugin = "kotlin")
     apply(plugin = "kotlinx-serialization")
+    apply(plugin = "net.dustrean.libloader")
 
     repositories {
         mavenCentral()
         gradlePluginPortal()
         maven("https://repo.cloudnetservice.eu/repository/releases/")
         maven("https://jitpack.io")
+        maven {
+            url = uri("https://repo.dustrean.net/releases/")
+            credentials {
+                username = System.getenv("DUSTREAN_REPO_USERNAME")
+                password = System.getenv("DUSTREAN_REPO_PASSWORD")
+            }
+        }
+    }
+
+    the(LibraryLoaderConfig::class).apply {
+        this.libraryFolder.set(project.projectDir.path + "/libraries")
+        this.configurationName.set("runtimeClasspath")
     }
 
     dependencies {
