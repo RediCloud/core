@@ -1,7 +1,7 @@
 import net.dustrean.libloader.plugin.LibraryLoader
 
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.7.22"
 }
 
 group = "net.dustrean.api.minestom"
@@ -19,6 +19,7 @@ dependencies {
 
     implementation("com.github.Minestom.Minestom:Minestom:d37f40a1bb")
 }
+
 tasks {
     jar {
         manifest {
