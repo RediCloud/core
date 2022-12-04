@@ -32,7 +32,7 @@ publishing {
     }
     publications {
         create<MavenPublication>("reposilite-repository") {
-            groupId = "net.dustrean.api"
+            groupId = "net.dustrean"
             artifactId = "api"
             version = "$projectVersion${if (snapshot) "-SNAPSHOT" else "-RELEASE"}"
             from(components["java"])
