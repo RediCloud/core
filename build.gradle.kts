@@ -71,7 +71,7 @@ allprojects {
         }
         if (net.dustrean.Functions.isCi())
             replace("build").doFirst {
-                dependsOn("buildAndPublishInOrder")
+                finalizedBy("buildAndPublishInOrder")
             }
     }
     afterEvaluate {
