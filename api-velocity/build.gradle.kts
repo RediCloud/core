@@ -13,7 +13,13 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
     annotationProcessor("com.velocitypowered:velocity-api:3.1.1")
 
-    implementation(project(":api-cloud"))
-    implementation(project(":api-impl"))
-    implementation(project(":api"))
+    if (!net.dustrean.Functions.isCi()) {
+        implementation(project(":api"))
+        implementation(project(":api-impl"))
+        implementation(project(":api-cloud"))
+    } else {
+        implementation("net.dustrean.api:api:1.0.0")
+        implementation("net.dustrean.api:api-impl:1.0.0")
+        implementation("net.dustrean.api:api-cloud:1.0.0")
+    }
 }

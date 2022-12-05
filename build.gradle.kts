@@ -1,5 +1,6 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig
+import org.gradle.configurationcache.extensions.capitalized
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.22"
@@ -14,6 +15,7 @@ allprojects {
     apply(plugin = "kotlin")
     apply(plugin = "kotlinx-serialization")
     apply(plugin = "net.dustrean.libloader")
+    apply(plugin = "maven-publish")
 
     repositories {
         mavenCentral()
@@ -56,6 +58,67 @@ allprojects {
         withType<JavaCompile> {
             options.release.set(17)
             options.encoding = "UTF-8"
+        }
+        create("buildAndPublishInOrder") {
+            dependsOn(
+                ":api:buildAndPublish", // Correct order
+                ":api-impl:buildAndPublish",
+                ":api-cloud:buildAndPublish",
+                ":api-minestom:build", // Don't need to publish these
+                ":api-paper:build",
+                ":api-velocity:build"
+            )
+        }
+        if (net.dustrean.Functions.isCi())
+            replace("build").doFirst {
+                dependsOn("buildAndPublishInOrder")
+            }
+    }
+    afterEvaluate {
+        if (try {
+                extra.get("maven") as Boolean?
+            } catch (e: Exception) {
+                false
+            } == true
+        )
+            project.extensions.configure<PublishingExtension>("publishing") {
+                repositories {
+                    maven {
+                        name = "dustrean"
+                        url =
+                            uri(
+                                "https://repo.dustrean.net/${
+                                    if (project.version.toString()
+                                            .endsWith("-SNAPSHOT")
+                                    ) "snapshots" else if (project.version.toString()
+                                            .endsWith("-RELEASE")
+                                    ) "releases" else throw NullPointerException("Version has to end with either -SNAPSHOT or -RELEASE\nProject: ${project.name}")
+                                }/"
+                            )
+                        credentials {
+                            username =
+                                findProperty("DUSTREAN_REPO_USERNAME") as String?
+                                    ?: System.getenv("DUSTREAN_REPO_USERNAME")
+                            password =
+                                findProperty("DUSTREAN_REPO_PASSWORD") as String?
+                                    ?: System.getenv("DUSTREAN_REPO_PASSWORD")
+                        }
+                        authentication {
+                            create<BasicAuthentication>("basic")
+                        }
+                    }
+                }
+                publications {
+                    create<MavenPublication>("dustrean${project.name.capitalize()}") {
+                        groupId = "${project.group}"
+                        artifactId = project.name
+                        version = "${project.version}"
+                        from(components["java"])
+                    }
+                }
+            }
+        tasks.register("buildAndPublish") {
+            dependsOn("build", "publishDustrean${project.name.capitalized()}ToDustreanRepository")
         }
     }
 }

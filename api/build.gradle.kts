@@ -2,11 +2,10 @@ plugins {
     kotlin("jvm") version "1.7.22"
     `maven-publish`
 }
+val maven: Boolean by extra(true)
 
-val projectVersion = "1.0.0"
-val snapshot = true
 group = "net.dustrean.api"
-version = "$projectVersion${if (snapshot) "-SNAPSHOT" else "-RELEASE"}"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -14,30 +13,6 @@ repositories {
 
 dependencies {
     implementation("org.redisson:redisson:3.18.0")
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "dustrean"
-            url = uri( if (!snapshot) "https://repo.dustrean.net/releases" else "https://repo.dustrean.net/snapshots")
-            credentials {
-                username = findProperty("DUSTREAN_REPO_USERNAME") as String? ?: System.getenv("DUSTREAN_REPO_USERNAME")
-                password = findProperty("DUSTREAN_REPO_PASSWORD") as String? ?: System.getenv("DUSTREAN_REPO_PASSWORD")
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
-        }
-    }
-    publications {
-        create<MavenPublication>("reposilite-repository") {
-            groupId = "net.dustrean"
-            artifactId = "api"
-            version = "$projectVersion${if (snapshot) "-SNAPSHOT" else "-RELEASE"}"
-            from(components["java"])
-        }
-    }
 }
 
 java {
