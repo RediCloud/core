@@ -4,7 +4,6 @@ plugins {
     kotlin("jvm") version "1.7.22"
 }
 
-group = "net.dustrean.api.minestom"
 
 the(LibraryLoader.LibraryLoaderConfig::class).apply {
     this.libraryFolder.set(project.projectDir.path + "/libraries")

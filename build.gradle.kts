@@ -6,8 +6,6 @@ plugins {
     kotlin("plugin.serialization") version "1.7.22"
     id("net.dustrean.libloader") version "1.1.0"
 }
-
-group = "net.dustrean"
 if (System.getenv("CI") == "true")
     tasks.replace("build").dependsOn("buildInOrder")
 tasks.create("buildInOrder") {
@@ -26,6 +24,7 @@ allprojects {
     apply(plugin = "net.dustrean.libloader")
     apply(plugin = "maven-publish")
 
+    group = "net.dustrean.api"
     version = "1.0.0-SNAPSHOT"
 
     val isCi by extra(System.getenv("CI") == "true")
@@ -96,6 +95,7 @@ allprojects {
             projects.forEach {
                 if (it.isNullOrBlank()) return@forEach
                 val tProject = project(":$it")
+                println("Adding ${tProject.group}:${tProject.name}:${tProject.version} to ${project.name}")
                 notationList.add("${tProject.group}:${tProject.name}:${tProject.version}")
             }
         }

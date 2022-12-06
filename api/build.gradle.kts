@@ -2,7 +2,6 @@ plugins {
     kotlin("jvm") version "1.7.22"
     `maven-publish`
 }
-group = "net.dustrean.api"
 val maven by extra(true)
 repositories {
     mavenCentral()

@@ -3,7 +3,6 @@ plugins {
     id("io.papermc.paperweight.userdev") version "1.3.11"
 }
 
-group = "net.dustrean.api.paper"
 val projects by extra(listOf("api", "api-impl", "api-cloud"))
 
 repositories {
