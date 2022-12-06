@@ -15,9 +15,9 @@ tasks.create("buildInOrder") {
         ":api:build", ":api:publishApiPublicationToDustreanRepository",
         ":api-impl:build", ":api-impl:publishApi_implPublicationToDustreanRepository",
         ":api-cloud:build", ":api-cloud:publishApi_cloudPublicationToDustreanRepository",
-        ":api-minestom:build", ":api-minestom:publishApi_minestomPublicationToDustreanRepository",
-        ":api-velocity:build", ":api-velocity:publishApi_velocityPublicationToDustreanRepository",
-        ":api-paper:build", ":api-paper:publishApi_paperPublicationToDustreanRepository"
+        ":api-minestom:build",
+        ":api-velocity:build",
+        ":api-paper:build"
     )
 }
 allprojects {
