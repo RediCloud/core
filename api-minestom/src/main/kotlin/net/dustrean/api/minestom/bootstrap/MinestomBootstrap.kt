@@ -1,16 +1,15 @@
 package net.dustrean.api.minestom.bootstrap
 
 import net.dustrean.api.minestom.MinestomCoreAPI
-import net.minestom.server.MinecraftServer
+import net.minestom.server.extensions.Extension
 
-fun main(args: Array<String>) {
-    val server = MinecraftServer.init()
+class MinestomBootstrap: Extension() {
 
-    server.start("0.0.0.0", System.getenv("service.bind.port").toInt())
+    override fun initialize() {
+        MinestomCoreAPI.init()
+    }
 
-    MinestomCoreAPI.init(server)
-
-    Runtime.getRuntime().addShutdownHook(Thread {
+    override fun terminate() {
         MinestomCoreAPI.shutdown()
-    })
+    }
 }

@@ -2,9 +2,9 @@ plugins {
     kotlin("jvm") version "1.7.22"
 }
 
-group = "net.dustrean.api.cloud"
-
+val maven by extra(true)
+val projects by extra(listOf("api", "api-impl"))
 dependencies {
-    implementation(project(":api"))
-    implementation(project(":api-impl"))
+    compileOnly(project(":api"))
+    compileOnly(project(":api-impl"))
 }

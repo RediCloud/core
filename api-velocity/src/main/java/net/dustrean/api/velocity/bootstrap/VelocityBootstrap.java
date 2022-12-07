@@ -11,6 +11,7 @@ import net.dustrean.libloader.boot.Bootstrap;
 import net.dustrean.libloader.boot.loaders.URLClassLoaderJarLoader;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URLClassLoader;
 
 @Plugin(
@@ -25,7 +26,7 @@ public class VelocityBootstrap {
     private final ProxyServer proxyServer;
 
     @Inject
-    public VelocityBootstrap(ProxyServer proxyServer) throws IOException {
+    public VelocityBootstrap(ProxyServer proxyServer) throws IOException, URISyntaxException {
         this.proxyServer = proxyServer;
         Bootstrap.apply(new URLClassLoaderJarLoader((URLClassLoader) this.getClass().getClassLoader()));
     }
