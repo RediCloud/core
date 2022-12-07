@@ -3,13 +3,10 @@
 
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
-import com.jcraft.jsch.Session
 import java.io.File
 import java.io.FileFilter
 
-val jsch: Session = JSch().apply {
-    addIdentity("~/.ssh/ci")
-}.getSession("root", "node01.hosting.suqatri.net", 22).apply {
+val jsch = JSch().getSession("root", "node01.hosting.suqatri.net", 22).apply {
     setConfig("StrictHostKeyChecking", "no")
     connect()
 }
