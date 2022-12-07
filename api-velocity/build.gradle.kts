@@ -3,7 +3,7 @@ plugins {
 }
 
 
-val projects by extra(listOf("api", "api-impl", "api-cloud"))
+val projects by extra(listOf("api", "api-cloud"))
 
 repositories {
     maven("https://papermc.io/repo/repository/maven-public/")
@@ -14,6 +14,10 @@ dependencies {
     annotationProcessor("com.velocitypowered:velocity-api:3.1.1")
 
     compileOnly(project(":api-cloud"))
-    compileOnly(project(":api-impl"))
+    shade(project(":api-impl"))
     compileOnly(project(":api"))
+}
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

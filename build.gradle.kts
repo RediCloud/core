@@ -4,14 +4,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.7.22"
     kotlin("plugin.serialization") version "1.7.22"
-    id("net.dustrean.libloader") version "1.1.0"
+    id("net.dustrean.libloader") version "1.2.0"
 }
 if (System.getenv("CI") == "true")
     tasks.replace("build").dependsOn("buildInOrder")
 tasks.create("buildInOrder") {
     dependsOn(
         ":api:build", ":api:publishApiPublicationToDustreanRepository",
-        ":api-impl:build", ":api-impl:publishApi_implPublicationToDustreanRepository",
+        ":api-impl:build",
         ":api-cloud:build", ":api-cloud:publishApi_cloudPublicationToDustreanRepository",
         ":api-minestom:build",
         ":api-velocity:build",
@@ -95,7 +95,6 @@ allprojects {
             projects.forEach {
                 if (it.isNullOrBlank()) return@forEach
                 val tProject = project(":$it")
-                println("Adding ${tProject.group}:${tProject.name}:${tProject.version} to ${project.name}")
                 notationList.add("${tProject.group}:${tProject.name}:${tProject.version}")
             }
         }

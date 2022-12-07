@@ -10,11 +10,11 @@ the(LibraryLoader.LibraryLoaderConfig::class).apply {
     this.configurationName.set("runtimeClasspath")
     this.mainClass.set("net.dustrean.api.minestom.bootstrap.MinestomBootstrap")
 }
-val projects by extra(listOf("api", "api-impl", "api-cloud"))
+val projects by extra(listOf("api", "api-cloud"))
 
 dependencies {
     compileOnly(project(":api"))
-    compileOnly(project(":api-impl"))
+    shade(project(":api-impl"))
     compileOnly(project(":api-cloud"))
 
     implementation("com.github.Minestom.Minestom:Minestom:d37f40a1bb")
@@ -23,11 +23,8 @@ dependencies {
 tasks {
     jar {
         manifest {
-            attributes(
-                mapOf(
-                    "Main-Class" to "net.dustrean.api.minestom.bootstrap.MinestomBootstrap", "Manifest-Version" to "1.0"
-                )
-            )
+            attributes["Manifest-Version"] = "1.0"
         }
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }
