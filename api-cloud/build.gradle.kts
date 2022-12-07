@@ -3,7 +3,7 @@ plugins {
 }
 
 val maven by extra(true)
-val projects by extra(listOf("api", "api-impl"))
+val projects by extra(listOf("api"))
 dependencies {
     compileOnly(project(":api"))
     compileOnly(project(":api-impl"))
