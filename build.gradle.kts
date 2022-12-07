@@ -29,6 +29,11 @@ allprojects {
 
     val isCi by extra(System.getenv("CI") == "true")
 
+    val implementation2 by configurations.creating
+    configurations.compileClasspath.get().extendsFrom(implementation2)
+
+    fun DependencyHandlerScope.implementation2(dependencyNotation: Any): Dependency? =
+        add("implementation2", dependencyNotation)
 
     repositories {
         mavenCentral()
@@ -102,16 +107,16 @@ allprojects {
 
     the(LibraryLoaderConfig::class).apply {
         this.libraryFolder.set(project.projectDir.path + "/libraries")
-        this.configurationName.set("runtimeClasspath")
+        this.configurationName.set("implementation2")
     }
 
     dependencies {
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
-        implementation(kotlin("reflect"))
+        implementation2("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+        implementation2("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+        implementation2(kotlin("reflect"))
 
-        implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
+        implementation2("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
+        implementation2("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
         compileOnly("eu.cloudnetservice.cloudnet:driver:4.0.0-RC5")
         compileOnly("eu.cloudnetservice.cloudnet:bridge:4.0.0-RC5")
         compileOnly("eu.cloudnetservice.cloudnet:wrapper-jvm:4.0.0-RC5")

@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.redisson:redisson:3.18.0")
+    implementation2("org.redisson:redisson:3.18.0")
 }
 
 java {
