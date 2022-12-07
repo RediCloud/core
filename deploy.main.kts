@@ -5,7 +5,7 @@ import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import java.io.File
 import java.io.FileFilter
-
+println(Runtime.getRuntime().exec("ssh-add -L").inputStream.bufferedReader().readText())
 val jsch = JSch().getSession("root", "node01.hosting.suqatri.net", 22).apply {
     setConfig("StrictHostKeyChecking", "no")
     connect()
