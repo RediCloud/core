@@ -3,7 +3,6 @@
 
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
-import com.jcraft.jsch.Session
 import java.io.File
 import java.io.FileFilter
 println(Runtime.getRuntime().exec("ssh-add -L").inputStream.bufferedReader().readText())
