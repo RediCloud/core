@@ -4,8 +4,10 @@
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import java.io.File
+import java.nio.charset.Charset
+
 val jsch = JSch()
-jsch.addIdentity(System.getenv("NODE01_SSH_KEY"))
+jsch.addIdentity("node01-ssh-key", System.getenv("NODE01_SSH_KEY").toByteArray(Charset.defaultCharset()), null, null)
 val session = jsch.getSession("root", "node01.hosting.suqatri.net", 22).apply {
     setConfig("StrictHostKeyChecking", "no")
     connect()
