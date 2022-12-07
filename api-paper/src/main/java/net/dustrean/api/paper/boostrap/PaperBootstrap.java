@@ -6,6 +6,7 @@ import net.dustrean.libloader.boot.loaders.URLClassLoaderJarLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URLClassLoader;
 
 public class PaperBootstrap extends JavaPlugin {
@@ -15,7 +16,7 @@ public class PaperBootstrap extends JavaPlugin {
         try {
             Bootstrap.apply(new URLClassLoaderJarLoader((URLClassLoader) this.getClass().getClassLoader()));
             CorePaperAPI.INSTANCE.init(this);
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
