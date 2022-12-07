@@ -4,13 +4,13 @@
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import java.io.File
-import java.io.FileFilter
-println(Runtime.getRuntime().exec("ssh-add -L").inputStream.bufferedReader().readText())
-val jsch = JSch().getSession("root", "node01.hosting.suqatri.net", 22).apply {
+val jsch = JSch()
+jsch.addIdentity(System.getenv("NODE01_SSH_KEY"))
+val session = jsch.getSession("root", "node01.hosting.suqatri.net", 22).apply {
     setConfig("StrictHostKeyChecking", "no")
     connect()
 }
-val sftp = jsch.openChannel("sftp").apply {
+val sftp = session.openChannel("sftp").apply {
     connect()
 } as ChannelSftp
 
@@ -29,4 +29,4 @@ files.forEach {
     }[0].absolutePath, it.second)
 }
 sftp.disconnect()
-jsch.disconnect()
+session.disconnect()
