@@ -3,16 +3,20 @@ plugins {
     id("io.papermc.paperweight.userdev") version "1.3.11"
 }
 
-group = "net.dustrean.api.paper"
+val projects by extra(listOf("api", "api-cloud"))
 
 repositories {
     maven("https://papermc.io/repo/repository/maven-public/")
 }
 
 dependencies {
-    implementation(project(":api"))
-    implementation(project(":api-impl"))
-    implementation(project(":api-cloud"))
+    compileOnly(project(":api"))
+    shade(project(":api-impl"))
+    compileOnly(project(":api-cloud"))
 
     paperDevBundle("1.19.2-R0.1-SNAPSHOT")
+}
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

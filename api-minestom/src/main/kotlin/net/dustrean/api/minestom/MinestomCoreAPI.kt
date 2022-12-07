@@ -7,22 +7,7 @@ import net.minestom.server.MinecraftServer
 
 object MinestomCoreAPI : CloudCoreAPI() {
 
-    // instance of MinecraftServer will be initialized by Refections
-    val server: MinecraftServer = null!!
-    val isInitialized: Boolean = false
-
-    fun init(server: MinecraftServer) {
-        MinestomCoreAPI::class.java.getDeclaredField("server").apply {
-            isAccessible = true
-            set(this@MinestomCoreAPI, server)
-            isAccessible = false
-        }
-        MinestomCoreAPI::class.java.getDeclaredField("isInitialized").apply {
-            isAccessible = true
-            set(this@MinestomCoreAPI, true)
-            isAccessible = false
-        }
-
+    fun init() {
         StringParser.customTypeParsers.add(PlayerParser())
     }
 
