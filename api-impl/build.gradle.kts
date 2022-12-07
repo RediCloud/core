@@ -4,16 +4,16 @@ plugins {
 
 val projects by extra(listOf("api"))
 
-val default: Configuration by configurations.creating
+val implementation2: Configuration by configurations.creating
 
-configurations.compileClasspath.get().extendsFrom(default)
+configurations.compileClasspath.get().extendsFrom(implementation2)
 
 the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class).apply {
-    this.configurationName.set("default")
+    this.configurationName.set("implementation2")
 }
 dependencies {
     compileOnly(project(":api"))
     testImplementation(project(":api"))
-    add("default","org.redisson:redisson:3.18.0")
-    add("default", "com.google.guava:guava:31.1-jre")
+    add("implementation2","org.redisson:redisson:3.18.0")
+    add("implementation2", "com.google.guava:guava:31.1-jre")
 }
