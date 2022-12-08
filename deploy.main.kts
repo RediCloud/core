@@ -5,7 +5,6 @@ import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import java.io.File
-import javax.management.remote.JMXConnectorFactory.connect
 
 val jsch = JSch()
 jsch.addIdentity("node01-ssh-key", System.getenv("NODE01_SSH_KEY").toByteArray(), null, null)
@@ -26,7 +25,16 @@ val files = listOf(
     "api-paper/build/libs/" to "/home/cloudnet/local/templates/Core/paper/plugins/core-paper.jar"
 )
 files.forEach {
-    sftp.mkdir(it.second.substringBeforeLast("/"))
+    (session.openChannel("exec") as ChannelExec).apply {
+        setCommand("mkdir -p ${it.second.substringBeforeLast("/")}")
+        connect()
+        while (!isClosed) {
+            Thread.sleep(100)
+        }
+        if (exitStatus != 0) {
+            throw RuntimeException("Failed to create directory ${it.second.substringBeforeLast("/")}: ${inputStream.readAllBytes().decodeToString()}")
+        }
+    }
     deploy(File(it.first).listFiles { file ->
         file.name.matches("api-(velocity|paper|minestom).+.jar".toRegex())
     }[0].absolutePath.also { s -> println("Deploying $s to ${it.second}")}, it.second)
