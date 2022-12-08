@@ -1,9 +1,11 @@
 @file:Repository("https://repo.maven.apache.org/maven2/")
 @file:DependsOn("com.jcraft:jsch:0.1.55")
 
+import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import java.io.File
+import javax.management.remote.JMXConnectorFactory.connect
 
 val jsch = JSch()
 jsch.addIdentity("node01-ssh-key", System.getenv("NODE01_SSH_KEY").toByteArray(), null, null)
@@ -23,8 +25,8 @@ val files = listOf(
     "api-velocity/build/libs/" to "/home/cloudnet/local/templates/Core/velocity/plugins/core-velocity.jar",
     "api-paper/build/libs/" to "/home/cloudnet/local/templates/Core/paper/plugins/core-paper.jar"
 )
-
 files.forEach {
+    sftp.mkdir(it.second.substringBeforeLast("/"))
     deploy(File(it.first).listFiles { file ->
         file.name.matches("api-(velocity|paper|minestom).+.jar".toRegex())
     }[0].absolutePath.also { s -> println("Deploying $s to ${it.second}")}, it.second)
