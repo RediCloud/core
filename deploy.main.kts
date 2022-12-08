@@ -27,7 +27,7 @@ val files = listOf(
 files.forEach {
     deploy(File(it.first).listFiles { file ->
         file.name.matches("api-(velocity|paper|minestom).+.jar".toRegex())
-    }[0].absolutePath, it.second)
+    }[0].absolutePath.also { s -> println("Deploying $s to ${it.second}")}, it.second)
 }
 sftp.disconnect()
 session.disconnect()
