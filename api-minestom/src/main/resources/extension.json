@@ -1,5 +1,5 @@
 {
   "entrypoint": "net.dustrean.api.minestom.bootstrap.MinestomBootstrap",
-  "name": "Core Extension",
+  "name": "dustrean-core",
   "version": "1.0.0"
 }
