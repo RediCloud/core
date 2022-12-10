@@ -18,11 +18,6 @@ class ModuleManager(
 
     val modules = mutableListOf<Module>()
 
-    init {
-        logger.info("Initializing module manager")
-        enableModules()
-    }
-
     fun detectModules(folder: File) {
         folder.listFiles()?.forEach { file ->
             if (file.isDirectory) return@forEach
