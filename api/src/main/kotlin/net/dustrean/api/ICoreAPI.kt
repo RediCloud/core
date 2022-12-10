@@ -4,6 +4,7 @@ import net.dustrean.api.event.IEventManager
 import net.dustrean.api.module.IModuleManager
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.packet.IPacketManager
+import net.dustrean.api.redis.IRedisConnection
 
 interface ICoreAPI {
 
@@ -14,6 +15,8 @@ interface ICoreAPI {
             return INSTANCE as T
         }
     }
+
+    fun getRedisConnection(): IRedisConnection
 
     fun getNetworkComponentInfo(): NetworkComponentInfo
 

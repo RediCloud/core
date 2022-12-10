@@ -16,7 +16,7 @@ abstract class CoreAPI(
     private val networkComponentInfo: NetworkComponentInfo
 ) : ICoreAPI{
 
-    var redisConnection: RedisConnection = RedisConnection()
+    private var redisConnection: RedisConnection = RedisConnection()
     private var packetManager: PacketManager = PacketManager(networkComponentInfo, redisConnection)
     private var eventManager: EventManager = EventManager()
     private var moduleManager: ModuleManager = ModuleManager(this)
@@ -36,6 +36,7 @@ abstract class CoreAPI(
         }
     }
 
+    override fun getRedisConnection(): RedisConnection = redisConnection
     override fun getNetworkComponentInfo(): NetworkComponentInfo = networkComponentInfo
 
     override fun getPacketManager(): IPacketManager = packetManager
