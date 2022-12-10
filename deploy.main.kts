@@ -19,6 +19,22 @@ val sftp = session.openChannel("sftp").apply {
 fun deploy(from: String, to: String) =
     sftp.put(from, to, ChannelSftp.OVERWRITE)
 
+fun Deploy_main.runCommandSync(it: String) {
+    (session.openChannel("exec") as ChannelExec).apply {
+        setCommand(it)
+        connect()
+        while (!isClosed) {
+            Thread.sleep(100)
+        }
+        if (exitStatus != 0) {
+            throw RuntimeException(
+                "Failed to run command \"${it}\": ${
+                    inputStream.readAllBytes().decodeToString()
+                }"
+            )
+        }
+    }
+}
 val files = listOf(
     "api-minestom/build/libs/" to "/home/cloudnet/local/templates/Core/minestom/extensions/core-minestom.jar",
     "api-velocity/build/libs/" to "/home/cloudnet/local/templates/Core/velocity/plugins/core-velocity.jar",
@@ -26,19 +42,11 @@ val files = listOf(
     "api-standalone/build/libs/" to "/home/standalone/core-standalone.jar",
 )
 files.forEach {
-    (session.openChannel("exec") as ChannelExec).apply {
-        setCommand("mkdir -p ${it.second.substringBeforeLast("/")}")
-        connect()
-        while (!isClosed) {
-            Thread.sleep(100)
-        }
-        if (exitStatus != 0) {
-            throw RuntimeException("Failed to create directory ${it.second.substringBeforeLast("/")}: ${inputStream.readAllBytes().decodeToString()}")
-        }
-    }
+    runCommandSync("mkdir -p ${it.second.substringBeforeLast("/")}")
     deploy(File(it.first).listFiles { file ->
         file.name.matches("api-(velocity|paper|minestom|standalone).+.jar".toRegex())
     }[0].absolutePath.also { s -> println("Deploying $s to ${it.second}")}, it.second)
 }
 sftp.disconnect()
 session.disconnect()
+
