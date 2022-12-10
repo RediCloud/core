@@ -110,7 +110,7 @@ allprojects {
 
     dependencies {
         implementation2(kotlin("reflect"))
-
+        implementation2("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
         implementation2("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
         implementation2("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
         compileOnly("eu.cloudnetservice.cloudnet:driver:4.0.0-RC5")
