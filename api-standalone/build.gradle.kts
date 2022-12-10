@@ -9,3 +9,6 @@ dependencies {
     compileOnly(project(":api"))
     shade(project(":api-impl"))
 }
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.WARN
+}
