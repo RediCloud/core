@@ -1,8 +1,6 @@
 package net.dustrean.api.redis
 
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class RedisConfiguration(
     val subscriptionConnectionMinimumIdleSize: Int = 1,
     val subscriptionConnectionPoolSize: Int = 50,
