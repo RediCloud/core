@@ -11,6 +11,7 @@ tasks.create("buildInOrder") {
     dependsOn(
         ":api:build", ":api:publishApiPublicationToDustreanRepository",
         ":api-impl:build",
+        ":api-standalone:build",
         ":api-cloud:build", ":api-cloud:publishApi_cloudPublicationToDustreanRepository",
         ":api-minestom:build",
         ":api-velocity:build",

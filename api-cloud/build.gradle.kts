@@ -2,6 +2,9 @@ plugins {
     kotlin("jvm") version "1.7.22"
 }
 
+the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
+    .doBootstrapShade.set(false)
+
 val maven by extra(true)
 val projects by extra(listOf("api"))
 dependencies {

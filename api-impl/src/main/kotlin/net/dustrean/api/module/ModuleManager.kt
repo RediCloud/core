@@ -2,6 +2,7 @@ package net.dustrean.api.module
 
 import com.google.gson.Gson
 import net.dustrean.api.ICoreAPI
+import net.dustrean.api.utils.getModuleFolder
 import net.dustrean.libloader.boot.Bootstrap
 import net.dustrean.libloader.boot.loaders.URLClassLoaderJarLoader
 import org.slf4j.LoggerFactory
@@ -105,7 +106,7 @@ class ModuleManager(
     }
 
     override fun enableModules() {
-        detectModules(File("modules"))
+        detectModules(getModuleFolder())
         modules.filter { it.state == ModuleState.LOADED }.forEach { it.onEnable(api) }
     }
 

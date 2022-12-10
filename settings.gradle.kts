@@ -1,6 +1,7 @@
 
 include("api")
 include("api-impl")
+include("api-standalone")
 include("api-cloud")
 include("api-paper")
 include("api-velocity")

@@ -10,11 +10,10 @@ import net.dustrean.api.packet.IPacketManager
 import net.dustrean.api.packet.PacketManager
 import net.dustrean.api.redis.RedisConnection
 import net.dustrean.api.utils.coreVersion
-import net.dustrean.api.utils.getModuleFolder
 
 abstract class CoreAPI(
     private val networkComponentInfo: NetworkComponentInfo
-) : ICoreAPI{
+) : ICoreAPI {
 
     private var redisConnection: RedisConnection = RedisConnection()
     private var packetManager: PacketManager = PacketManager(networkComponentInfo, redisConnection)
@@ -23,15 +22,15 @@ abstract class CoreAPI(
 
     init {
         ICoreAPI.INSTANCE = this
-        moduleManager.detectModules(getModuleFolder())
+        moduleManager.enableModules()
     }
 
     override fun shutdown() {
+        moduleManager.disableModules()
         AbstractDataManager.MANAGERS.forEach { (_, manager) ->
             manager.unregisterCache()
         }
-
-        if(redisConnection.isConnected()) {
+        if (redisConnection.isConnected()) {
             redisConnection.disconnect()
         }
     }

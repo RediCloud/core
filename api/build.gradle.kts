@@ -7,6 +7,8 @@ repositories {
     mavenCentral()
 }
 
+the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
+    .doBootstrapShade.set(false)
 dependencies {
     implementation2("org.redisson:redisson:3.18.0")
 }
