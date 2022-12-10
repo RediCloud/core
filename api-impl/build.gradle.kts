@@ -11,7 +11,6 @@ dependencies {
 
     testCompileOnly(project(":api"))
     testCompileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    testCompileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
     testCompileOnly(kotlin("reflect"))
     testCompileOnly("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
     testCompileOnly("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
