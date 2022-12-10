@@ -22,7 +22,8 @@ fun deploy(from: String, to: String) =
 val files = listOf(
     "api-minestom/build/libs/" to "/home/cloudnet/local/templates/Core/minestom/extensions/core-minestom.jar",
     "api-velocity/build/libs/" to "/home/cloudnet/local/templates/Core/velocity/plugins/core-velocity.jar",
-    "api-paper/build/libs/" to "/home/cloudnet/local/templates/Core/paper/plugins/core-paper.jar"
+    "api-paper/build/libs/" to "/home/cloudnet/local/templates/Core/paper/plugins/core-paper.jar",
+    "api-standalone/build/libs/" to "/home/standalone/core-standalone.jar",
 )
 files.forEach {
     (session.openChannel("exec") as ChannelExec).apply {
@@ -36,7 +37,7 @@ files.forEach {
         }
     }
     deploy(File(it.first).listFiles { file ->
-        file.name.matches("api-(velocity|paper|minestom).+.jar".toRegex())
+        file.name.matches("api-(velocity|paper|minestom|standalone).+.jar".toRegex())
     }[0].absolutePath.also { s -> println("Deploying $s to ${it.second}")}, it.second)
 }
 sftp.disconnect()
