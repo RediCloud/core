@@ -1,7 +1,6 @@
 package net.dustrean.api.module
 
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import com.google.gson.Gson
 import net.dustrean.api.ICoreAPI
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -13,6 +12,7 @@ class ModuleManager(
 ) : IModuleManager {
 
     private val logger = LoggerFactory.getLogger(ModuleManager::class.java)
+    private val gson = Gson()
 
     val modules = mutableListOf<Module>()
 
@@ -34,7 +34,7 @@ class ModuleManager(
                     return@forEach
                 }
                 val inputStream = jar.getInputStream(entry)
-                val description = Json.decodeFromString<ModuleDescription>(inputStream.reader().readText())
+                val description = gson.fromJson(inputStream.reader().readText(), ModuleDescription::class.java)
 
                 description::class.java.getDeclaredField("file").apply {
                     isAccessible = true
