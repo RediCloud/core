@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.22"
-    id("net.dustrean.libloader") version "1.2.0"
+    id("net.dustrean.libloader") version "1.4.0"
 }
 if (System.getenv("CI") == "true")
     tasks.replace("build").dependsOn("buildInOrder")

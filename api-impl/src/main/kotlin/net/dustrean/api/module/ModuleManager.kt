@@ -2,6 +2,8 @@ package net.dustrean.api.module
 
 import com.google.gson.Gson
 import net.dustrean.api.ICoreAPI
+import net.dustrean.libloader.boot.Bootstrap
+import net.dustrean.libloader.boot.loaders.URLClassLoaderJarLoader
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URLClassLoader
@@ -15,11 +17,6 @@ class ModuleManager(
     private val gson = Gson()
 
     val modules = mutableListOf<Module>()
-
-    init {
-        logger.info("Initializing module manager")
-        enableModules()
-    }
 
     fun detectModules(folder: File) {
         folder.listFiles()?.forEach { file ->
@@ -73,6 +70,12 @@ class ModuleManager(
 
         val module =
             loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).newInstance() as Module
+
+        try {
+            Bootstrap.apply(URLClassLoaderJarLoader(loader), loader, loader)
+        } catch (e: Throwable) {
+            logger.info("No libloader implementation found, continuing", e)
+        }
 
         module::class.java.getDeclaredField("description").apply {
             isAccessible = true
