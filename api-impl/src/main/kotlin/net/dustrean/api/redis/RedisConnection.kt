@@ -1,7 +1,5 @@
 package net.dustrean.api.redis
 
-import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
-import com.fasterxml.jackson.databind.ObjectMapper
 import net.dustrean.api.redis.codec.GsonCodec
 import org.redisson.Redisson
 import org.redisson.api.RedissonClient
