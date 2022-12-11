@@ -2,6 +2,8 @@ package net.dustrean.api.tasks.futures
 
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
+import java.util.concurrent.Future
 import java.util.concurrent.TimeoutException
 import kotlin.time.Duration
 
@@ -12,6 +14,18 @@ class FutureAction<T>() : CompletableFuture<T>() {
     constructor(result: T) : this() {
         complete(result)
         this.result = result
+    }
+
+    constructor(future: CompletionStage<T>) : this(){
+        future.whenComplete{ result, throwable ->
+            if (throwable != null) {
+                completeExceptionally(throwable)
+                this.throwable = throwable
+            } else {
+                complete(result)
+                this.result = result
+            }
+        }
     }
 
     constructor(throwable: Throwable) : this() {
@@ -76,7 +90,7 @@ class FutureAction<T>() : CompletableFuture<T>() {
         return this
     }
 
-    fun <R> map(mapper: FutureMapper<T, R>): FutureAction<R> {
+    fun <R> map(mapper: (T) -> R): FutureAction<R> {
         val futureAction = FutureAction<R>()
         whenComplete { result, throwable ->
             if (throwable != null) {
@@ -84,9 +98,8 @@ class FutureAction<T>() : CompletableFuture<T>() {
                 futureAction.completeExceptionally(throwable)
                 return@whenComplete
             }
-
             this.result = result
-            futureAction.complete(mapper.map(result))
+            futureAction.complete(mapper.invoke(result))
         }
         return futureAction
     }

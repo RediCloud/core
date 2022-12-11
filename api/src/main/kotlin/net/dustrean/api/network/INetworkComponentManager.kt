@@ -1,18 +1,21 @@
 package net.dustrean.api.network
 
 import net.dustrean.api.tasks.futures.FutureAction
+import org.redisson.api.RList
+import org.redisson.api.RMap
 import java.util.*
 
 interface INetworkComponentManager {
-    fun getComponentInfo(key: String): NetworkComponentInfo?
-    fun getComponentInfoAsync(key: String): FutureAction<NetworkComponentInfo>
 
-    fun getComponentInfo(uniqueId: UUID): NetworkComponentInfo?
-    fun getComponentInfoAsync(uniqueId: UUID): FutureAction<NetworkComponentInfo>
+    val networkComponents: RMap<String, NetworkComponentInfo>
 
-    fun getComponentInfos(type: NetworkComponentType): List<NetworkComponentInfo>
-    fun getComponentInfosAsync(type: NetworkComponentType): FutureAction<List<NetworkComponentInfo>>
+    fun getComponentInfo(key: String): FutureAction<NetworkComponentInfo>
 
-    fun getComponentInfos(): List<NetworkComponentInfo>
-    fun getComponentInfosAsync(): FutureAction<List<NetworkComponentInfo>>
+    fun getComponentInfo(uniqueId: UUID): FutureAction<NetworkComponentInfo>
+
+
+    fun getComponentInfos(type: NetworkComponentType): FutureAction<List<NetworkComponentInfo>>
+
+    fun getComponentInfos(): FutureAction<List<NetworkComponentInfo>>
+
 }
