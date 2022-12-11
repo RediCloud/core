@@ -2,13 +2,19 @@ package net.dustrean.api.network
 
 import net.dustrean.api.redis.IRedisConnection
 import net.dustrean.api.tasks.futures.FutureAction
+import org.redisson.api.LocalCachedMapOptions
 import org.redisson.api.RMap
 import java.util.*
 
 open class NetworkComponentManager(redisConnection: IRedisConnection) : INetworkComponentManager {
 
     override val networkComponents: RMap<String, NetworkComponentInfo> =
-        redisConnection.getRedissonClient().getMapCache("networkComponents")
+        redisConnection.getRedissonClient().getLocalCachedMap(
+            "networkComponents",
+            LocalCachedMapOptions.defaults<String?, NetworkComponentInfo?>()
+                .storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
+                .syncStrategy(LocalCachedMapOptions.SyncStrategy.UPDATE)
+        )
 
     override fun getComponentInfo(key: String): FutureAction<NetworkComponentInfo> {
         return FutureAction(networkComponents.getAsync(key))
@@ -16,7 +22,7 @@ open class NetworkComponentManager(redisConnection: IRedisConnection) : INetwork
 
     override fun getComponentInfo(uniqueId: UUID): FutureAction<NetworkComponentInfo> {
         val future = FutureAction<NetworkComponentInfo>()
-        getComponentInfos().whenComplete{ networkComponentInfos, throwable ->
+        getComponentInfos().whenComplete { networkComponentInfos, throwable ->
             if (throwable != null) {
                 future.completeExceptionally(throwable)
                 return@whenComplete
