@@ -5,7 +5,6 @@ plugins {
 the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
     .doBootstrapShade.set(false)
 
-val maven by extra(true)
 val projects by extra(listOf("api"))
 dependencies {
     compileOnly(project(":api"))

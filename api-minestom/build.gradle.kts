@@ -10,12 +10,12 @@ the(LibraryLoader.LibraryLoaderConfig::class).apply {
     this.configurationName.set("runtimeClasspath")
     this.mainClass.set("net.dustrean.api.minestom.bootstrap.MinestomBootstrap")
 }
-val projects by extra(listOf("api", "api-cloud"))
+val projects by extra(listOf("api"))
 
 dependencies {
     compileOnly(project(":api"))
     shade(project(":api-impl"))
-    compileOnly(project(":api-cloud"))
+    shade(project(":api-cloud"))
 
     implementation2("com.github.Minestom.Minestom:Minestom:d37f40a1bb")
 }

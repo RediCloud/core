@@ -3,7 +3,7 @@ plugins {
     id("io.papermc.paperweight.userdev") version "1.3.11"
 }
 
-val projects by extra(listOf("api", "api-cloud"))
+val projects by extra(listOf("api"))
 
 repositories {
     maven("https://papermc.io/repo/repository/maven-public/")
@@ -12,7 +12,7 @@ repositories {
 dependencies {
     compileOnly(project(":api"))
     shade(project(":api-impl"))
-    compileOnly(project(":api-cloud"))
+    shade(project(":api-cloud"))
 
     paperDevBundle("1.19.2-R0.1-SNAPSHOT")
 }
