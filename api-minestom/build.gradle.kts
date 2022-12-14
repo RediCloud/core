@@ -8,7 +8,6 @@ plugins {
 the(LibraryLoader.LibraryLoaderConfig::class).apply {
     this.libraryFolder.set(project.projectDir.path + "/libraries")
     this.configurationName.set("runtimeClasspath")
-    this.mainClass.set("net.dustrean.api.minestom.bootstrap.MinestomBootstrap")
 }
 val projects by extra(listOf("api", "api-cloud"))
 
@@ -17,7 +16,7 @@ dependencies {
     shade(project(":api-impl"))
     compileOnly(project(":api-cloud"))
 
-    implementation2("com.github.Minestom.Minestom:Minestom:d37f40a1bb")
+    compileOnly("com.github.Minestom.Minestom:Minestom:d37f40a1bb")
 }
 
 tasks {
