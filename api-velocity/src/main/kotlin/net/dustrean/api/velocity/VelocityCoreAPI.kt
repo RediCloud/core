@@ -8,16 +8,13 @@ import net.dustrean.api.velocity.utils.parser.PlayerParser
 
 object VelocityCoreAPI : CloudCoreAPI() {
 
-    // Instance will be set by reflections
-    val proxyServer: ProxyServer = null!!
-    val commandManager = VelocityCommandManager
+    lateinit var proxyServer: ProxyServer
+        private set
+
+    override fun getCommandManager() = VelocityCommandManager
 
     fun init(proxyServer: ProxyServer) {
-        VelocityCoreAPI::class.java.getDeclaredField("proxyServer").apply {
-            isAccessible = true
-            set(this@VelocityCoreAPI, proxyServer)
-            isAccessible = false
-        }
+        this.proxyServer = proxyServer
 
         StringParser.customTypeParsers.add(PlayerParser())
     }
