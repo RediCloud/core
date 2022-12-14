@@ -28,7 +28,7 @@ public class VelocityBootstrap {
     @Inject
     public VelocityBootstrap(ProxyServer proxyServer) throws IOException, URISyntaxException {
         this.proxyServer = proxyServer;
-        Bootstrap.apply(new URLClassLoaderJarLoader((URLClassLoader) this.getClass().getClassLoader()));
+        new Bootstrap().apply(new URLClassLoaderJarLoader((URLClassLoader) this.getClass().getClassLoader()));
     }
 
     @Subscribe
