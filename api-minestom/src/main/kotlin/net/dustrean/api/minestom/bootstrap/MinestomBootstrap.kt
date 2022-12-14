@@ -5,7 +5,7 @@ import net.dustrean.libloader.boot.Bootstrap
 import net.minestom.server.extensions.Extension
 import net.minestom.server.extensions.ExtensionClassLoader
 
-class MinestomBootstrap: Extension() {
+class MinestomBootstrap : Extension() {
 
     override fun initialize() {
         val classloader = this.javaClass.superclass.getDeclaredMethod(
