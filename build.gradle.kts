@@ -1,10 +1,9 @@
-import net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    kotlin("jvm") version "1.7.22"
-    id("net.dustrean.libloader") version "1.5.1"
+    kotlin("jvm")
+    id("net.dustrean.libloader")
 }
+
 if (System.getenv("CI") == "true")
     tasks.replace("build").dependsOn("buildInOrder")
 tasks.create("buildInOrder") {
@@ -90,7 +89,7 @@ allprojects {
                     }
                 }
             }
-        the(LibraryLoaderConfig::class).apply {
+        the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class).apply {
             val projects: List<String?> = try {
                 extra.get("projects") as List<String>?
             } catch (e: Exception) {
@@ -104,7 +103,7 @@ allprojects {
         }
     }
 
-    the(LibraryLoaderConfig::class).apply {
+    the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class).apply {
         this.libraryFolder.set(project.projectDir.path + "/libraries")
         this.configurationName.set("implementation2")
     }
