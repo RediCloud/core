@@ -1,10 +1,12 @@
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.7.22"
 }
 
-group = "net.dustrean.api.cloud"
+the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
+    .doBootstrapShade.set(false)
 
+val projects by extra(listOf("api"))
 dependencies {
-    implementation(project(":api"))
-    implementation(project(":api-impl"))
+    compileOnly(project(":api"))
+    compileOnly(project(":api-impl"))
 }

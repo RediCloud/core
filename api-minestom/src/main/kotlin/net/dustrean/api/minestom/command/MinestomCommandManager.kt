@@ -4,9 +4,9 @@ package net.dustrean.api.minestom.command
 
 import eu.cloudnetservice.modules.bridge.player.CloudPlayer
 import kotlinx.coroutines.DelicateCoroutinesApi
-import net.dustrean.api.command.CommandActor
+import net.dustrean.api.command.ICommandActor
+import net.dustrean.api.command.CommandManager
 import net.dustrean.api.command.ICommand
-import net.dustrean.api.commands.CommandManager
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 
@@ -23,7 +23,7 @@ object MinestomCommandManager : CommandManager() {
         loadSubCommands(command)
     }
 
-    override fun getPlayer(clazz: Class<*>, player: CommandActor): Any? {
+    override fun getPlayer(clazz: Class<*>, player: ICommandActor): Any? {
 
         if (player is MinestomCommandActor) {
             return player.player

@@ -1,11 +1,23 @@
 package net.dustrean.api.minestom.bootstrap
 
 import net.dustrean.api.minestom.MinestomCoreAPI
-import net.minestom.server.MinecraftServer
+import net.dustrean.libloader.boot.Bootstrap
+import net.minestom.server.extensions.Extension
+import net.minestom.server.extensions.ExtensionClassLoader
 
-fun main(args: Array<String>) {
-    val server = MinecraftServer.init()
-    server.start("0.0.0.0", System.getenv("service.bind.port").toInt())
+class MinestomBootstrap: Extension() {
 
-    MinestomCoreAPI.init(server)
+    override fun initialize() {
+        val classloader = this.javaClass.superclass.getDeclaredMethod(
+            "getExtensionClassLoader"
+        ).apply { isAccessible = true }.invoke(this) as ExtensionClassLoader
+        Bootstrap().apply({
+            classloader.addURL(it)
+        }, classloader, classloader);
+        MinestomCoreAPI.init()
+    }
+
+    override fun terminate() {
+        MinestomCoreAPI.shutdown()
+    }
 }

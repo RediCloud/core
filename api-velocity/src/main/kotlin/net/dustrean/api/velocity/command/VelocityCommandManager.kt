@@ -3,9 +3,9 @@ package net.dustrean.api.velocity.command
 import com.velocitypowered.api.proxy.Player
 import eu.cloudnetservice.modules.bridge.player.CloudPlayer
 import kotlinx.coroutines.DelicateCoroutinesApi
-import net.dustrean.api.command.CommandActor
+import net.dustrean.api.command.ICommandActor
+import net.dustrean.api.command.CommandManager
 import net.dustrean.api.command.ICommand
-import net.dustrean.api.commands.CommandManager
 import net.dustrean.api.velocity.VelocityCoreAPI
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -25,7 +25,7 @@ object VelocityCommandManager : CommandManager() {
         loadSubCommands(command)
     }
 
-    override fun getPlayer(clazz: Class<*>, player: CommandActor): Any? {
+    override fun getPlayer(clazz: Class<*>, player: ICommandActor): Any? {
 
         if (player is VelocityCommandActor) {
             return player.player
@@ -33,7 +33,7 @@ object VelocityCommandManager : CommandManager() {
 
         return when (clazz.typeName) {
             Player::class.java.typeName -> VelocityCoreAPI.proxyServer.getPlayer(player.uuid).get()
-            CloudPlayer::class.java.typeName -> TODO("CloudNetDriver.instance<CloudNetDriver>().serviceRegistry().firstProvider(PlayerManager::class.java)")
+            CloudPlayer::class.java.typeName -> TODO()
             // add more type to parse/support here
             else -> null
         }

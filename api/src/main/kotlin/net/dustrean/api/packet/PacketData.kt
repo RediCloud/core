@@ -3,19 +3,19 @@ package net.dustrean.api.packet
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.tasks.futures.FutureAction
 import net.dustrean.api.packet.response.PacketResponse
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.google.gson.annotations.Expose
 import java.io.Serializable
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
-class PacketData : Serializable {
+class PacketData : Serializable{
     val packetId: UUID = UUID.randomUUID()
     lateinit var senderComponent: NetworkComponentInfo
     val receiverComponent: ArrayList<NetworkComponentInfo> = arrayListOf()
     var allowSenderAsReceiver: Boolean = false
     var responsePacketData: PacketData? = null
 
-    @JsonIgnore
+    @Expose(serialize = false, deserialize = false)
     var futureResponse: FutureAction<PacketResponse>? = null
 
     fun allowSenderAsReceiver() {

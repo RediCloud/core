@@ -1,11 +1,8 @@
-package net.dustrean.api.commands
+package net.dustrean.api.command
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.dustrean.api.command.CommandActor
-import net.dustrean.api.command.ICommand
-import net.dustrean.api.command.ICommandManager
 import net.dustrean.api.command.annotations.CommandArgument
 import net.dustrean.api.command.annotations.CommandSubPath
 import net.dustrean.api.command.data.CommandData
@@ -16,11 +13,11 @@ import org.slf4j.LoggerFactory
 import kotlin.reflect.jvm.kotlinFunction
 
 @DelicateCoroutinesApi
-abstract class CommandManager : ICommandManager {
+abstract class CommandManager {
 
     private val logger = LoggerFactory.getLogger(CommandManager::class.java)
 
-    override fun handleCommand(player: CommandActor, command: ICommand, args: List<String>) {
+    fun handleCommand(player: ICommandActor, command: ICommand, args: List<String>) {
 
         val commandData = getMatchingCommandData(command, args) ?: return
 
@@ -84,7 +81,7 @@ abstract class CommandManager : ICommandManager {
 
     }
 
-    fun handleTabComplete(player: CommandActor, command: ICommand, message: String): List<String> {
+    fun handleTabComplete(player: ICommandActor, command: ICommand, message: String): List<String> {
 
         val messageArray = message.split(" ").map { it.trim() }
         val suggestions = HashSet<String>()
@@ -217,7 +214,7 @@ abstract class CommandManager : ICommandManager {
 
     private fun isParameter(s: String) = s.startsWith("<") && s.endsWith(">")
 
-    abstract override fun registerCommand(command: ICommand)
+    abstract fun registerCommand(command: ICommand)
 
-    abstract fun getPlayer(clazz: Class<*>, player: CommandActor): Any?
+    abstract fun getPlayer(clazz: Class<*>, player: ICommandActor): Any?
 }
