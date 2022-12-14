@@ -3,6 +3,7 @@ package net.dustrean.api.event
 import net.dustrean.api.packet.PacketManager
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.slf4j.LoggerFactory
 import java.lang.IllegalArgumentException
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
@@ -14,13 +15,14 @@ class EventManager : IEventManager {
     }
 
     init {
-        Companion.INSTANCE = this
+        INSTANCE = this
         PacketManager.INSTANCE.registerPacket(EventPacket())
     }
 
-    val byListenerAndPriority = mutableMapOf<Class<*>, MutableMap<Byte, MutableMap<Any, Array<Method>>>>()
-    val byEventBaked = mutableMapOf<Class<*>, Array<EventInvoker>>()
-    val listenerLock = Mutex()
+    private val byListenerAndPriority = mutableMapOf<Class<*>, MutableMap<Byte, MutableMap<Any, Array<Method>>>>()
+    private val byEventBaked = mutableMapOf<Class<*>, Array<EventInvoker>>()
+    private val listenerLock = Mutex()
+    private val logger = LoggerFactory.getLogger(EventManager::class.java)
 
     override suspend fun registerListener(listener: Any) {
         listenerLock.withLock {
@@ -76,7 +78,7 @@ class EventManager : IEventManager {
 
                 val elapsed = System.nanoTime() - time
                 if(elapsed > 50000000) {
-                    println("Event ${event::class.java.name} took ${elapsed / 1000000}ms to process")
+                    logger.warn("Event ${event::class.java.name} took ${elapsed / 1000000}ms to process")
                 }
             }
             return

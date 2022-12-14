@@ -1,57 +1,48 @@
 package net.dustrean.api.network
 
+import net.dustrean.api.redis.IRedisConnection
 import net.dustrean.api.tasks.futures.FutureAction
+import org.redisson.api.LocalCachedMapOptions
+import org.redisson.api.RMap
 import java.util.*
 
-open class NetworkComponentManager : INetworkComponentManager{
+open class NetworkComponentManager(redisConnection: IRedisConnection) : INetworkComponentManager {
 
-    private val networkComponents = mutableListOf<NetworkComponentInfo>()
+    override val networkComponents: RMap<String, NetworkComponentInfo> =
+        redisConnection.getRedissonClient().getLocalCachedMap(
+            "networkComponents",
+            LocalCachedMapOptions.defaults<String?, NetworkComponentInfo?>()
+                .storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
+                .syncStrategy(LocalCachedMapOptions.SyncStrategy.UPDATE)
+        )
 
-    override fun getComponentInfo(key: String): NetworkComponentInfo? {
-        if(networkComponents.parallelStream().filter { it.getKey() == key }.count() > 1) return null
-        return networkComponents.first { it.getKey() == key }
+    override fun getComponentInfo(key: String): FutureAction<NetworkComponentInfo> {
+        return FutureAction(networkComponents.getAsync(key))
     }
 
-    override fun getComponentInfo(uniqueId: UUID): NetworkComponentInfo? {
-        if(networkComponents.parallelStream().filter { it.identifier == uniqueId }.count() > 1) return null
-        return networkComponents.first { it.identifier == uniqueId }
+    override fun getComponentInfo(uniqueId: UUID): FutureAction<NetworkComponentInfo> {
+        val future = FutureAction<NetworkComponentInfo>()
+        getComponentInfos().whenComplete { networkComponentInfos, throwable ->
+            if (throwable != null) {
+                future.completeExceptionally(throwable)
+                return@whenComplete
+            }
+            val networkComponentInfo = networkComponentInfos.find { it.identifier == uniqueId }
+            if (networkComponentInfo != null) {
+                future.complete(networkComponentInfo)
+                return@whenComplete
+            }
+            future.completeExceptionally(NoSuchElementException("No NetworkComponentInfo with the UUID $uniqueId was found"))
+        }
+        return future
     }
 
-    override fun getComponentInfoAsync(key: String): FutureAction<NetworkComponentInfo> {
-        val futureAction = FutureAction<NetworkComponentInfo>()
-        val componentInfo = getComponentInfo(key)
-        if(componentInfo != null) futureAction.complete(componentInfo)
-        else futureAction.completeExceptionally(Exception("No component with key $key found"))
-        return futureAction
+    override fun getComponentInfos(type: NetworkComponentType): FutureAction<List<NetworkComponentInfo>> {
+        return getComponentInfos().map { list -> list.filter { it.type == type } }
     }
 
-    override fun getComponentInfoAsync(uniqueId: UUID): FutureAction<NetworkComponentInfo> {
-        val futureAction = FutureAction<NetworkComponentInfo>()
-        val componentInfo = getComponentInfo(uniqueId)
-        if(componentInfo != null) futureAction.complete(componentInfo)
-        else futureAction.completeExceptionally(Exception("No component with uniqueId $uniqueId found"))
-        return futureAction
+    override fun getComponentInfos(): FutureAction<List<NetworkComponentInfo>> {
+        return FutureAction(networkComponents.readAllValuesAsync()).map { it.toList() }
     }
-
-    override fun getComponentInfos(type: NetworkComponentType): List<NetworkComponentInfo> {
-        return networkComponents.filter { it.type == type }
-    }
-
-    override fun getComponentInfos(): List<NetworkComponentInfo> {
-        return networkComponents
-    }
-
-    override fun getComponentInfosAsync(type: NetworkComponentType): FutureAction<List<NetworkComponentInfo>> {
-        val futureAction = FutureAction<List<NetworkComponentInfo>>()
-        futureAction.complete(getComponentInfos(type))
-        return futureAction
-    }
-
-    override fun getComponentInfosAsync(): FutureAction<List<NetworkComponentInfo>> {
-        val futureAction = FutureAction<List<NetworkComponentInfo>>()
-        futureAction.complete(getComponentInfos())
-        return futureAction
-    }
-
 
 }

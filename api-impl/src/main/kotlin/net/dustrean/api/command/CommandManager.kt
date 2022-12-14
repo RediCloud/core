@@ -17,7 +17,7 @@ abstract class CommandManager {
 
     private val logger = LoggerFactory.getLogger(CommandManager::class.java)
 
-    fun handleCommand(player: CommandActor, command: ICommand, args: List<String>) {
+    fun handleCommand(player: ICommandActor, command: ICommand, args: List<String>) {
 
         val commandData = getMatchingCommandData(command, args) ?: return
 
@@ -81,7 +81,7 @@ abstract class CommandManager {
 
     }
 
-    fun handleTabComplete(player: CommandActor, command: ICommand, message: String): List<String> {
+    fun handleTabComplete(player: ICommandActor, command: ICommand, message: String): List<String> {
 
         val messageArray = message.split(" ").map { it.trim() }
         val suggestions = HashSet<String>()
@@ -216,5 +216,5 @@ abstract class CommandManager {
 
     abstract fun registerCommand(command: ICommand)
 
-    abstract fun getPlayer(clazz: Class<*>, player: CommandActor): Any?
+    abstract fun getPlayer(clazz: Class<*>, player: ICommandActor): Any?
 }

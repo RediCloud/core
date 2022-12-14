@@ -1,9 +1,9 @@
 package net.dustrean.api.paper.command
 
-import net.dustrean.api.command.CommandActor
+import net.dustrean.api.command.ICommandActor
 import org.bukkit.entity.Player
 
-class PaperCommandActor(val player: Player) : CommandActor {
+class PaperCommandActor(val player: Player) : ICommandActor {
 
     override val uuid = player.uniqueId
 
