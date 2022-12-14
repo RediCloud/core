@@ -1,6 +1,7 @@
 package net.dustrean.api.minestom
 
 import net.dustrean.api.cloud.CloudCoreAPI
+import net.dustrean.api.minestom.command.MinestomCommandManager
 import net.dustrean.api.minestom.utils.parser.PlayerParser
 import net.dustrean.api.utils.parser.string.StringParser
 import net.minestom.server.MinecraftServer
@@ -10,6 +11,7 @@ object MinestomCoreAPI : CloudCoreAPI() {
     // instance of MinecraftServer will be initialized by Refections
     val server: MinecraftServer = null!!
     val isInitialized: Boolean = false
+    override fun getCommandManager() = MinestomCommandManager
 
     fun init(server: MinecraftServer) {
         MinestomCoreAPI::class.java.getDeclaredField("server").apply {

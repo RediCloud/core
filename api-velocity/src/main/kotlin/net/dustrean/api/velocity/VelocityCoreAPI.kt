@@ -10,7 +10,7 @@ object VelocityCoreAPI : CloudCoreAPI() {
 
     // Instance will be set by reflections
     val proxyServer: ProxyServer = null!!
-    val commandManager = VelocityCommandManager
+    override fun getCommandManager() = VelocityCommandManager
 
     fun init(proxyServer: ProxyServer) {
         VelocityCoreAPI::class.java.getDeclaredField("proxyServer").apply {

@@ -1,12 +1,12 @@
 package command
 
 import net.dustrean.api.command.CommandActor
-import net.dustrean.api.command.CommandManager
 import net.dustrean.api.command.ICommand
 import net.dustrean.api.command.annotations.CommandArgument
 import net.dustrean.api.command.annotations.CommandSubPath
 import net.dustrean.api.command.data.CommandData
 import net.dustrean.api.command.data.CommandParameterData
+import net.dustrean.api.commands.CommandManager
 import org.jetbrains.annotations.NotNull
 import kotlin.reflect.jvm.kotlinFunction
 

@@ -1,8 +1,11 @@
-package net.dustrean.api.command
+package net.dustrean.api.commands
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.dustrean.api.command.CommandActor
+import net.dustrean.api.command.ICommand
+import net.dustrean.api.command.ICommandManager
 import net.dustrean.api.command.annotations.CommandArgument
 import net.dustrean.api.command.annotations.CommandSubPath
 import net.dustrean.api.command.data.CommandData
@@ -13,11 +16,11 @@ import org.slf4j.LoggerFactory
 import kotlin.reflect.jvm.kotlinFunction
 
 @DelicateCoroutinesApi
-abstract class CommandManager {
+abstract class CommandManager : ICommandManager {
 
     private val logger = LoggerFactory.getLogger(CommandManager::class.java)
 
-    fun handleCommand(player: CommandActor, command: ICommand, args: List<String>) {
+    override fun handleCommand(player: CommandActor, command: ICommand, args: List<String>) {
 
         val commandData = getMatchingCommandData(command, args) ?: return
 
@@ -214,7 +217,7 @@ abstract class CommandManager {
 
     private fun isParameter(s: String) = s.startsWith("<") && s.endsWith(">")
 
-    abstract fun registerCommand(command: ICommand)
+    abstract override fun registerCommand(command: ICommand)
 
     abstract fun getPlayer(clazz: Class<*>, player: CommandActor): Any?
 }
