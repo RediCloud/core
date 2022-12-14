@@ -13,11 +13,11 @@ import org.slf4j.LoggerFactory
 import kotlin.reflect.jvm.kotlinFunction
 
 @DelicateCoroutinesApi
-abstract class CommandManager {
+abstract class CommandManager : ICommandManager {
 
     private val logger = LoggerFactory.getLogger(CommandManager::class.java)
 
-    fun handleCommand(player: ICommandActor, command: ICommand, args: List<String>) {
+    override fun handleCommand(player: ICommandActor, command: ICommand, args: List<String>) {
 
         val commandData = getMatchingCommandData(command, args) ?: return
 
@@ -214,7 +214,7 @@ abstract class CommandManager {
 
     private fun isParameter(s: String) = s.startsWith("<") && s.endsWith(">")
 
-    abstract fun registerCommand(command: ICommand)
+    abstract override fun registerCommand(command: ICommand)
 
     abstract fun getPlayer(clazz: Class<*>, player: ICommandActor): Any?
 }
