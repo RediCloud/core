@@ -1,5 +1,5 @@
 name: core
-main: net.dustrean.api.paper.bootstrap.PaperBootstrap
+main: net.dustrean.api.paper.boostrap.PaperBootstrap
 version: 1.0-SNAPSHOT
 author: Dustrean-Team
 description: Core plugin for the Dustrean API
