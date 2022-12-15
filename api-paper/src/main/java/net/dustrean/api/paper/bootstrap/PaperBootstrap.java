@@ -1,4 +1,4 @@
-package net.dustrean.api.paper.boostrap;
+package net.dustrean.api.paper.bootstrap;
 
 import net.dustrean.api.paper.CorePaperAPI;
 import net.dustrean.libloader.boot.Bootstrap;
