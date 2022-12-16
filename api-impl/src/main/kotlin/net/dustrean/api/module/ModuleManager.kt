@@ -17,7 +17,7 @@ class ModuleManager(
     private val logger = LoggerFactory.getLogger(ModuleManager::class.java)
     private val gson = Gson()
 
-    val modules = mutableListOf<Module>()
+    private val modules = mutableListOf<Module>()
 
     fun detectModules(folder: File) {
         folder.listFiles()?.forEach { file ->
@@ -40,7 +40,7 @@ class ModuleManager(
                     isAccessible = false
                 }
 
-                if (!loadModule(description)) {
+                if (!loadModule(description, file)) {
                     logger.error("Failed to load module ${file.name}")
                     return@forEach
                 }
@@ -65,9 +65,9 @@ class ModuleManager(
         return modules.firstOrNull { it.description.name == name }?.description
     }
 
-    override fun loadModule(description: ModuleDescription): Boolean {
+    override fun loadModule(description: ModuleDescription, file: File): Boolean {
 
-        val loader = URLClassLoader(arrayListOf(description.file.toURI().toURL()).toTypedArray(), javaClass.classLoader)
+        val loader = URLClassLoader(arrayListOf(file.toURI().toURL()).toTypedArray(), javaClass.classLoader)
 
         val module =
             loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).newInstance() as Module
