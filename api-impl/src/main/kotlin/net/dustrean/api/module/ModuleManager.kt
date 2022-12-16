@@ -89,15 +89,32 @@ class ModuleManager(
     }
 
     override fun unloadModule(module: Module): Boolean {
-        module.onDisable(api)
+        if(module.state == ModuleState.ENABLED) {
+            try {
+                module.onDisable(api)
+                logger.info("Disabled module ${module.description.name}")
+            } catch (e: Exception) {
+                logger.error("Failed to disable module ${module.description.name}", e)
+            }
         modules.remove(module)
+        module.state = ModuleState.DISABLED
+        logger.info("Unloaded module ${module.description.name}")
         return true
     }
 
     override fun unloadModule(name: String): Boolean {
         val module = getModule(name) ?: return false
-        module.onDisable(api)
+        if(module.state == ModuleState.ENABLED){
+            try {
+                module.onDisable(api)
+                logger.info("Disabled module ${module.description.name}")
+            }catch (e: Exception){
+                logger.error("Failed to disable module ${module.description.name}", e)
+            }
+        }
+        module.state = ModuleState.DISABLED
         modules.remove(module)
+        logger.info("Unloaded module $name")
         return true
     }
 
@@ -106,18 +123,28 @@ class ModuleManager(
         modules.filter { it.state == ModuleState.LOADED }.forEach {
             try {
                 it.onEnable(api)
+                logger.info("Enabled module ${it.description.name}")
             }catch (e: Exception){
                 logger.error("Failed to enable module ${it.description.name}", e)
             }
+            it.state = ModuleState.ENABLED
         }
     }
 
     override fun disableModules() {
-        modules.filter { it.state == ModuleState.LOADED || it.state == ModuleState.ENABLED }
-            .forEach { it.onDisable(api) }
+        modules.filter { it.state == ModuleState.LOADED || it.state == ModuleState.ENABLED }.forEach {
+            try {
+                it.onDisable(api)
+                logger.info("Disabled module ${it.description.name}")
+            }catch (e: Exception){
+                logger.error("Failed to disable module ${it.description.name}", e)
+            }
+            it.state = ModuleState.DISABLED
+        }
     }
 
     override fun reloadModules() {
+        logger.info("Reloading modules...")
         disableModules()
         enableModules()
     }
