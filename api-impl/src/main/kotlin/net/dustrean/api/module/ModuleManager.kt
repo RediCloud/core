@@ -34,12 +34,6 @@ class ModuleManager(
                 val inputStream = jar.getInputStream(entry)
                 val description = gson.fromJson(inputStream.reader().readText(), ModuleDescription::class.java)
 
-                description::class.java.getDeclaredField("file").apply {
-                    isAccessible = true
-                    set(description, file)
-                    isAccessible = false
-                }
-
                 if (!loadModule(description, file)) {
                     logger.error("Failed to load module ${file.name}")
                     return@forEach
