@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization")
     id("net.dustrean.libloader")
 }
 
@@ -19,6 +20,7 @@ tasks.create("buildInOrder") {
 }
 allprojects {
     apply(plugin = "kotlin")
+    apply(plugin = "kotlinx-serialization")
     apply(plugin = "net.dustrean.libloader")
     apply(plugin = "maven-publish")
 
@@ -111,6 +113,7 @@ allprojects {
     dependencies {
         implementation2(kotlin("reflect"))
         implementation2("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
         implementation2("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
         implementation2("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
         compileOnly("eu.cloudnetservice.cloudnet:driver:4.0.0-RC5")
