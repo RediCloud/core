@@ -96,6 +96,7 @@ class ModuleManager(
             } catch (e: Exception) {
                 logger.error("Failed to disable module ${module.description.name}", e)
             }
+        }
         modules.remove(module)
         module.state = ModuleState.DISABLED
         logger.info("Unloaded module ${module.description.name}")
