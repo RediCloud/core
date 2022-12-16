@@ -4,7 +4,7 @@ import net.dustrean.api.network.NetworkComponentType
 import java.io.File
 import com.google.gson.annotations.Expose
 
-data class ModuleDescription(
+class ModuleDescription(
     val name: String,
     val description: String,
     val version: String,
