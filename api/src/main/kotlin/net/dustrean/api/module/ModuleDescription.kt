@@ -6,5 +6,5 @@ data class ModuleDescription(
     val name: String,
     val description: String,
     val version: String,
-    val mainClasses: HashMap<NetworkComponentType, String>
+    val mainClasses: Map<NetworkComponentType, String>
 )
