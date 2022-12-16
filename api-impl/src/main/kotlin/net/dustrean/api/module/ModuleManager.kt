@@ -72,7 +72,7 @@ class ModuleManager(
             logger.info("No libloader implementation found, continuing", e)
         }
 
-        module::class.java.getDeclaredField("description").apply {
+        module::class.java.superclass.getDeclaredField("description").apply {
             isAccessible = true
             set(module, description)
             isAccessible = false
