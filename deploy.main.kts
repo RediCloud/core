@@ -39,7 +39,7 @@ val files = listOf(
     "api-minestom/build/libs/" to "/home/cloudnet/local/templates/Core/minestom/extensions/core-minestom.jar",
     "api-velocity/build/libs/" to "/home/cloudnet/local/templates/Core/velocity/plugins/core-velocity.jar",
     "api-paper/build/libs/" to "/home/cloudnet/local/templates/Core/paper/plugins/core-paper.jar",
-    "api-standalone/build/libs/" to "/home/docker/standalone/core-standalone.jar",
+    "api-standalone/build/libs/" to "/home/core/standalone/core-standalone.jar",
 )
 files.forEach {
     runCommandSync("mkdir -p ${it.second.substringBeforeLast("/")}")
