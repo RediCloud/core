@@ -34,10 +34,7 @@ class ModuleManager(
                 val inputStream = jar.getInputStream(entry)
                 val description = gson.fromJson(inputStream.reader().readText(), ModuleDescription::class.java)
 
-                if (!loadModule(description, file)) {
-                    logger.error("Failed to load module ${file.name}")
-                    return@forEach
-                }
+                if (!loadModule(description, file)) return@forEach
                 logger.info("Loaded module ${file.name}")
 
             } catch (e: Exception) {
@@ -78,7 +75,12 @@ class ModuleManager(
             isAccessible = false
         }
 
-        module.onLoad(api)
+        try {
+            module.onLoad(api)
+        }catch (e: Exception){
+            logger.error("Failed to load module ${description.name}", e)
+            return false
+        }
 
         module.state = ModuleState.LOADED
         modules.add(module)
@@ -101,7 +103,13 @@ class ModuleManager(
 
     override fun enableModules() {
         detectModules(getModuleFolder())
-        modules.filter { it.state == ModuleState.LOADED }.forEach { it.onEnable(api) }
+        modules.filter { it.state == ModuleState.LOADED }.forEach {
+            try {
+                it.onEnable(api)
+            }catch (e: Exception){
+                logger.error("Failed to enable module ${it.description.name}", e)
+            }
+        }
     }
 
     override fun disableModules() {
