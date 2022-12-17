@@ -1,7 +1,6 @@
 package net.dustrean.api.module
 
 import net.dustrean.api.ICoreAPI
-import net.dustrean.api.network.NetworkComponentType
 
 abstract class Module {
     var state = ModuleState.DISABLED
