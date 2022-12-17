@@ -116,9 +116,7 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
         return future
     }
 
-    override fun deleteConfig(config: IConfig): FutureAction<Unit> {
-        return deleteConfig(config.key)
-    }
+    override fun deleteConfig(config: IConfig): FutureAction<Unit> = deleteConfig(config.key)
 
     override fun <T : IConfig> saveConfig(config: T): FutureAction<Unit> {
         val future = FutureAction<Unit>()
