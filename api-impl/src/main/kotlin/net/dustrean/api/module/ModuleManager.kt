@@ -77,7 +77,7 @@ class ModuleManager(
 
         try {
             module.onLoad(api)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             logger.error("Failed to load module ${description.name}", e)
             return false
         }
@@ -89,7 +89,7 @@ class ModuleManager(
     }
 
     override fun unloadModule(module: Module): Boolean {
-        if(module.state == ModuleState.ENABLED) {
+        if (module.state == ModuleState.ENABLED) {
             try {
                 module.onDisable(api)
                 logger.info("Disabled module ${module.description.name}")
@@ -105,11 +105,11 @@ class ModuleManager(
 
     override fun unloadModule(name: String): Boolean {
         val module = getModule(name) ?: return false
-        if(module.state == ModuleState.ENABLED){
+        if (module.state == ModuleState.ENABLED) {
             try {
                 module.onDisable(api)
                 logger.info("Disabled module ${module.description.name}")
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 logger.error("Failed to disable module ${module.description.name}", e)
             }
         }
@@ -125,7 +125,7 @@ class ModuleManager(
             try {
                 it.onEnable(api)
                 logger.info("Enabled module ${it.description.name}")
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 logger.error("Failed to enable module ${it.description.name}", e)
             }
             it.state = ModuleState.ENABLED
@@ -137,7 +137,7 @@ class ModuleManager(
             try {
                 it.onDisable(api)
                 logger.info("Disabled module ${it.description.name}")
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 logger.error("Failed to disable module ${it.description.name}", e)
             }
             it.state = ModuleState.DISABLED
