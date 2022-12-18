@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractDataManager
 import org.redisson.api.LocalCachedMapOptions
-import org.redisson.api.RLocalCachedMap
 import java.util.*
 
 class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player>(
@@ -19,21 +18,16 @@ class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player
     )
     val onlineFetcher = core.getRedisConnection().getRedissonClient().getList<UUID>("fetcher:player_online")
 
-    override suspend fun getPlayerByUUID(uuid: UUID): IPlayer? {
-        try {
-            return getObject(uuid)
-        } catch (e: NoSuchElementException) {
-            return null
-        }
+    override suspend fun getPlayerByUUID(uuid: UUID): IPlayer? = try {
+        getObject(uuid)
+    } catch (e: NoSuchElementException) {
+        null
     }
 
-    override suspend fun getPlayerByName(name: String): IPlayer? =
-        nameFetcher.get(name)?.let { getPlayerByUUID(it) }
+    override suspend fun getPlayerByName(name: String): IPlayer? = nameFetcher.get(name)?.let { getPlayerByUUID(it) }
 
-    override suspend fun getOnlinePlayers(): Collection<IPlayer> =
-        onlineFetcher.map { getPlayerByUUID(it)!! }
+    override suspend fun getOnlinePlayers(): Collection<IPlayer> = onlineFetcher.map { getPlayerByUUID(it)!! }
 
-    internal suspend fun updatePlayer(player: Player): Player =
-        updateObject(player)
+    internal suspend fun updatePlayer(player: Player): Player = updateObject(player)
 
 }
