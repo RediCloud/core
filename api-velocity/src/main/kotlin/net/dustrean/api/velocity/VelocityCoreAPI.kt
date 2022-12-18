@@ -2,6 +2,7 @@ package net.dustrean.api.velocity
 
 import com.velocitypowered.api.proxy.ProxyServer
 import net.dustrean.api.cloud.CloudCoreAPI
+import net.dustrean.api.utils.ExceptionHandler
 import net.dustrean.api.utils.parser.string.StringParser
 import net.dustrean.api.velocity.command.VelocityCommandManager
 import net.dustrean.api.velocity.event.PlayerEvents
@@ -16,6 +17,8 @@ object VelocityCoreAPI : CloudCoreAPI() {
 
     fun init(proxyServer: ProxyServer) {
         this.proxyServer = proxyServer
+
+        ExceptionHandler
 
         StringParser.customTypeParsers.add(PlayerParser())
         proxyServer.eventManager.register(this, PlayerEvents(getPlayerManager()))
