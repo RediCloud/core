@@ -2,12 +2,12 @@ package net.dustrean.api.player
 
 import kotlinx.coroutines.Deferred
 import java.util.*
+import kotlin.collections.Collection
 
 interface IPlayerManager {
 
-    fun getPlayerByName(name: String): Deferred<IPlayer?>
+    suspend fun getPlayerByName(name: String): IPlayer?
 
-    fun getPlayerByUUID(uuid: UUID): Deferred<IPlayer?>
-
-    fun getOnlinePlayers()
+    suspend fun getPlayerByUUID(uuid: UUID): IPlayer?
+    suspend fun getOnlinePlayers(): Collection<IPlayer>
 }

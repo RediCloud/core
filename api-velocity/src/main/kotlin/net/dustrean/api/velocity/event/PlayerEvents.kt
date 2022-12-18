@@ -10,11 +10,11 @@ import net.dustrean.api.player.PlayerManager
 
 class PlayerEvents(private val playerManager: PlayerManager) {
     @Subscribe
-    fun onPlayerJoin(event: LoginEvent) {
+    fun onPlayerJoin(event: LoginEvent) = runBlocking j@{
         val player = runBlocking {
             playerManager.getPlayerByUUID(
                 event.player.uniqueId
-            ).await()
+            )
         }
         if (player != null) {
             if (
@@ -26,8 +26,8 @@ class PlayerEvents(private val playerManager: PlayerManager) {
             }
             player.lastProxy = ICoreAPI.getInstance<CoreAPI>().getNetworkComponentInfo()
             player.currentlyOnline = true
-            player.update().get()
-            return
+            player.update()
+            return@j
         }
         ICoreAPI.getInstance<CoreAPI>().getPlayerManager().createObject(
             Player(
@@ -38,6 +38,6 @@ class PlayerEvents(private val playerManager: PlayerManager) {
                 nameHistory.add(System.currentTimeMillis() to event.player.username)
                 lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
             }
-        ).get()
+        )
     }
 }

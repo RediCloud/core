@@ -1,14 +1,11 @@
 package net.dustrean.api.player
 
-import kotlinx.coroutines.*
-import net.dustrean.api.data.AbstractDataObject
 import net.dustrean.api.network.NetworkComponentInfo
-import net.dustrean.api.tasks.futures.FutureAction
 import java.util.*
 
 interface IPlayer {
 
-    fun update(): FutureAction<out IPlayer>
+    suspend fun update(): IPlayer
 
     val uuid: UUID
 

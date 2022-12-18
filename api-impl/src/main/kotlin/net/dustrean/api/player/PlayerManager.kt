@@ -1,9 +1,10 @@
 package net.dustrean.api.player
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractDataManager
-import net.dustrean.api.tasks.futures.FutureAction
 import java.util.*
 
 class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player>(
@@ -13,25 +14,24 @@ class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    override fun getPlayerByUUID(uuid: UUID): Deferred<Player?> {
-        return scope.async {
-            withContext(Dispatchers.IO) {
-                getObject(
-                    uuid
-                ).get()
-            }
+    override suspend fun getPlayerByUUID(uuid: UUID): IPlayer? {
+        return withContext(Dispatchers.IO) {
+            getObject(
+                uuid
+            )
         }
+
     }
 
-    override fun getPlayerByName(name: String): Deferred<Player?> {
+    override suspend fun getPlayerByName(name: String): IPlayer? {
         TODO()
     }
 
-    override fun getOnlinePlayers() {
+    override suspend fun getOnlinePlayers(): Collection<IPlayer> {
         TODO("Not yet implemented")
     }
 
-    internal fun updatePlayer(player: Player): FutureAction<Player> { // TODO: POST DEFERRED
+    internal suspend fun updatePlayer(player: Player): Player {
         return updateObject(player)
     }
 }

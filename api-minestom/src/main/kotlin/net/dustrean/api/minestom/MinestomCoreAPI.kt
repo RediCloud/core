@@ -1,5 +1,6 @@
 package net.dustrean.api.minestom
 
+import kotlinx.coroutines.runBlocking
 import net.dustrean.api.cloud.CloudCoreAPI
 import net.dustrean.api.minestom.command.MinestomCommandManager
 import net.dustrean.api.minestom.utils.parser.PlayerParser
@@ -16,22 +17,16 @@ object MinestomCoreAPI : CloudCoreAPI() {
 
     private val playerNode = EventNode.type("player_node", EventFilter.PLAYER).apply {
         addListener(PlayerSpawnEvent::class.java) { event ->
-            if (event.isFirstSpawn) {
-                val deferredPlayer = getPlayerManager().getPlayerByUUID(event.player.uuid)
-                deferredPlayer.invokeOnCompletion {
-                    if (it != null) {
+            if (event.isFirstSpawn)
+                runBlocking {
+                    val player = getPlayerManager().getPlayerByUUID(event.player.uuid)
+                    if (player == null) {
                         event.player.kick("§4An error occurred while loading your data. Please try again later or create a ticket.")
-                        return@invokeOnCompletion
+                        return@runBlocking
                     }
-                    val player = deferredPlayer.getCompleted()
-                        ?: let {
-                            event.player.kick("§4An error occurred while loading your data. Please try again later or create a ticket.")
-                            return@invokeOnCompletion
-                        }
                     player.lastServer = getNetworkComponentInfo()
                     player.update()
                 }
-            }
         }
     }
 
