@@ -6,12 +6,12 @@ import java.util.*
 
 abstract class AbstractCacheHandler<T : AbstractDataObject> {
 
-    val currentCached = mutableListOf<NetworkComponentInfo>()
+    val currentCached = mutableSetOf<NetworkComponentInfo>()
 
-    fun getCurrentNetworkComponents(): List<NetworkComponentInfo> {
-        return Collections.unmodifiableList(currentCached)
+    fun getCurrentNetworkComponents(): Set<NetworkComponentInfo> {
+        return Collections.unmodifiableSet(currentCached)
     }
 
-    abstract fun getCacheNetworkComponents(): FutureAction<List<NetworkComponentInfo>>
+    abstract fun getCacheNetworkComponents(): FutureAction<Set<NetworkComponentInfo>>
 
 }

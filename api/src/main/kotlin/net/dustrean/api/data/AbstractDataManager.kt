@@ -48,7 +48,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         return cachedObjects.values.toList()
     }
 
-    fun sendPacket(identifier: UUID, action: DataCacheActionType, components: List<NetworkComponentInfo>) {
+    fun sendPacket(identifier: UUID, action: DataCacheActionType, components: Set<NetworkComponentInfo>) {
         val packet = DataCachePacket()
         packet.identifier = identifier
         packet.managerPrefix = prefix
@@ -64,7 +64,10 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         packet.type = action
         packet.identifier = dataObject.getIdentifier()
         packet.managerPrefix = prefix
-        dataObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
+        dataObject.getCacheHandler().getCacheNetworkComponents().map {
+            it.toMutableList().addAll(dataObject.getCacheHandler().getCurrentNetworkComponents())
+            it.toList()
+        }.whenComplete { components, throwable ->
             if (throwable != null) {
                 future.completeExceptionally(throwable)
                 return@whenComplete
@@ -84,7 +87,10 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
                 cachedObjects.remove(identifier)
                 parkedObjects[identifier] = cachedObject
 
-                cachedObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
+                cachedObject.getCacheHandler().getCacheNetworkComponents().map {
+                    it.toMutableList().addAll(cachedObject.getCacheHandler().getCurrentNetworkComponents())
+                    it.toSet()
+                }.whenComplete { components, throwable ->
                     if (throwable != null) {
                         logger.error("Error while getting cache network components for object $identifier", throwable)
                         return@whenComplete
@@ -125,7 +131,10 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             if (!cachedObject.getValidator()!!.isValid()) return@forEach
             cachedObjects.remove(cachedObject.getIdentifier())
 
-            cachedObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
+            cachedObject.getCacheHandler().getCacheNetworkComponents().map {
+                it.toMutableList().addAll(cachedObject.getCacheHandler().getCurrentNetworkComponents())
+                it.toSet()
+            }.whenComplete { components, throwable ->
                 if (throwable != null) {
                     logger.error(
                         "Error while getting cache network components for object ${cachedObject.getIdentifier()}",
@@ -158,7 +167,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             future.complete(cache)
             return future
         }
-        val key = "$prefix@$identifier"
+        val key = "$prefix:$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.async.whenComplete { dataObject, throwable ->
             if (throwable != null) {
@@ -173,9 +182,9 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
                 parkedObjects[dataObject.getIdentifier()] = dataObject
             }
             if(cacheListUpdated){
-                dataObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
-                    if (throwable != null) {
-                        future.completeExceptionally(throwable)
+                dataObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable1 ->
+                    if (throwable1 != null) {
+                        future.completeExceptionally(throwable1)
                         return@whenComplete
                     }
                     sendPacket(identifier, DataCacheActionType.ADDED, components)
@@ -190,7 +199,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     override fun createObject(dataObject: T): FutureAction<T> {
         val future = FutureAction<T>()
-        val key = "$prefix@${dataObject.getIdentifier()}"
+        val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.setAsync(dataObject).whenComplete { _, throwable ->
             if (throwable != null) {
@@ -214,7 +223,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     override fun updateObject(dataObject: T): FutureAction<T> {
         val future = FutureAction<T>()
-        val key = "$prefix@${dataObject.getIdentifier()}"
+        val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.isExistsAsync.whenComplete { exists, throwable ->
             if (throwable != null) {
@@ -247,7 +256,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     override fun deleteObject(dataObject: T): FutureAction<Unit> {
         val future = FutureAction<Unit>()
-        val key = "$prefix@${dataObject.getIdentifier()}"
+        val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.isExistsAsync.whenComplete { exists, throwable ->
             if (throwable != null) {
@@ -281,7 +290,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             future.complete(true)
             return future
         }
-        val key = "$prefix@$identifier"
+        val key = "$prefix:<$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.isExistsAsync.whenComplete { exists, throwable ->
             if (throwable != null) {
