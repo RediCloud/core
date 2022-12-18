@@ -26,8 +26,8 @@ data class Player(
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
 
     private val cacheHandler = object: AbstractCacheHandler<AbstractDataObject>() {
-        override fun getCacheNetworkComponents(): FutureAction<List<NetworkComponentInfo>> =
-            FutureAction(listOf(lastServer))
+        override fun getCacheNetworkComponents(): FutureAction<Set<NetworkComponentInfo>> =
+            FutureAction(setOf(lastServer))
     }
 
     private val validator = object: ICacheValidator<AbstractDataObject> {
