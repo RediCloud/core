@@ -1,12 +1,11 @@
 package net.dustrean.api.packet
 
 import net.dustrean.api.network.NetworkComponentInfo
-import net.dustrean.api.tasks.futures.FutureAction
 import net.dustrean.api.packet.response.PacketResponse
 import com.google.gson.annotations.Expose
+import kotlinx.coroutines.CompletableDeferred
 import java.io.Serializable
 import java.util.*
-import kotlin.time.Duration.Companion.seconds
 
 class PacketData : Serializable{
     val packetId: UUID = UUID.randomUUID()
@@ -16,7 +15,7 @@ class PacketData : Serializable{
     var responsePacketData: PacketData? = null
 
     @Expose(serialize = false, deserialize = false)
-    var futureResponse: FutureAction<PacketResponse>? = null
+    var futureResponse: CompletableDeferred<PacketResponse>? = null
 
     fun allowSenderAsReceiver() {
         allowSenderAsReceiver = true
@@ -30,9 +29,9 @@ class PacketData : Serializable{
 
     fun clearReceiverComponent() = receiverComponent.clear()
 
-    fun waitForResponse(): FutureAction<PacketResponse> {
-        futureResponse = FutureAction()
-        futureResponse!!.orTimeout(15.seconds)
+    fun waitForResponse(): CompletableDeferred<PacketResponse> {
+        futureResponse = CompletableDeferred()
+        //TODO: timeout 30 sek
         return futureResponse!!
     }
 

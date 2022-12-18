@@ -7,7 +7,5 @@ interface IPacketManager {
 
     fun<T: Packet> isRegistered(packet: T): Boolean
 
-    fun<T: Packet> sendPacket(packet: T)
-
-    fun<T: Packet> sendPacketAsync(packet: T)
+    suspend fun<T: Packet> sendPacket(packet: T)
 }
