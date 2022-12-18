@@ -1,5 +1,9 @@
 package net.dustrean.api.packet
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import net.dustrean.api.packet.response.PacketResponse
 import org.redisson.api.RFuture
 
@@ -29,7 +33,7 @@ class PacketReceiver(
 
             val future =
                 packetManager.waitingForResponse[packet.packetData.responsePacketData!!.packetId]!!.futureResponse
-            if (!future!!.isFinishedAnyway()) future.complete(packet as PacketResponse)
+            if (!future!!.isCompleted) future.complete(packet as PacketResponse)
             packetManager.waitingForResponse.remove(packet.packetData.responsePacketData!!.packetId)
 
             return
@@ -39,7 +43,7 @@ class PacketReceiver(
     }
 
     fun <T : Packet> connectPacketListener(packetClass: Class<T>) {
-        val future: RFuture<Int> = packetManager.topic.addListenerAsync(packetClass, { _, packet -> receive(packet) })
+        val future: RFuture<Int> = packetManager.topic.addListenerAsync(packetClass) { _, packet -> receive(packet) }
 
         future.whenComplete(({ result, throwable ->
             run {
@@ -47,7 +51,7 @@ class PacketReceiver(
                     throwable.printStackTrace()
                     return@run
                 }
-                listener.put(packetClass, result)
+                listener[packetClass] = result
             }
         }))
     }

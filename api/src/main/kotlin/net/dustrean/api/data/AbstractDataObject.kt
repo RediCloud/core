@@ -10,7 +10,7 @@ abstract class AbstractDataObject() : Serializable {
 
     abstract fun getIdentifier(): UUID
 
-    abstract fun getCacheHandler(): AbstractCacheHandler<AbstractDataObject>
+    abstract fun getCacheHandler(): AbstractCacheHandler
 
     abstract fun getValidator(): ICacheValidator<AbstractDataObject>?
 

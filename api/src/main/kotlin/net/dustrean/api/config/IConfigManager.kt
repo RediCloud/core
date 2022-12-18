@@ -1,17 +1,14 @@
 package net.dustrean.api.config
 
-import net.dustrean.api.tasks.futures.FutureAction
-
-
 interface IConfigManager {
 
-    fun <T: IConfig> getConfig(key: String): FutureAction<T>
+    suspend fun <T: IConfig> getConfig(key: String): T
 
-    fun <T: IConfig> createConfig(config: T): FutureAction<T>
+    suspend fun <T: IConfig> createConfig(config: T): T
 
-    fun deleteConfig(key: String): FutureAction<Unit>
-    fun deleteConfig(config: IConfig): FutureAction<Unit>
+    suspend fun deleteConfig(key: String)
+    suspend fun deleteConfig(config: IConfig)
 
-    fun <T: IConfig> saveConfig(config: T): FutureAction<Unit>
+    suspend fun <T: IConfig> saveConfig(config: T)
 
 }
