@@ -1,10 +1,14 @@
 package net.dustrean.api.player
 
 import kotlinx.coroutines.*
+import net.dustrean.api.data.AbstractDataObject
 import net.dustrean.api.network.NetworkComponentInfo
+import net.dustrean.api.tasks.futures.FutureAction
 import java.util.*
 
 interface IPlayer {
+
+    fun update(): FutureAction<out IPlayer>
 
     val uuid: UUID
 
@@ -14,7 +18,11 @@ interface IPlayer {
 
     var coins: Long
 
-    fun getProxy(): Deferred<NetworkComponentInfo>
+    var currentlyOnline: Boolean
 
-    fun getServer(): Deferred<NetworkComponentInfo>
+    var lastServer: NetworkComponentInfo
+
+    var lastProxy: NetworkComponentInfo
+
+    val nameHistory: MutableList<Pair<Long, String>>
 }
