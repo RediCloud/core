@@ -16,6 +16,7 @@ import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.whenComplete
 import java.util.*
+import kotlin.NoSuchElementException
 
 abstract class AbstractDataManager<T : AbstractDataObject>(
     private val prefix: String,
@@ -141,7 +142,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         }
         val key = "$prefix:$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        if(!bucket.isExists) throw IllegalArgumentException("Object with identifier $identifier does not exist!")
+        if(!bucket.isExists) throw NoSuchElementException("Object with identifier $identifier does not exist!")
         val dataObject = bucket.get()
         if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
             cachedObjects[dataObject.getIdentifier()] = dataObject

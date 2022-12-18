@@ -1,12 +1,14 @@
 package net.dustrean.api.velocity.event
 
 import com.velocitypowered.api.event.Subscribe
+import com.velocitypowered.api.event.connection.DisconnectEvent
 import com.velocitypowered.api.event.connection.LoginEvent
 import kotlinx.coroutines.runBlocking
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.player.Player
 import net.dustrean.api.player.PlayerManager
+import java.util.*
 
 class PlayerEvents(private val playerManager: PlayerManager) {
     @Subscribe
@@ -16,10 +18,11 @@ class PlayerEvents(private val playerManager: PlayerManager) {
                 event.player.uniqueId
             )
         }
+        playerManager.onlineFetcher.add(event.player.uniqueId)
         if (player != null) {
-            if (
-                player.name != event.player.username
-            ) {
+            if (player.name != event.player.username) {
+                playerManager.nameFetcher.remove(player.name.lowercase())
+                playerManager.nameFetcher[event.player.username.lowercase()] = event.player.uniqueId
                 player.nameHistory.add(System.currentTimeMillis() to event.player.username)
                 player.name = event.player.username
                 // TODO: PlayerNameUpdate Event CoreAPI
@@ -29,15 +32,17 @@ class PlayerEvents(private val playerManager: PlayerManager) {
             player.update()
             return@j
         }
-        ICoreAPI.getInstance<CoreAPI>().getPlayerManager().createObject(
-            Player(
-                event.player.uniqueId,
-                event.player.username,
-                currentlyOnline = true
-            ).apply {
-                nameHistory.add(System.currentTimeMillis() to event.player.username)
-                lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
-            }
-        )
+        ICoreAPI.getInstance<CoreAPI>().getPlayerManager().createObject(Player(
+            event.player.uniqueId, event.player.username, currentlyOnline = true
+        ).apply {
+            playerManager.nameFetcher[event.player.username.lowercase()] = event.player.uniqueId
+            nameHistory.add(System.currentTimeMillis() to event.player.username)
+            lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
+        })
+    }
+
+    @Subscribe
+    fun onPlayerDisconnect(event: DisconnectEvent){
+        playerManager.onlineFetcher.remove(event.player.uniqueId)
     }
 }
