@@ -4,13 +4,40 @@ import net.dustrean.api.cloud.CloudCoreAPI
 import net.dustrean.api.minestom.command.MinestomCommandManager
 import net.dustrean.api.minestom.utils.parser.PlayerParser
 import net.dustrean.api.utils.parser.string.StringParser
+import net.minestom.server.MinecraftServer
+import net.minestom.server.event.EventFilter
+import net.minestom.server.event.EventNode
+import net.minestom.server.event.player.PlayerLoginEvent
+import net.minestom.server.event.player.PlayerSpawnEvent
 
 object MinestomCoreAPI : CloudCoreAPI() {
 
     override fun getCommandManager() = MinestomCommandManager
 
-    fun init() {
+    private val playerNode = EventNode.type("player_node", EventFilter.PLAYER).apply {
+        addListener(PlayerSpawnEvent::class.java) { event ->
+            if (event.isFirstSpawn) {
+                val deferredPlayer = getPlayerManager().getPlayerByUUID(event.player.uuid)
+                deferredPlayer.invokeOnCompletion {
+                    if (it != null) {
+                        event.player.kick("§4An error occurred while loading your data. Please try again later or create a ticket.")
+                        return@invokeOnCompletion
+                    }
+                    val player = deferredPlayer.getCompleted()
+                        ?: let {
+                            event.player.kick("§4An error occurred while loading your data. Please try again later or create a ticket.")
+                            return@invokeOnCompletion
+                        }
+                    player.lastServer = getNetworkComponentInfo()
+                    player.update()
+                }
+            }
+        }
+    }
 
+
+    fun init() {
+        MinecraftServer.getGlobalEventHandler().addChild(playerNode)
         StringParser.customTypeParsers.add(PlayerParser())
     }
 
