@@ -1,6 +1,5 @@
 package net.dustrean.api.data
 
-import net.dustrean.api.tasks.futures.FutureAction
 import java.util.*
 
 interface IDataManager<T : AbstractDataObject> {
@@ -11,18 +10,19 @@ interface IDataManager<T : AbstractDataObject> {
 
     fun getCache(): List<T>
 
-    fun getObject(identifier: UUID): FutureAction<T>
-
     fun unregisterCache()
 
-    fun createObject(dataObject: T): FutureAction<T>
-
-    fun updateObject(dataObject: T): FutureAction<T>
-
-    fun deleteObject(dataObject: T): FutureAction<Unit>
-
-    fun existsObject(identifier: UUID): FutureAction<Boolean>
-
     fun getDataPrefix(): String
+
+    suspend fun getObject(identifier: UUID): T
+
+    suspend fun createObject(dataObject: T): T
+
+    suspend fun updateObject(dataObject: T): T
+
+    suspend fun deleteObject(dataObject: T)
+
+    suspend fun existsObject(identifier: UUID): Boolean
+
 
 }

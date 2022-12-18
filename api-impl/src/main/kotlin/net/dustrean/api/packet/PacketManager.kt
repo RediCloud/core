@@ -1,5 +1,7 @@
 package net.dustrean.api.packet
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.redis.RedisConnection
 import org.redisson.api.RTopic
@@ -37,15 +39,9 @@ class PacketManager(
         receiver.disconnectPacketListener(packet::class.java)
     }
 
-    override fun <T : Packet> sendPacket(packet: T) {
+    override suspend fun <T : Packet> sendPacket(packet: T) {
         if (!isRegistered(packet)) throw Exception("Packet is not registered")
         packet.packetData.senderComponent = networkComponentInfo
         topic.publish(packet)
-    }
-
-    override fun <T : Packet> sendPacketAsync(packet: T) {
-        if (!isRegistered(packet)) throw Exception("Packet is not registered")
-        packet.packetData.senderComponent = networkComponentInfo
-        topic.publishAsync(packet)
     }
 }
