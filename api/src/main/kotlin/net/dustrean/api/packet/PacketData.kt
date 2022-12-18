@@ -11,7 +11,7 @@ import kotlin.time.Duration.Companion.seconds
 class PacketData : Serializable{
     val packetId: UUID = UUID.randomUUID()
     lateinit var senderComponent: NetworkComponentInfo
-    val receiverComponent: ArrayList<NetworkComponentInfo> = arrayListOf()
+    val receiverComponent: MutableSet<NetworkComponentInfo> = mutableSetOf()
     var allowSenderAsReceiver: Boolean = false
     var responsePacketData: PacketData? = null
 

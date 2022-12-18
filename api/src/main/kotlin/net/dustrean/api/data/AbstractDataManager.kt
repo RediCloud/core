@@ -48,7 +48,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         return cachedObjects.values.toList()
     }
 
-    fun sendPacket(identifier: UUID, action: DataCacheActionType, components: List<NetworkComponentInfo>) {
+    fun sendPacket(identifier: UUID, action: DataCacheActionType, components: Set<NetworkComponentInfo>) {
         val packet = DataCachePacket()
         packet.identifier = identifier
         packet.managerPrefix = prefix
@@ -89,7 +89,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
                 cachedObject.getCacheHandler().getCacheNetworkComponents().map {
                     it.toMutableList().addAll(cachedObject.getCacheHandler().getCurrentNetworkComponents())
-                    it.toList()
+                    it.toSet()
                 }.whenComplete { components, throwable ->
                     if (throwable != null) {
                         logger.error("Error while getting cache network components for object $identifier", throwable)
@@ -133,7 +133,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
             cachedObject.getCacheHandler().getCacheNetworkComponents().map {
                 it.toMutableList().addAll(cachedObject.getCacheHandler().getCurrentNetworkComponents())
-                it.toList()
+                it.toSet()
             }.whenComplete { components, throwable ->
                 if (throwable != null) {
                     logger.error(
