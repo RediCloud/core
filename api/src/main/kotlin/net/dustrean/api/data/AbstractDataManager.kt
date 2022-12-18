@@ -167,7 +167,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             future.complete(cache)
             return future
         }
-        val key = "$prefix@$identifier"
+        val key = "$prefix:$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.async.whenComplete { dataObject, throwable ->
             if (throwable != null) {
@@ -199,7 +199,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     override fun createObject(dataObject: T): FutureAction<T> {
         val future = FutureAction<T>()
-        val key = "$prefix@${dataObject.getIdentifier()}"
+        val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.setAsync(dataObject).whenComplete { _, throwable ->
             if (throwable != null) {
@@ -223,7 +223,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     override fun updateObject(dataObject: T): FutureAction<T> {
         val future = FutureAction<T>()
-        val key = "$prefix@${dataObject.getIdentifier()}"
+        val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.isExistsAsync.whenComplete { exists, throwable ->
             if (throwable != null) {
@@ -256,7 +256,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     override fun deleteObject(dataObject: T): FutureAction<Unit> {
         val future = FutureAction<Unit>()
-        val key = "$prefix@${dataObject.getIdentifier()}"
+        val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.isExistsAsync.whenComplete { exists, throwable ->
             if (throwable != null) {
@@ -290,7 +290,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             future.complete(true)
             return future
         }
-        val key = "$prefix@$identifier"
+        val key = "$prefix:<$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         bucket.isExistsAsync.whenComplete { exists, throwable ->
             if (throwable != null) {
