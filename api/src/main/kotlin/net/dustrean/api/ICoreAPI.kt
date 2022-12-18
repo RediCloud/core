@@ -1,6 +1,7 @@
 package net.dustrean.api
 
 import net.dustrean.api.command.ICommandManager
+import net.dustrean.api.config.IConfigManager
 import net.dustrean.api.event.IEventManager
 import net.dustrean.api.module.IModuleManager
 import net.dustrean.api.network.INetworkComponentManager
@@ -20,6 +21,8 @@ interface ICoreAPI {
     }
 
     fun getRedisConnection(): IRedisConnection
+
+    fun getConfigManager(): IConfigManager
 
     fun getNetworkComponentInfo(): NetworkComponentInfo
 

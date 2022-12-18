@@ -1,5 +1,7 @@
 package net.dustrean.api.module
 
+import java.io.File
+
 interface IModuleManager {
 
     fun getModule(name: String): Module?
@@ -8,7 +10,7 @@ interface IModuleManager {
 
     fun getModules(state: ModuleState): List<Module>
 
-    fun loadModule(description: ModuleDescription): Boolean
+    fun loadModule(description: ModuleDescription, file: File): Boolean
 
     fun unloadModule(module: Module): Boolean
 
