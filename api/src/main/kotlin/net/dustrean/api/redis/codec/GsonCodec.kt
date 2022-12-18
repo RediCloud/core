@@ -1,6 +1,10 @@
 package net.dustrean.api.redis.codec
 
+import com.google.gson.ExclusionStrategy
+import com.google.gson.FieldAttributes
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.annotations.Expose
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.ByteBufInputStream
@@ -14,7 +18,12 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 class GsonCodec : BaseCodec() {
-    private val gson: Gson = Gson()
+    private val gson: Gson = GsonBuilder().setExclusionStrategies(object: ExclusionStrategy {
+        override fun shouldSkipField(p0: FieldAttributes?): Boolean {
+            return p0?.getAnnotation(Expose::class.java)?.serialize == false
+        }
+        override fun shouldSkipClass(p0: Class<*>?): Boolean = false
+    }).create()
     private val classMap: MutableMap<String, Class<*>?> = ConcurrentHashMap()
 
     fun mapClass(clazz: Class<*>) {
