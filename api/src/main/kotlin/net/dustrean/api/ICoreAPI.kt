@@ -6,6 +6,7 @@ import net.dustrean.api.module.IModuleManager
 import net.dustrean.api.network.INetworkComponentManager
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.packet.IPacketManager
+import net.dustrean.api.player.IPlayerManager
 import net.dustrean.api.redis.IRedisConnection
 
 interface ICoreAPI {
@@ -33,6 +34,8 @@ interface ICoreAPI {
     fun getCommandManager(): ICommandManager? = null
 
     fun getNetworkComponentManager(): INetworkComponentManager
+
+    fun getPlayerManager(): IPlayerManager
 
     fun shutdown()
 }
