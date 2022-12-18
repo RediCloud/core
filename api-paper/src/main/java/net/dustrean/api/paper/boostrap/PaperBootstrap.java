@@ -15,7 +15,7 @@ public class PaperBootstrap extends JavaPlugin {
     public void onEnable() {
         try {
             new Bootstrap().apply(new URLClassLoaderJarLoader((URLClassLoader) this.getClass().getClassLoader()));
-            CorePaperAPI.INSTANCE.init();
+            CorePaperAPI.INSTANCE.init(this);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
