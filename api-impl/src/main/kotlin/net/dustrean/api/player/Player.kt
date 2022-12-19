@@ -43,6 +43,6 @@ data class Player(
     override fun getCacheHandler(): AbstractCacheHandler =
         cacheHandler
 
-    override fun getValidator(): ICacheValidator<AbstractDataObject>? = validator // TODO()
+    override fun getValidator(): ICacheValidator<AbstractDataObject> = validator
 
 }
