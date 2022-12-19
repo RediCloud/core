@@ -8,7 +8,6 @@ import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.player.Player
 import net.dustrean.api.player.PlayerManager
-import java.util.*
 
 class PlayerEvents(private val playerManager: PlayerManager) {
     @Subscribe
@@ -27,6 +26,10 @@ class PlayerEvents(private val playerManager: PlayerManager) {
                 player.name = event.player.username
                 // TODO: PlayerNameUpdate Event CoreAPI
             }
+
+            if (player.getLastIp() != event.player.remoteAddress.address.hostAddress)
+                player.ipHistory.add(System.currentTimeMillis() to event.player.remoteAddress.address.hostAddress)
+
             player.lastProxy = ICoreAPI.getInstance<CoreAPI>().getNetworkComponentInfo()
             player.currentlyOnline = true
             player.update()
@@ -37,12 +40,13 @@ class PlayerEvents(private val playerManager: PlayerManager) {
         ).apply {
             playerManager.nameFetcher[event.player.username.lowercase()] = event.player.uniqueId
             nameHistory.add(System.currentTimeMillis() to event.player.username)
+            ipHistory.add(System.currentTimeMillis() to event.player.remoteAddress.address.hostAddress)
             lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
         })
     }
 
     @Subscribe
-    fun onPlayerDisconnect(event: DisconnectEvent){
+    fun onPlayerDisconnect(event: DisconnectEvent) {
         playerManager.onlineFetcher.remove(event.player.uniqueId)
     }
 }
