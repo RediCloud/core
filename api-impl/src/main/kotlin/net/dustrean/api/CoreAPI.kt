@@ -11,6 +11,7 @@ import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentManager
 import net.dustrean.api.packet.IPacketManager
 import net.dustrean.api.packet.PacketManager
+import net.dustrean.api.player.PlayerManager
 import net.dustrean.api.redis.RedisConnection
 import net.dustrean.api.utils.coreVersion
 
@@ -23,6 +24,7 @@ abstract class CoreAPI(
     private var eventManager: EventManager = EventManager()
     private var networkComponentManager: NetworkComponentManager = NetworkComponentManager(redisConnection)
     private var configManager: ConfigManager = ConfigManager(redisConnection)
+    private var playerManager: PlayerManager = PlayerManager(this)
     private var moduleManager: ModuleManager = ModuleManager(this)
 
     init {
@@ -58,4 +60,5 @@ abstract class CoreAPI(
 
     override fun getConfigManager(): ConfigManager = configManager
 
+    override fun getPlayerManager(): PlayerManager = playerManager
 }

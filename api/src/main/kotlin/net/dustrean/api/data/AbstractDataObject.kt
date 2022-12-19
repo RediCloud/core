@@ -5,7 +5,7 @@ import java.util.*
 
 abstract class AbstractDataObject() : Serializable {
 
-    abstract fun update()
+    abstract suspend fun update(): AbstractDataObject
 
     abstract fun getIdentifier(): UUID
 

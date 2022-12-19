@@ -16,6 +16,7 @@ import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.whenComplete
 import java.util.*
+import kotlin.NoSuchElementException
 
 abstract class AbstractDataManager<T : AbstractDataObject>(
     private val prefix: String,
@@ -141,6 +142,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         }
         val key = "$prefix:$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
+        if(!bucket.isExists) throw NoSuchElementException("Object with identifier $identifier does not exist!")
         val dataObject = bucket.get()
         if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
             cachedObjects[dataObject.getIdentifier()] = dataObject
@@ -158,6 +160,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
     override suspend fun createObject(dataObject: T): T {
         val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
+        if(existsObject(dataObject.getIdentifier())) throw IllegalArgumentException("Object with identifier ${dataObject.getIdentifier()} already exists!")
         bucket.set(dataObject)
         if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
             cachedObjects[dataObject.getIdentifier()] = dataObject
@@ -171,9 +174,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
     override suspend fun updateObject(dataObject: T): T {
         val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        if (!bucket.isExists) {
-            throw NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist")
-        }
+        if (!existsObject(dataObject.getIdentifier())) throw NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist")
         bucket.set(dataObject)
         if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
             cachedObjects[dataObject.getIdentifier()] = dataObject
@@ -188,8 +189,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
     override suspend fun deleteObject(dataObject: T) {
         val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        if (!bucket.isExists)
-            throw NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist")
+        if (!existsObject(dataObject.getIdentifier())) throw NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist")
         bucket.delete()
         cachedObjects.remove(dataObject.getIdentifier())
         parkedObjects.remove(dataObject.getIdentifier())
