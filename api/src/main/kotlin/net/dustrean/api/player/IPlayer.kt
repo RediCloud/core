@@ -21,4 +21,8 @@ interface IPlayer {
     var lastProxy: NetworkComponentInfo
 
     val nameHistory: MutableList<Pair<Long, String>>
+
+    val ipHistory: MutableList<Pair<Long, String>>
+
+    fun getLastIp(): String
 }
