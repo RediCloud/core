@@ -4,7 +4,6 @@ import net.dustrean.api.network.NetworkComponentInfo
 import java.util.*
 
 interface IPlayer {
-
     suspend fun update(): IPlayer
 
     val uuid: UUID

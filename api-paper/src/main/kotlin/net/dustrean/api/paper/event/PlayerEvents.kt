@@ -21,6 +21,5 @@ class PlayerEvents : Listener {
 
         player.lastServer = ICoreAPI.INSTANCE.getNetworkComponentInfo()
         player.update()
-
     }
 }

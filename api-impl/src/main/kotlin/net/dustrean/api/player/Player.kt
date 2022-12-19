@@ -45,5 +45,4 @@ data class Player(
 
     override fun getValidator(): ICacheValidator<AbstractDataObject>? = validator // TODO()
 
-
 }
