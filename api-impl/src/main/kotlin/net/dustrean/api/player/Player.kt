@@ -14,15 +14,17 @@ data class Player(
     override var name: String,
     override var languageID: Int = 0,
     override var coins: Long = 0,
-    override var connected: Boolean = false
+    override var connected: Boolean = false,
 ) : IPlayer, AbstractDataObject() {
     companion object {
         val INVALID_ID = UUID(0, 0)
         val INVALID_SERVICE = NetworkComponentInfo(NetworkComponentType.STANDALONE, INVALID_ID)
         val INVALID_IP = "UNKNOWN"
+        val INVALID_AUTHENTICATION = PlayerAuthentication()
     }
     override var lastServer: NetworkComponentInfo = INVALID_SERVICE
     override var lastProxy: NetworkComponentInfo = INVALID_SERVICE
+    override val authentication: IPlayerAuthentication = INVALID_AUTHENTICATION
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
     override val sessions: MutableList<Pair<Long, IPlayerSession>> = mutableListOf()
     private val cacheHandler = object: AbstractCacheHandler() {
@@ -43,8 +45,8 @@ data class Player(
         return if(session.isActive()) session as PlayerSession else null
     }
 
-    override fun getLastSession(): PlayerSession =
-        sessions.lastOrNull()?.second as PlayerSession
+    override fun getLastSession(): PlayerSession? =
+        sessions.lastOrNull()?.second as PlayerSession ?: null
 
     override fun getIdentifier(): UUID =
         uuid

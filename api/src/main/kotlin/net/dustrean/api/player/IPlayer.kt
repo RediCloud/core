@@ -24,6 +24,8 @@ interface IPlayer {
 
     val sessions: MutableList<Pair<Long, IPlayerSession>>
 
+    val authentication: IPlayerAuthentication
+
     fun isOnline(): Boolean
 
     fun getCurrentSession(): IPlayerSession?
