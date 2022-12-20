@@ -13,36 +13,42 @@ import java.util.stream.Stream
 
 class WebUniqueIdFetcher {
 
+    companion object {
+        private val fetcher = WebUniqueIdFetcher()
+
+        suspend fun fetchName(uniqueId: UUID): String? {
+            if (fetcher.nameCache.containsKey(uniqueId)) {
+                return fetcher.nameCache[uniqueId]
+            }
+            val connection = fetcher.createConnection("https://api.minetools.eu/profile/$uniqueId")
+            val reader = BufferedReader(InputStreamReader(connection.inputStream, StandardCharsets.UTF_8))
+            val name = fetcher.fetchLinesByName(reader.lines()) ?: return null
+            fetcher.nameCache[uniqueId] = name
+            fetcher.uniqueIdCache[name] = uniqueId
+            fetcher.nameCache[uniqueId] = name
+            return name
+        }
+
+
+        suspend fun fetchUniqueId(name: String): UUID? {
+            val identifierName = name.lowercase()
+            if(fetcher.uniqueIdCache.containsKey(identifierName)){
+                return fetcher.uniqueIdCache[identifierName]
+            }
+            val connection = fetcher.createConnection("https://api.minetools.eu/uuid/$identifierName")
+            val reader = BufferedReader(InputStreamReader(connection.inputStream, StandardCharsets.UTF_8))
+            val rawUniqueId = fetcher.fetchLinesByUUID(reader.lines()) ?: return null
+            val uniqueId = UUID.fromString(fetcher.pattern.matcher(rawUniqueId).replaceAll("$1-$2-$3-$4-$5"))
+            fetcher.uniqueIdCache[identifierName] = uniqueId
+            fetcher.nameCache[uniqueId] = name
+            return uniqueId
+        }
+
+    }
+
     private val uniqueIdCache = mutableMapOf<String, UUID>()
     private val nameCache = mutableMapOf<UUID, String>()
     private val pattern = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})")
-
-    suspend fun fetchName(uniqueId: UUID): String? {
-        if (nameCache.containsKey(uniqueId)) {
-            return nameCache[uniqueId]
-        }
-        val connection = createConnection("https://api.minetools.eu/profile/$uniqueId")
-        val reader = BufferedReader(InputStreamReader(connection.inputStream, StandardCharsets.UTF_8))
-        val name = fetchLinesByName(reader.lines()) ?: return null
-        nameCache[uniqueId] = name
-        uniqueIdCache[name] = uniqueId
-        nameCache[uniqueId] = name
-        return name
-    }
-
-    suspend fun fetchUniqueId(name: String): UUID? {
-        val identifierName = name.lowercase()
-        if(uniqueIdCache.containsKey(identifierName)){
-            return uniqueIdCache[identifierName]
-        }
-        val connection = createConnection("https://api.minetools.eu/uuid/$identifierName")
-        val reader = BufferedReader(InputStreamReader(connection.inputStream, StandardCharsets.UTF_8))
-        val rawUniqueId = fetchLinesByUUID(reader.lines()) ?: return null
-        val uniqueId = UUID.fromString(pattern.matcher(rawUniqueId).replaceAll("$1-$2-$3-$4-$5"))
-        uniqueIdCache[identifierName] = uniqueId
-        nameCache[uniqueId] = name
-        return uniqueId
-    }
 
     private suspend fun createConnection(url: String): HttpURLConnection =
         withContext(Dispatchers.IO){
