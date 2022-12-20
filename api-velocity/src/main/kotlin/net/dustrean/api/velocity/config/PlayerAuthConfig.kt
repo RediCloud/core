@@ -8,5 +8,6 @@ class PlayerAuthConfig(override val key: String) : IConfig {
     val minPasswordLength = 6
     val maxPasswordLength = 18
     val passwordCanContainsPlayerName = false
+    val verifyTask = "Verify"
 
 }
