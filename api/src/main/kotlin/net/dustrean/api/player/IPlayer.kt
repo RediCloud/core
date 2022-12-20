@@ -33,4 +33,6 @@ interface IPlayer {
 
     fun getLastSession(): IPlayerSession?
 
+    suspend fun connect(service: NetworkComponentInfo)
+
 }

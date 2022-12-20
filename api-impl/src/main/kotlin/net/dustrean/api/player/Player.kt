@@ -7,6 +7,7 @@ import net.dustrean.api.data.AbstractDataObject
 import net.dustrean.api.data.ICacheValidator
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
+import net.dustrean.api.packet.connect.PlayerChangeServicePacket
 import java.util.*
 
 data class Player(
@@ -63,6 +64,15 @@ data class Player(
             NetworkComponentType.VELOCITY -> lastProxy == ICoreAPI.INSTANCE.getNetworkComponentInfo()
             NetworkComponentType.MINESTOM -> lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
             NetworkComponentType.PAPER -> lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
+    }
+
+    override suspend fun connect(service: NetworkComponentInfo) {
+        if(!connected) return
+        val packet = PlayerChangeServicePacket().apply {
+            this.uniqueId = uuid
+            this.networkComponentInfo = service
+        }
+        packet.sendPacket()
     }
 
 }

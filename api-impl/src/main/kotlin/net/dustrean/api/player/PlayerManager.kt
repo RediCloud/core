@@ -4,12 +4,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractDataManager
+import net.dustrean.api.packet.PacketManager
+import net.dustrean.api.packet.connect.PlayerChangeServicePacket
 import org.redisson.api.LocalCachedMapOptions
 import java.util.*
 
 class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player>(
     "player", core.getRedisConnection(), Player::class.java
 ) {
+
+    init {
+        PacketManager.INSTANCE.registerPacket(PlayerChangeServicePacket())
+    }
+
     private val scope = CoroutineScope(Dispatchers.IO)
     val nameFetcher = core.getRedisConnection().getRedissonClient().getLocalCachedMap(
         "fetcher:player_name",
