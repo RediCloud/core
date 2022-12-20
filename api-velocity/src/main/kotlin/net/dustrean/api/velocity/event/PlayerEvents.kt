@@ -1,17 +1,26 @@
 package net.dustrean.api.velocity.event
 
+import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.DisconnectEvent
 import com.velocitypowered.api.event.connection.LoginEvent
+import com.velocitypowered.api.event.connection.PostLoginEvent
 import com.velocitypowered.api.event.connection.PreLoginEvent
+import com.velocitypowered.api.event.player.ServerPostConnectEvent
+import com.velocitypowered.api.event.player.ServerPreConnectEvent
 import kotlinx.coroutines.runBlocking
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.player.Player
+import net.dustrean.api.player.PlayerAuthentication
 import net.dustrean.api.player.PlayerManager
 import net.dustrean.api.player.PlayerSession
+import net.dustrean.api.utils.extension.isPremium
+import net.dustrean.api.utils.fetcher.WebUniqueIdFetcher
+import net.dustrean.api.velocity.VelocityCoreAPI
 import net.dustrean.api.velocity.config.PlayerAuthConfig
 import net.kyori.adventure.text.Component
+import java.io.IOException
 import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.seconds
 
@@ -26,47 +35,75 @@ class PlayerEvents(private val playerManager: PlayerManager) {
         }
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
     fun onPreLogin(event: PreLoginEvent) = runBlocking {
         val name = event.username
 
-        if(!authConfig.crackAllowed){
+        if (!authConfig.crackAllowed) {
             event.result = PreLoginEvent.PreLoginComponentResult.forceOnlineMode()
             return@runBlocking
         }
 
-        if(name.length > 16){
+        if (name.length > 16) {
             event.result = PreLoginEvent.PreLoginComponentResult.denied(Component.text("Username too long"))
             return@runBlocking
         }
 
-        if(name.length < 3){
+        if (name.length < 3) {
             event.result = PreLoginEvent.PreLoginComponentResult.denied(Component.text("Username too short"))
             return@runBlocking
         }
 
-        if(!namePattern.matcher(name).matches()){
+        if (!namePattern.matcher(name).matches()) {
             event.result = PreLoginEvent.PreLoginComponentResult.denied(Component.text("Invalid username"))
             return@runBlocking
         }
 
-
+        try {
+            val premiumUniqueId = WebUniqueIdFetcher.fetchUniqueId(name)
+            if (premiumUniqueId == null) {
+                event.result = PreLoginEvent.PreLoginComponentResult.forceOfflineMode()
+            } else {
+                event.result = PreLoginEvent.PreLoginComponentResult.forceOnlineMode()
+            }
+        } catch (e: IOException) {
+            event.result =
+                PreLoginEvent.PreLoginComponentResult.denied(Component.text("Error while connecting to external service!\nPlease try again later."))
+        }
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
     fun onPlayerJoin(event: LoginEvent) = runBlocking j@{
+
+        val uniqueId = event.player.uniqueId
+        val name = event.player.username
+
+        if (!event.player.isOnlineMode) {
+            if (uniqueId.isPremium(name)) {
+                event.player.disconnect(Component.text("You are a premium player, but you are not authenticated!\nPlease relogin!"))
+                return@j
+            }
+            return@j
+        }
+
         val player = playerManager.getPlayerByUUID(
             event.player.uniqueId
         )
         playerManager.onlineFetcher.add(event.player.uniqueId)
 
-
-        val session = PlayerSession()
-        session.ip = event.player.remoteAddress.address.hostAddress
-        session.start = System.currentTimeMillis()
-        session.authenticated = true
-        session.premium = true
-        session.proxyId = ICoreAPI.INSTANCE.getNetworkComponentInfo()
+        val authentication = PlayerAuthentication().apply {
+            cracked = false
+            ip = event.player.remoteAddress.address.hostAddress
+            lastVerify = System.currentTimeMillis()
+            loginProcess = false
+        }
+        val session = PlayerSession().apply {
+            ip = event.player.remoteAddress.address.hostAddress
+            start = System.currentTimeMillis()
+            authenticated = true
+            premium = true
+            proxyId = ICoreAPI.INSTANCE.getNetworkComponentInfo()
+        }
 
         if (player != null) {
             if (player.name != event.player.username) {
@@ -76,7 +113,7 @@ class PlayerEvents(private val playerManager: PlayerManager) {
                 player.name = event.player.username
                 // TODO: PlayerNameUpdate Event CoreAPI
             }
-
+            player.authentication = authentication
             player.lastProxy = ICoreAPI.getInstance<CoreAPI>().getNetworkComponentInfo()
             player.connected = true
             player.sessions.add(System.currentTimeMillis() to session)
@@ -88,12 +125,40 @@ class PlayerEvents(private val playerManager: PlayerManager) {
             event.player.uniqueId, event.player.username, connected = true
         ).apply {
             nameHistory.add(System.currentTimeMillis() to event.player.username)
+            this.authentication = authentication
             lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
             sessions.add(System.currentTimeMillis() to session)
         })
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
+    fun onPostLogin(event: PostLoginEvent) = runBlocking {
+        if (event.player.isOnlineMode) return@runBlocking
+        val player = playerManager.getPlayerByUUID(event.player.uniqueId) ?: return@runBlocking
+        if (player.authentication.isLoggedIn(player)) {
+            event.player.sendMessage(Component.text("You are logged in as ${player.name}!"))
+        }
+    }
+
+    @Subscribe(order = PostOrder.FIRST)
+    fun onPreServerConnect(event: ServerPreConnectEvent) {
+        val target = event.originalServer
+
+        if(!ICoreAPI.getInstance<VelocityCoreAPI>().getPlayerManager().isCached(event.player.uniqueId)){
+            if (event.player.isOnlineMode) {
+                event.result = ServerPreConnectEvent.ServerResult.denied()
+                event.player.disconnect(Component.text("Error while connecting to server because cloud player is not cached"))
+                return
+            }
+        }
+    }
+
+    @Subscribe(order = PostOrder.FIRST)
+    fun onPostServerConnect(event: ServerPostConnectEvent) {
+
+    }
+
+    @Subscribe(order = PostOrder.LAST)
     fun onPlayerDisconnect(event: DisconnectEvent) = runBlocking {
         val player = runBlocking {
             playerManager.getPlayerByUUID(
@@ -102,10 +167,9 @@ class PlayerEvents(private val playerManager: PlayerManager) {
         }
         if (player != null) {
             val session = player.getCurrentSession()
-            if(session != null){
+            if (session != null) {
                 session.end = System.currentTimeMillis()
-                if(session.getDuration() < 5.seconds.inWholeMilliseconds)
-                    player.sessions.removeIf { it == session }
+                if (session.getDuration() < 5.seconds.inWholeMilliseconds) player.sessions.removeIf { it == session }
             }
             player.update()
         }
