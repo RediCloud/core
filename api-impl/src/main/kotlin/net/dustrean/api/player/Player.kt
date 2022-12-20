@@ -24,7 +24,7 @@ data class Player(
     }
     override var lastServer: NetworkComponentInfo = INVALID_SERVICE
     override var lastProxy: NetworkComponentInfo = INVALID_SERVICE
-    override val authentication: IPlayerAuthentication = INVALID_AUTHENTICATION
+    override var authentication: IPlayerAuthentication = INVALID_AUTHENTICATION
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
     override val sessions: MutableList<Pair<Long, IPlayerSession>> = mutableListOf()
     private val cacheHandler = object: AbstractCacheHandler() {
