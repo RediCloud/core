@@ -22,6 +22,7 @@ data class Player(
     override var lastServer: NetworkComponentInfo = INVALID
     override var lastProxy: NetworkComponentInfo = INVALID
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
+    override val ipHistory: MutableList<Pair<Long, String>> = mutableListOf()
 
     private val cacheHandler = object: AbstractCacheHandler() {
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
@@ -43,6 +44,10 @@ data class Player(
     override fun getCacheHandler(): AbstractCacheHandler =
         cacheHandler
 
-    override fun getValidator(): ICacheValidator<AbstractDataObject> = validator
+    override fun getValidator(): ICacheValidator<AbstractDataObject> =
+        validator
+
+    override fun getLastIp(): String =
+        ipHistory.last().second
 
 }
