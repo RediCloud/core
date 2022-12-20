@@ -3,15 +3,56 @@ package net.dustrean.api.velocity.event
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.DisconnectEvent
 import com.velocitypowered.api.event.connection.LoginEvent
+import com.velocitypowered.api.event.connection.PreLoginEvent
 import kotlinx.coroutines.runBlocking
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.player.Player
 import net.dustrean.api.player.PlayerManager
 import net.dustrean.api.player.PlayerSession
+import net.dustrean.api.velocity.config.PlayerAuthConfig
+import net.kyori.adventure.text.Component
+import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.seconds
 
 class PlayerEvents(private val playerManager: PlayerManager) {
+
+    private lateinit var authConfig: PlayerAuthConfig
+    private val namePattern = Pattern.compile("^[a-zA-Z0-9_]{2,16}$")
+
+    init {
+        runBlocking {
+            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig<PlayerAuthConfig>("player-authentication")
+        }
+    }
+
+    @Subscribe
+    fun onPreLogin(event: PreLoginEvent) = runBlocking {
+        val name = event.username
+
+        if(!authConfig.crackAllowed){
+            event.result = PreLoginEvent.PreLoginComponentResult.forceOnlineMode()
+            return@runBlocking
+        }
+
+        if(name.length > 16){
+            event.result = PreLoginEvent.PreLoginComponentResult.denied(Component.text("Username too long"))
+            return@runBlocking
+        }
+
+        if(name.length < 3){
+            event.result = PreLoginEvent.PreLoginComponentResult.denied(Component.text("Username too short"))
+            return@runBlocking
+        }
+
+        if(!namePattern.matcher(name).matches()){
+            event.result = PreLoginEvent.PreLoginComponentResult.denied(Component.text("Invalid username"))
+            return@runBlocking
+        }
+
+
+    }
+
     @Subscribe
     fun onPlayerJoin(event: LoginEvent) = runBlocking j@{
         val player = playerManager.getPlayerByUUID(
@@ -70,4 +111,5 @@ class PlayerEvents(private val playerManager: PlayerManager) {
         }
         playerManager.onlineFetcher.remove(event.player.uniqueId)
     }
+
 }
