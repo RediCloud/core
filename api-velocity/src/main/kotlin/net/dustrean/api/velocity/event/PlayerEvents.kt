@@ -8,16 +8,25 @@ import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.player.Player
 import net.dustrean.api.player.PlayerManager
+import net.dustrean.api.player.PlayerSession
+import kotlin.time.Duration.Companion.seconds
 
 class PlayerEvents(private val playerManager: PlayerManager) {
     @Subscribe
     fun onPlayerJoin(event: LoginEvent) = runBlocking j@{
-        val player = runBlocking {
-            playerManager.getPlayerByUUID(
-                event.player.uniqueId
-            )
-        }
+        val player = playerManager.getPlayerByUUID(
+            event.player.uniqueId
+        )
         playerManager.onlineFetcher.add(event.player.uniqueId)
+
+
+        val session = PlayerSession()
+        session.ip = event.player.remoteAddress.address.hostAddress
+        session.start = System.currentTimeMillis()
+        session.authenticated = true
+        session.premium = true
+        session.proxyId = ICoreAPI.INSTANCE.getNetworkComponentInfo()
+
         if (player != null) {
             if (player.name != event.player.username) {
                 playerManager.nameFetcher.remove(player.name.lowercase())
@@ -27,26 +36,38 @@ class PlayerEvents(private val playerManager: PlayerManager) {
                 // TODO: PlayerNameUpdate Event CoreAPI
             }
 
-            if (player.getLastIp() != event.player.remoteAddress.address.hostAddress)
-                player.ipHistory.add(System.currentTimeMillis() to event.player.remoteAddress.address.hostAddress)
-
             player.lastProxy = ICoreAPI.getInstance<CoreAPI>().getNetworkComponentInfo()
-            player.currentlyOnline = true
+            player.connected = true
+            player.sessions.add(System.currentTimeMillis() to session)
             player.update()
             return@j
         }
+        playerManager.nameFetcher[event.player.username.lowercase()] = event.player.uniqueId
         ICoreAPI.getInstance<CoreAPI>().getPlayerManager().createObject(Player(
-            event.player.uniqueId, event.player.username, currentlyOnline = true
+            event.player.uniqueId, event.player.username, connected = true
         ).apply {
-            playerManager.nameFetcher[event.player.username.lowercase()] = event.player.uniqueId
             nameHistory.add(System.currentTimeMillis() to event.player.username)
-            ipHistory.add(System.currentTimeMillis() to event.player.remoteAddress.address.hostAddress)
             lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
+            sessions.add(System.currentTimeMillis() to session)
         })
     }
 
     @Subscribe
-    fun onPlayerDisconnect(event: DisconnectEvent) {
+    fun onPlayerDisconnect(event: DisconnectEvent) = runBlocking {
+        val player = runBlocking {
+            playerManager.getPlayerByUUID(
+                event.player.uniqueId
+            )
+        }
+        if (player != null) {
+            val session = player.getCurrentSession()
+            if(session != null){
+                session.end = System.currentTimeMillis()
+                if(session.getDuration() < 5.seconds.inWholeMilliseconds)
+                    player.sessions.removeIf { it == session }
+            }
+            player.update()
+        }
         playerManager.onlineFetcher.remove(event.player.uniqueId)
     }
 }

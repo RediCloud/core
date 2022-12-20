@@ -14,29 +14,37 @@ data class Player(
     override var name: String,
     override var languageID: Int = 0,
     override var coins: Long = 0,
-    override var currentlyOnline: Boolean = false
+    override var connected: Boolean = false
 ) : IPlayer, AbstractDataObject() {
     companion object {
-        val INVALID = NetworkComponentInfo(NetworkComponentType.STANDALONE, UUID(0, 0))
+        val INVALID_ID = UUID(0, 0)
+        val INVALID_SERVICE = NetworkComponentInfo(NetworkComponentType.STANDALONE, INVALID_ID)
+        val INVALID_IP = "UNKNOWN"
     }
-    override var lastServer: NetworkComponentInfo = INVALID
-    override var lastProxy: NetworkComponentInfo = INVALID
+    override var lastServer: NetworkComponentInfo = INVALID_SERVICE
+    override var lastProxy: NetworkComponentInfo = INVALID_SERVICE
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
-    override val ipHistory: MutableList<Pair<Long, String>> = mutableListOf()
-
+    override val sessions: MutableList<Pair<Long, IPlayerSession>> = mutableListOf()
     private val cacheHandler = object: AbstractCacheHandler() {
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
             setOf(lastServer)
     }
-
     private val validator = object: ICacheValidator<AbstractDataObject> {
         override fun isValid(): Boolean {
             return lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
         }
     }
+
     override suspend fun update(): Player =
         ICoreAPI.getInstance<CoreAPI>().getPlayerManager().updatePlayer(this)
 
+    override fun getCurrentSession(): PlayerSession? {
+        val session = sessions.lastOrNull()?.second ?: return null
+        return if(session.isActive()) session as PlayerSession else null
+    }
+
+    override fun getLastSession(): PlayerSession =
+        sessions.lastOrNull()?.second as PlayerSession
 
     override fun getIdentifier(): UUID =
         uuid
@@ -47,7 +55,12 @@ data class Player(
     override fun getValidator(): ICacheValidator<AbstractDataObject> =
         validator
 
-    override fun getLastIp(): String =
-        ipHistory.last().second
+    override fun isOnline(): Boolean =
+        when(ICoreAPI.INSTANCE.getNetworkComponentInfo().type) {
+            NetworkComponentType.STANDALONE -> connected
+            NetworkComponentType.VELOCITY -> lastProxy == ICoreAPI.INSTANCE.getNetworkComponentInfo()
+            NetworkComponentType.MINESTOM -> lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
+            NetworkComponentType.PAPER -> lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
+    }
 
 }

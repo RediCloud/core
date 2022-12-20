@@ -14,7 +14,7 @@ interface IPlayer {
 
     var coins: Long
 
-    var currentlyOnline: Boolean
+    var connected: Boolean
 
     var lastServer: NetworkComponentInfo
 
@@ -22,7 +22,12 @@ interface IPlayer {
 
     val nameHistory: MutableList<Pair<Long, String>>
 
-    val ipHistory: MutableList<Pair<Long, String>>
+    val sessions: MutableList<Pair<Long, IPlayerSession>>
 
-    fun getLastIp(): String
+    fun isOnline(): Boolean
+
+    fun getCurrentSession(): IPlayerSession?
+
+    fun getLastSession(): IPlayerSession?
+
 }
