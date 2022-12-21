@@ -15,18 +15,6 @@ class UpdatableBCrypt(
         return BCrypt.checkpw(password, hash)
     }
 
-    fun verifyAndUpdateHash(password: String?, hash: String, updateFunc: Function<String?, Boolean>): Boolean {
-        if (BCrypt.checkpw(password, hash)) {
-            val rounds = getRounds(hash)
-            if (rounds != logRounds) {
-                val newHash = hash(password)
-                return updateFunc.apply(newHash)
-            }
-            return true
-        }
-        return false
-    }
-
     private fun getRounds(salt: String): Int {
         var minor = 0.toChar()
         var off = 0
