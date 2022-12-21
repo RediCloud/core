@@ -13,7 +13,7 @@ import net.dustrean.api.velocity.config.PlayerAuthConfig
 class ChangePasswordCommand : Command(
     commandName = "changepassword",
     commandDescription = "Change your password",
-    commandAliases = arrayOf("cp")
+    commandAliases = arrayOf("cp", "changepw", "cpw")
 ) {
 
 
