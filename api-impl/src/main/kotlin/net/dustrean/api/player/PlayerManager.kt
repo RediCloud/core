@@ -18,12 +18,12 @@ class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player
     }
 
     private val scope = CoroutineScope(Dispatchers.IO)
-    val nameFetcher = core.getRedisConnection().getRedissonClient().getLocalCachedMap(
+    override val nameFetcher = core.getRedisConnection().getRedissonClient().getLocalCachedMap(
         "fetcher:player_name",
         LocalCachedMapOptions.defaults<String, UUID>().storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
             .syncStrategy(LocalCachedMapOptions.SyncStrategy.UPDATE)
     )
-    val onlineFetcher = core.getRedisConnection().getRedissonClient().getList<UUID>("fetcher:player_online")
+    override val onlineFetcher = core.getRedisConnection().getRedissonClient().getList<UUID>("fetcher:player_online")
 
     override suspend fun getPlayerByUUID(uuid: UUID): IPlayer? = try {
         getObject(uuid)
