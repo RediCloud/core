@@ -34,7 +34,7 @@ interface ICoreAPI {
 
     fun getEventManager(): IEventManager
 
-    fun getCommandManager(): ICommandManager? = null
+    fun getCommandManager(): ICommandManager
 
     fun getNetworkComponentManager(): INetworkComponentManager
 
