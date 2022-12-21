@@ -5,6 +5,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.dustrean.api.velocity.VelocityCoreAPI;
 import net.dustrean.libloader.boot.Bootstrap;
@@ -33,7 +34,7 @@ public class VelocityBootstrap {
 
     @Subscribe
     public void onInit(ProxyInitializeEvent event) {
-        VelocityCoreAPI.INSTANCE.init(this.proxyServer);
+        VelocityCoreAPI.INSTANCE.init(this.proxyServer, (PluginContainer) this);
     }
 
     @Subscribe
