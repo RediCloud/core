@@ -23,6 +23,9 @@ import net.dustrean.api.player.PlayerSession
 import net.dustrean.api.utils.extension.isPremium
 import net.dustrean.api.utils.fetcher.WebUniqueIdFetcher
 import net.dustrean.api.velocity.VelocityCoreAPI
+import net.dustrean.api.velocity.command.impl.ChangePasswordCommand
+import net.dustrean.api.velocity.command.impl.LoginCommand
+import net.dustrean.api.velocity.command.impl.RegisterCommand
 import net.dustrean.api.velocity.config.PlayerAuthConfig
 import net.kyori.adventure.text.Component
 import java.io.IOException
@@ -32,12 +35,17 @@ import kotlin.time.Duration.Companion.seconds
 
 class PlayerEvents(private val playerManager: PlayerManager) {
 
-    private lateinit var authConfig: PlayerAuthConfig
+    private var authConfig: PlayerAuthConfig
     private val namePattern = Pattern.compile("^[a-zA-Z0-9_]{2,16}$")
 
     init {
         runBlocking {
-            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig<PlayerAuthConfig>("player-authentication")
+            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig("player-authentication")
+            if(authConfig.crackAllowed) {
+                ICoreAPI.INSTANCE.getCommandManager().registerCommand(RegisterCommand())
+                ICoreAPI.INSTANCE.getCommandManager().registerCommand(LoginCommand())
+                ICoreAPI.INSTANCE.getCommandManager().registerCommand(ChangePasswordCommand())
+            }
         }
     }
 
