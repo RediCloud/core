@@ -9,5 +9,6 @@ class PlayerAuthConfig(override val key: String) : IConfig {
     val maxPasswordLength = 18
     val passwordCanContainsPlayerName = false
     val verifyTask = "Verify"
+    val passwordRounds = 10
 
 }
