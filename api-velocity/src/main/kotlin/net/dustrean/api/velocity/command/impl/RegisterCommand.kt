@@ -28,9 +28,9 @@ class RegisterCommand : Command("register", commandDescription = "Register your 
     fun register(
         actor: ICommandActor,
         @CommandArgument("<password>") password: String,
-        @CommandArgument("<password>") passwordConfirm: String
+        @CommandArgument("<passwordConfirm>") passwordConfirm: String
     ) = runBlocking {
-        if (VelocityCoreAPI.getPlayerManager().isCached(actor.uuid)) {
+        if (VelocityCoreAPI.getPlayerManager().existsObject(actor.uuid)) {
             actor.sendMessage("§cYou are already registered!")
             return@runBlocking
         }

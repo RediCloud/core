@@ -6,14 +6,10 @@ import com.velocitypowered.api.event.connection.DisconnectEvent
 import com.velocitypowered.api.event.connection.LoginEvent
 import com.velocitypowered.api.event.connection.PostLoginEvent
 import com.velocitypowered.api.event.connection.PreLoginEvent
-import com.velocitypowered.api.event.player.ServerPostConnectEvent
 import com.velocitypowered.api.event.player.ServerPreConnectEvent
-import com.velocitypowered.api.proxy.ServerConnection
-import eu.cloudnetservice.modules.bridge.player.executor.ServerSelectorType
 import kotlinx.coroutines.runBlocking
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
-import net.dustrean.api.cloud.utils.getCloudPlayerManager
 import net.dustrean.api.cloud.utils.getCloudServiceProvider
 import net.dustrean.api.cloud.utils.getCloudTaskProvider
 import net.dustrean.api.player.Player
@@ -29,7 +25,6 @@ import net.dustrean.api.velocity.command.impl.RegisterCommand
 import net.dustrean.api.velocity.config.PlayerAuthConfig
 import net.kyori.adventure.text.Component
 import java.io.IOException
-import java.util.*
 import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.seconds
 
@@ -157,26 +152,17 @@ class PlayerEvents(private val playerManager: PlayerManager) {
     @Subscribe(order = PostOrder.FIRST)
     fun onPreServerConnect(event: ServerPreConnectEvent) {
         val target = event.originalServer
-        var loggedIn = false
-        if(ICoreAPI.getInstance<VelocityCoreAPI>().getPlayerManager().isCached(event.player.uniqueId)){
-            val player = ICoreAPI.getInstance<VelocityCoreAPI>().getPlayerManager().getCache(event.player.uniqueId)!!
-            loggedIn = player.authentication.isLoggedIn(player)
+    val player = runBlocking {
+            ICoreAPI.getInstance<VelocityCoreAPI>().getPlayerManager().getPlayerByUUID(event.player.uniqueId)
         }
-        if(loggedIn) return
+        if(player?.authentication?.isLoggedIn(player) == true) return
         if(!target.serverInfo.name.startsWith(authConfig.verifyTask)){
             val task = getCloudTaskProvider().serviceTask(authConfig.verifyTask)
-            if(task == null){
+            if(task == null || getCloudServiceProvider().servicesByTask(authConfig.verifyTask).isEmpty()){
                 event.player.sendMessage(Component.text("§cThe authentication server is currently not available!"))
                 event.result = ServerPreConnectEvent.ServerResult.denied()
                 return
             }
-            if(getCloudServiceProvider().servicesByTask(authConfig.verifyTask).isEmpty()){
-                event.player.sendMessage(Component.text("§cThe authentication server is currently not available!"))
-                event.result = ServerPreConnectEvent.ServerResult.denied()
-                return
-            }
-            getCloudPlayerManager().playerExecutor(event.player.uniqueId).connectToTask(authConfig.verifyTask, ServerSelectorType.LOWEST_PLAYERS)
-            return
         }
     }
 
