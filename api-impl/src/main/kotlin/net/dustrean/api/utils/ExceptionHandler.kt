@@ -12,9 +12,9 @@ object ExceptionHandler {
     private val client = HttpClient.newHttpClient()
     private val gson = Gson()
 
-    private val service = "undefined"
-    private val hasteURL = System.getenv("EXCEPTION_HASTE_URL")
-    private val webhookURL = URL(System.getenv("EXCEPTION_SERVICE_WEB_HOOK_URL"))
+    var service = "undefined"
+    var hasteURL = System.getenv("EXCEPTION_HASTE_URL")
+    var webhookURL = URL(System.getenv("EXCEPTION_SERVICE_WEB_HOOK_URL"))
 
     init {
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
