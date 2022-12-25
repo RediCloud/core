@@ -6,14 +6,16 @@ import net.minestom.server.extensions.Extension
 import net.minestom.server.extensions.ExtensionClassLoader
 
 class MinestomBootstrap : Extension() {
-
-    override fun initialize() {
+    override fun preInitialize() {
         val classloader = this.javaClass.superclass.getDeclaredMethod(
             "getExtensionClassLoader"
         ).apply { isAccessible = true }.invoke(this) as ExtensionClassLoader
         Bootstrap().apply({
             classloader.addURL(it)
-        }, classloader, classloader);
+        }, classloader, classloader)
+    }
+
+    override fun initialize() {
         MinestomCoreAPI.init()
     }
 
