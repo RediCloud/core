@@ -1,5 +1,7 @@
 package net.dustrean.api.redis
 
+import net.dustrean.api.CoreAPI
+import net.dustrean.api.ICoreAPI
 import net.dustrean.api.redis.codec.GsonCodec
 import org.redisson.Redisson
 import org.redisson.api.RedissonClient
@@ -27,7 +29,7 @@ class RedisConnection(
             .password = credentials.password
 
 
-        config.codec = GsonCodec()
+        config.codec = GsonCodec(ICoreAPI::class.java.classLoader)
 
         redisClient = Redisson.create(config)
     }
