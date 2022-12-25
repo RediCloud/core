@@ -14,15 +14,25 @@ interface IPlayer {
 
     var coins: Long
 
-    var currentlyOnline: Boolean
+    var connected: Boolean
 
     var lastServer: NetworkComponentInfo
 
     var lastProxy: NetworkComponentInfo
 
+    var authentication: IPlayerAuthentication
+
     val nameHistory: MutableList<Pair<Long, String>>
 
-    val ipHistory: MutableList<Pair<Long, String>>
+    val sessions: MutableList<IPlayerSession>
 
-    fun getLastIp(): String
+
+    fun isOnCurrent(): Boolean
+
+    fun getCurrentSession(): IPlayerSession?
+
+    fun getLastSession(): IPlayerSession?
+
+    suspend fun connect(service: NetworkComponentInfo)
+
 }

@@ -6,7 +6,7 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     println("Starting API Standalone...")
-    val coreAPI = StandaloneCoreAPI()
+    val coreAPI = StandaloneCoreAPI
     println("API Standalone started!")
     while (true) {
         try {

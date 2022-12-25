@@ -32,7 +32,7 @@ class DefaultCommandMeta(
     }
 
     override fun getPlugin(): Any {
-        return VelocityCoreAPI
+        return VelocityCoreAPI.pluginContainer
     }
 
 }

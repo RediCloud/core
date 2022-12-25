@@ -4,19 +4,26 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractDataManager
+import net.dustrean.api.packet.PacketManager
+import net.dustrean.api.packet.connect.PlayerChangeServicePacket
 import org.redisson.api.LocalCachedMapOptions
 import java.util.*
 
 class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player>(
     "player", core.getRedisConnection(), Player::class.java
 ) {
+
+    init {
+        PacketManager.INSTANCE.registerPacket(PlayerChangeServicePacket())
+    }
+
     private val scope = CoroutineScope(Dispatchers.IO)
-    val nameFetcher = core.getRedisConnection().getRedissonClient().getLocalCachedMap(
+    override val nameFetcher = core.getRedisConnection().getRedissonClient().getLocalCachedMap(
         "fetcher:player_name",
         LocalCachedMapOptions.defaults<String, UUID>().storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
             .syncStrategy(LocalCachedMapOptions.SyncStrategy.UPDATE)
     )
-    val onlineFetcher = core.getRedisConnection().getRedissonClient().getList<UUID>("fetcher:player_online")
+    override val onlineFetcher = core.getRedisConnection().getRedissonClient().getList<UUID>("fetcher:player_online")
 
     override suspend fun getPlayerByUUID(uuid: UUID): IPlayer? = try {
         getObject(uuid)
