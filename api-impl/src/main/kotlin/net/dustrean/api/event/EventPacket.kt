@@ -7,7 +7,7 @@ class EventPacket : Packet() {
     lateinit var event: CoreEvent
 
     override fun received() {
-        net.dustrean.api.event.EventManager.INSTANCE.callEvent0(event, true)
+        EventManager.INSTANCE.callEvent0(event, true)
     }
 
 

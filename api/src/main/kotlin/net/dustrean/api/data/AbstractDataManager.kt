@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.packet.DataActionType
 import net.dustrean.api.data.packet.DataObjectPacket
@@ -14,9 +17,7 @@ import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.redis.IRedisConnection
 import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
 import org.slf4j.LoggerFactory
-import reactor.core.publisher.whenComplete
 import java.util.*
-import kotlin.NoSuchElementException
 
 abstract class AbstractDataManager<T : AbstractDataObject>(
     private val prefix: String,
@@ -142,7 +143,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         }
         val key = "$prefix:$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        if(!bucket.isExists) throw NoSuchElementException("Object with identifier $identifier does not exist!")
+        if (!bucket.isExists) throw NoSuchElementException("Object with identifier $identifier does not exist!")
         val dataObject = bucket.get()
         if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
             cachedObjects[dataObject.getIdentifier()] = dataObject
@@ -160,7 +161,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
     override suspend fun createObject(dataObject: T): T {
         val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        if(existsObject(dataObject.getIdentifier())) throw IllegalArgumentException("Object with identifier ${dataObject.getIdentifier()} already exists!")
+        if (existsObject(dataObject.getIdentifier())) throw IllegalArgumentException("Object with identifier ${dataObject.getIdentifier()} already exists!")
         bucket.set(dataObject)
         if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
             cachedObjects[dataObject.getIdentifier()] = dataObject
@@ -223,7 +224,11 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
             cachedObjects[dataObject.getIdentifier()] = dataObject
             cacheScope.launch {
-                sendPacket(dataObject.getIdentifier(), DataCacheActionType.ADDED, dataObject.getCacheHandler().getCacheNetworkComponents())
+                sendPacket(
+                    dataObject.getIdentifier(),
+                    DataCacheActionType.ADDED,
+                    dataObject.getCacheHandler().getCacheNetworkComponents()
+                )
             }
             return dataObject
         }

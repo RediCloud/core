@@ -1,9 +1,5 @@
 package net.dustrean.api.packet
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import net.dustrean.api.packet.response.PacketResponse
 import org.redisson.api.RFuture
 

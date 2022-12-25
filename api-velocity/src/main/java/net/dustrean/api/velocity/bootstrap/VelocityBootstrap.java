@@ -16,11 +16,11 @@ import java.net.URISyntaxException;
 import java.net.URLClassLoader;
 
 @Plugin(
-        id = "core",
-        name = "core",
-        version = "1.0.0-SNAPSHOT",
-        description = "Core plugin for the Dustrean API",
-        authors = "Dustrean-Team"
+    id = "core",
+    name = "core",
+    version = "1.0.0-SNAPSHOT",
+    description = "Core plugin for the Dustrean API",
+    authors = "Dustrean-Team"
 )
 public class VelocityBootstrap {
 

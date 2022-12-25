@@ -28,9 +28,9 @@ class ChangePasswordCommand : Command(
     @CommandSubPath
     fun handle(
         actor: ICommandActor,
-       @CommandArgument("<old-password>") oldPassword: String,
-       @CommandArgument("<new-password>") newPassword: String
-    ) = runBlocking{
+        @CommandArgument("<old-password>") oldPassword: String,
+        @CommandArgument("<new-password>") newPassword: String
+    ) = runBlocking {
         if (!authConfig.crackAllowed) {
             actor.sendMessage("§cCrack mode is currently disabled!")
             return@runBlocking
@@ -45,10 +45,10 @@ class ChangePasswordCommand : Command(
             actor.sendMessage("§cYou are not registered!")
             return@runBlocking
         }
-        if(player.authentication.crypt == null){
+        if (player.authentication.crypt == null) {
             player.authentication.crypt = UpdatableBCrypt(authConfig.passwordRounds)
         }
-        if(!player.authentication.crypt!!.verifyHash(oldPassword, player.authentication.passwordHash)){
+        if (!player.authentication.crypt!!.verifyHash(oldPassword, player.authentication.passwordHash)) {
             actor.sendMessage("§cWrong password!")
             return@runBlocking
         }

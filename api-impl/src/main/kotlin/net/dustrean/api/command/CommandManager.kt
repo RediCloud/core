@@ -10,6 +10,9 @@ import net.dustrean.api.command.data.CommandParameterData
 import net.dustrean.api.utils.parser.string.StringParser
 import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 import kotlin.reflect.jvm.kotlinFunction
 
 @DelicateCoroutinesApi
@@ -115,7 +118,7 @@ abstract class CommandManager : ICommandManager {
             }
         }
 
-        return suggestions.filter { it.toLowerCase().startsWith(messageArray.last().toLowerCase()) }
+        return suggestions.filter { it.lowercase(Locale.getDefault()).startsWith(messageArray.last().lowercase(Locale.getDefault())) }
     }
 
     fun loadSubCommands(command: ICommand) {

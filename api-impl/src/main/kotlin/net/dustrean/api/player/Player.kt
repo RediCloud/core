@@ -22,16 +22,17 @@ data class Player(
         val INVALID_SERVICE = NetworkComponentInfo(NetworkComponentType.STANDALONE, INVALID_ID)
         val INVALID_IP = "UNKNOWN"
     }
+
     override var lastServer: NetworkComponentInfo = INVALID_SERVICE
     override var lastProxy: NetworkComponentInfo = INVALID_SERVICE
     override var authentication: IPlayerAuthentication = PlayerAuthentication()
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
     override val sessions: MutableList<IPlayerSession> = mutableListOf()
-    private val cacheHandler = object: AbstractCacheHandler() {
+    private val cacheHandler = object : AbstractCacheHandler() {
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
             setOf(lastServer)
     }
-    private val validator = object: ICacheValidator<AbstractDataObject> {
+    private val validator = object : ICacheValidator<AbstractDataObject> {
         override fun isValid(): Boolean {
             return lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
         }
@@ -42,7 +43,7 @@ data class Player(
 
     override fun getCurrentSession(): PlayerSession? {
         val session = sessions.lastOrNull() ?: return null
-        return if(session.isActive()) session as PlayerSession else null
+        return if (session.isActive()) session as PlayerSession else null
     }
 
     override fun getLastSession(): PlayerSession? {
@@ -61,15 +62,15 @@ data class Player(
         validator
 
     override fun isOnCurrent(): Boolean =
-        when(ICoreAPI.INSTANCE.getNetworkComponentInfo().type) {
+        when (ICoreAPI.INSTANCE.getNetworkComponentInfo().type) {
             NetworkComponentType.STANDALONE -> connected
             NetworkComponentType.VELOCITY -> lastProxy == ICoreAPI.INSTANCE.getNetworkComponentInfo()
             NetworkComponentType.MINESTOM -> lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
             NetworkComponentType.PAPER -> lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
-    }
+        }
 
     override suspend fun connect(service: NetworkComponentInfo) {
-        if(!connected) return
+        if (!connected) return
         val packet = PlayerChangeServicePacket().apply {
             this.uniqueId = uuid
             this.networkComponentInfo = service

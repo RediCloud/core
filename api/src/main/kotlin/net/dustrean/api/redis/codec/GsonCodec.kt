@@ -18,10 +18,11 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 class GsonCodec : BaseCodec() {
-    private val gson: Gson = GsonBuilder().setExclusionStrategies(object: ExclusionStrategy {
+    private val gson: Gson = GsonBuilder().setExclusionStrategies(object : ExclusionStrategy {
         override fun shouldSkipField(p0: FieldAttributes?): Boolean {
             return p0?.getAnnotation(Expose::class.java)?.serialize == false
         }
+
         override fun shouldSkipClass(p0: Class<*>?): Boolean = false
     }).create()
     private val classMap: MutableMap<String, Class<*>?> = ConcurrentHashMap()

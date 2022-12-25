@@ -1,6 +1,5 @@
 package net.dustrean.api.player
 
-import com.google.gson.annotations.Expose
 import net.dustrean.api.utils.crypt.UpdatableBCrypt
 
 interface IPlayerAuthentication {

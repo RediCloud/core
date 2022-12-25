@@ -7,7 +7,7 @@ import org.redisson.config.Config
 
 class RedisConnection(
     private val configuration: RedisConfiguration = RedisConfiguration()
-): IRedisConnection{
+) : IRedisConnection {
     lateinit var redisClient: RedissonClient
     private val credentials = configuration.credentials
 

@@ -3,7 +3,7 @@ package net.dustrean.api.data
 import java.io.Serializable
 import java.util.*
 
-abstract class AbstractDataObject() : Serializable {
+abstract class AbstractDataObject : Serializable {
 
     abstract suspend fun update(): AbstractDataObject
 

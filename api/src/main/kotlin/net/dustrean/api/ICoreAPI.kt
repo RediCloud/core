@@ -15,7 +15,7 @@ interface ICoreAPI {
     companion object {
         lateinit var INSTANCE: ICoreAPI
 
-        fun <T : ICoreAPI> getInstance() : T {
+        fun <T : ICoreAPI> getInstance(): T {
             return INSTANCE as T
         }
     }

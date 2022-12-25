@@ -3,9 +3,9 @@ package net.dustrean.api.velocity.command
 import com.velocitypowered.api.proxy.Player
 import eu.cloudnetservice.modules.bridge.player.CloudPlayer
 import kotlinx.coroutines.DelicateCoroutinesApi
-import net.dustrean.api.command.ICommandActor
 import net.dustrean.api.command.CommandManager
 import net.dustrean.api.command.ICommand
+import net.dustrean.api.command.ICommandActor
 import net.dustrean.api.velocity.VelocityCoreAPI
 
 @OptIn(DelicateCoroutinesApi::class)

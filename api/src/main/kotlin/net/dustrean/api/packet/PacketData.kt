@@ -1,13 +1,13 @@
 package net.dustrean.api.packet
 
-import net.dustrean.api.network.NetworkComponentInfo
-import net.dustrean.api.packet.response.PacketResponse
 import com.google.gson.annotations.Expose
 import kotlinx.coroutines.CompletableDeferred
+import net.dustrean.api.network.NetworkComponentInfo
+import net.dustrean.api.packet.response.PacketResponse
 import java.io.Serializable
 import java.util.*
 
-class PacketData : Serializable{
+class PacketData : Serializable {
     val packetId: UUID = UUID.randomUUID()
     lateinit var senderComponent: NetworkComponentInfo
     val receiverComponent: MutableSet<NetworkComponentInfo> = mutableSetOf()

@@ -1,6 +1,5 @@
 package net.dustrean.api.network
 
-import org.redisson.api.RList
 import org.redisson.api.RMap
 import java.util.*
 

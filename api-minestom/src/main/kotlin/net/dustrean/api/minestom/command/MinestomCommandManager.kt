@@ -4,9 +4,9 @@ package net.dustrean.api.minestom.command
 
 import eu.cloudnetservice.modules.bridge.player.CloudPlayer
 import kotlinx.coroutines.DelicateCoroutinesApi
-import net.dustrean.api.command.ICommandActor
 import net.dustrean.api.command.CommandManager
 import net.dustrean.api.command.ICommand
+import net.dustrean.api.command.ICommandActor
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 

@@ -17,11 +17,11 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
     }
 
     override suspend fun <T : IConfig> getConfig(key: String): T {
-        if(cache.any { it.key == key }) {
+        if (cache.any { it.key == key }) {
             return cache.first { it.key == key } as T
         }
         val bucket = redisConnection.redisClient.getBucket<ConfigData>("config:$key")
-        if(!bucket.isExists) throw NoSuchElementException("Config with key $key does not exists")
+        if (!bucket.isExists) throw NoSuchElementException("Config with key $key does not exists")
         val configData = bucket.get()
         val config = gson.fromJson(configData.json, Class.forName(configData.clazz))
         cache.add(config as IConfig)
@@ -30,7 +30,7 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
 
     override suspend fun <T : IConfig> createConfig(config: T): T {
         val bucket = redisConnection.redisClient.getBucket<ConfigData>("config:${config.key}")
-        if(bucket.isExists) throw IllegalArgumentException("Config with key ${config.key} already exists")
+        if (bucket.isExists) throw IllegalArgumentException("Config with key ${config.key} already exists")
         val configData = ConfigData(gson.toJson(config), config.javaClass.name)
         bucket.set(configData)
         cache.add(config)
@@ -39,7 +39,7 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
 
     override suspend fun deleteConfig(key: String) {
         val bucket = redisConnection.redisClient.getBucket<ConfigData>("config:$key")
-        if(!bucket.isExists) throw NoSuchElementException("Config with key $key does not exist")
+        if (!bucket.isExists) throw NoSuchElementException("Config with key $key does not exist")
         bucket.delete()
         cache.removeIf { it.key == key }
         val packet = ConfigUpdatePacket()
@@ -47,8 +47,8 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
         packet.delete = true
         packet.configData = ConfigData("", "")
         ICoreAPI.INSTANCE.getNetworkComponentManager().getComponentInfos().forEach {
-            if(it == ICoreAPI.INSTANCE.getNetworkComponentInfo())
-            packet.packetData.addReceiver(it)
+            if (it == ICoreAPI.INSTANCE.getNetworkComponentInfo())
+                packet.packetData.addReceiver(it)
         }
         packet.sendPacket()
     }
@@ -57,7 +57,7 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
 
     override suspend fun <T : IConfig> saveConfig(config: T) {
         val bucket = redisConnection.redisClient.getBucket<ConfigData>("config:${config.key}")
-        if(!bucket.isExists) throw NoSuchElementException("Config with key ${config.key} does not exist")
+        if (!bucket.isExists) throw NoSuchElementException("Config with key ${config.key} does not exist")
         val configData = ConfigData(gson.toJson(config), config.javaClass.name)
         bucket.set(configData)
         cache.add(config)

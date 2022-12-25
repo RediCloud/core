@@ -2,7 +2,7 @@ package net.dustrean.api.data.packet
 
 import net.dustrean.api.data.AbstractDataManager
 import net.dustrean.api.packet.Packet
-import java.util.UUID
+import java.util.*
 
 class DataObjectPacket : Packet() {
 
@@ -12,9 +12,9 @@ class DataObjectPacket : Packet() {
     lateinit var managerPrefix: String
 
     override fun received() {
-        if(!AbstractDataManager.MANAGERS.containsKey(managerPrefix)) return
+        if (!AbstractDataManager.MANAGERS.containsKey(managerPrefix)) return
         val manager = AbstractDataManager.MANAGERS[managerPrefix]!!
-        when(type) {
+        when (type) {
             DataActionType.UPDATE -> manager.deserialize(identifier, json)
             DataActionType.CREATE -> manager.deserialize(identifier, json)
             DataActionType.DELETE -> {
