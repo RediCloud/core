@@ -24,7 +24,7 @@ object CoinsCommand : TestCommand() {
         println("Command without arguments: ${player.uuid}")
     }
 
-    @CommandSubPath("<amount>", "nsg.staff")
+    @CommandSubPath("<amount>", "dustrean.staff")
     fun get(player: ICommandActor, @CommandArgument("amount") test: Int) {
 
         println("Command with arguments: ${player.uuid} $test")
