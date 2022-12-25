@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.dustrean.api.redis.codec.GsonCodec;
 import net.dustrean.api.velocity.VelocityCoreAPI;
 import net.dustrean.libloader.boot.Bootstrap;
 import net.dustrean.libloader.boot.loaders.URLClassLoaderJarLoader;
@@ -35,6 +36,7 @@ public class VelocityBootstrap {
     @Subscribe
     public void onInit(ProxyInitializeEvent event) {
         VelocityCoreAPI.INSTANCE.init(this.proxyServer, (PluginContainer) this);
+        ((GsonCodec) VelocityCoreAPI.INSTANCE.getRedisConnection().redisClient.getConfig().getCodec()).getClassLoaders().add(this.getClass().getClassLoader());
     }
 
     @Subscribe

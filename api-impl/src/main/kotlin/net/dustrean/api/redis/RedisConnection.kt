@@ -29,7 +29,7 @@ class RedisConnection(
             .password = credentials.password
 
 
-        config.codec = GsonCodec(ICoreAPI::class.java.classLoader)
+        config.codec = GsonCodec(mutableListOf(ICoreAPI::class.java.classLoader))
 
         redisClient = Redisson.create(config)
     }

@@ -17,7 +17,7 @@ import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
 
-class GsonCodec(private val classLoader: ClassLoader) : BaseCodec() {
+class GsonCodec(val classLoaders: MutableList<ClassLoader>) : BaseCodec() {
     private val gson: Gson = GsonBuilder().setExclusionStrategies(object : ExclusionStrategy {
         override fun shouldSkipField(p0: FieldAttributes?): Boolean {
             return p0?.getAnnotation(Expose::class.java)?.serialize == false
@@ -64,7 +64,15 @@ class GsonCodec(private val classLoader: ClassLoader) : BaseCodec() {
                 clazz = try {
                     Class.forName(name)
                 } catch (e: ClassNotFoundException) {
-                    Class.forName(name, true, classLoader)
+                    let {
+                        for (classLoader in classLoaders) {
+                            try {
+                                return@let classLoader.loadClass(name)
+                            } catch (ignored: ClassNotFoundException) {
+                            }
+                        }
+                        throw e
+                    }
                 }
                 classMap[name] = clazz
             } catch (e: ClassNotFoundException) {
