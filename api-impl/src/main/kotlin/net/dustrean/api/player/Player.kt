@@ -21,13 +21,12 @@ data class Player(
         val INVALID_ID = UUID(0, 0)
         val INVALID_SERVICE = NetworkComponentInfo(NetworkComponentType.STANDALONE, INVALID_ID)
         val INVALID_IP = "UNKNOWN"
-        val INVALID_AUTHENTICATION = PlayerAuthentication()
     }
     override var lastServer: NetworkComponentInfo = INVALID_SERVICE
     override var lastProxy: NetworkComponentInfo = INVALID_SERVICE
-    override var authentication: IPlayerAuthentication = INVALID_AUTHENTICATION
+    override var authentication: IPlayerAuthentication = PlayerAuthentication()
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
-    override val sessions: MutableList<Pair<Long, IPlayerSession>> = mutableListOf()
+    override val sessions: MutableList<IPlayerSession> = mutableListOf()
     private val cacheHandler = object: AbstractCacheHandler() {
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
             setOf(lastServer)
@@ -42,12 +41,15 @@ data class Player(
         ICoreAPI.getInstance<CoreAPI>().getPlayerManager().updatePlayer(this)
 
     override fun getCurrentSession(): PlayerSession? {
-        val session = sessions.lastOrNull()?.second ?: return null
+        val session = sessions.lastOrNull() ?: return null
         return if(session.isActive()) session as PlayerSession else null
     }
 
-    override fun getLastSession(): PlayerSession? =
-        sessions.lastOrNull()?.second as PlayerSession ?: null
+    override fun getLastSession(): PlayerSession? {
+        val session = sessions.lastOrNull { !it.isActive() } ?: return null
+        return session as PlayerSession
+    }
+
 
     override fun getIdentifier(): UUID =
         uuid
@@ -58,7 +60,7 @@ data class Player(
     override fun getValidator(): ICacheValidator<AbstractDataObject> =
         validator
 
-    override fun isOnline(): Boolean =
+    override fun isOnCurrent(): Boolean =
         when(ICoreAPI.INSTANCE.getNetworkComponentInfo().type) {
             NetworkComponentType.STANDALONE -> connected
             NetworkComponentType.VELOCITY -> lastProxy == ICoreAPI.INSTANCE.getNetworkComponentInfo()

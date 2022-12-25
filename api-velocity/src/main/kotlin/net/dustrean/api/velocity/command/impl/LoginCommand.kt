@@ -69,7 +69,7 @@ class LoginCommand : Command("login", commandDescription = "Login to your accoun
         player.authentication.lastVerify = System.currentTimeMillis()
         player.lastProxy = ICoreAPI.getInstance<CoreAPI>().getNetworkComponentInfo()
         player.connected = true
-        player.sessions.add(System.currentTimeMillis() to session)
+        player.sessions.add(session)
         player.update()
 
         actor.sendMessage("§aYou are now logged in!")

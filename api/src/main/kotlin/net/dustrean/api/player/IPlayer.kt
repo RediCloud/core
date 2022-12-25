@@ -24,10 +24,10 @@ interface IPlayer {
 
     val nameHistory: MutableList<Pair<Long, String>>
 
-    val sessions: MutableList<Pair<Long, IPlayerSession>>
+    val sessions: MutableList<IPlayerSession>
 
 
-    fun isOnline(): Boolean
+    fun isOnCurrent(): Boolean
 
     fun getCurrentSession(): IPlayerSession?
 

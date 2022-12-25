@@ -17,6 +17,6 @@ class PlayerSession : IPlayerSession, Serializable {
         else end - start
 
     override fun isActive(): Boolean =
-        end == -1L
+        end == -1L && start != -1L
 
 }

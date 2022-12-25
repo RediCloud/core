@@ -80,7 +80,7 @@ class RegisterCommand : Command("register", commandDescription = "Register your 
                 this.proxyId = VelocityCoreAPI.getNetworkComponentInfo()
             }
             this.authentication = authentication
-            this.sessions.add(System.currentTimeMillis() to session)
+            this.sessions.add(session)
             this.lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
             nameHistory.add(System.currentTimeMillis() to proxyPlayer.username)
         }

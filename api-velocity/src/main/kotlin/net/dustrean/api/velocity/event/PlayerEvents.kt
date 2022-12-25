@@ -125,7 +125,7 @@ class PlayerEvents(private val playerManager: PlayerManager) {
             player.authentication = authentication
             player.lastProxy = ICoreAPI.getInstance<CoreAPI>().getNetworkComponentInfo()
             player.connected = true
-            player.sessions.add(System.currentTimeMillis() to session)
+            player.sessions.add(session)
             player.update()
             return@j
         }
@@ -136,7 +136,7 @@ class PlayerEvents(private val playerManager: PlayerManager) {
             nameHistory.add(System.currentTimeMillis() to event.player.username)
             this.authentication = authentication
             lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
-            sessions.add(System.currentTimeMillis() to session)
+            sessions.add(session)
         })
     }
 
@@ -152,8 +152,8 @@ class PlayerEvents(private val playerManager: PlayerManager) {
     @Subscribe(order = PostOrder.FIRST)
     fun onPreServerConnect(event: ServerPreConnectEvent) {
         val target = event.originalServer
-    val player = runBlocking {
-            ICoreAPI.getInstance<VelocityCoreAPI>().getPlayerManager().getPlayerByUUID(event.player.uniqueId)
+        val player = runBlocking {
+            ICoreAPI.INSTANCE.getPlayerManager().getPlayerByUUID(event.player.uniqueId)
         }
         if(player?.authentication?.isLoggedIn(player) == true) return
         if(!target.serverInfo.name.startsWith(authConfig.verifyTask)){
