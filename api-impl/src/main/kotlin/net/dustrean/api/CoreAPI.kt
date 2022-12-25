@@ -19,20 +19,19 @@ abstract class CoreAPI(
     private val networkComponentInfo: NetworkComponentInfo
 ) : ICoreAPI {
 
+    init {
+        ICoreAPI.INSTANCE = this
+    }
+
     private var redisConnection: RedisConnection = RedisConnection()
     private var packetManager: PacketManager = PacketManager(networkComponentInfo, redisConnection)
     private var eventManager: EventManager = EventManager()
-    private var networkComponentManager: NetworkComponentManager = NetworkComponentManager(redisConnection)
+    private var networkComponentManager: NetworkComponentManager = NetworkComponentManager(redisConnection).also {
+        it.networkComponents[networkComponentInfo.getKey()] = networkComponentInfo
+    }
     private var configManager: ConfigManager = ConfigManager(redisConnection)
     private var playerManager: PlayerManager = PlayerManager(this)
-    private var moduleManager: ModuleManager = ModuleManager(this)
-
-    init {
-        ICoreAPI.INSTANCE = this
-        networkComponentManager.networkComponents[networkComponentInfo.getKey()] = networkComponentInfo
-
-        moduleManager.enableModules()
-    }
+    private var moduleManager: ModuleManager = ModuleManager(this).also { it.enableModules() }
 
     override fun shutdown() {
         moduleManager.disableModules()
