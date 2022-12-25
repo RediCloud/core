@@ -12,7 +12,6 @@ import net.dustrean.api.network.NetworkComponentType
 import net.dustrean.api.player.IPlayerManager
 
 fun getCurrentNetworkComponent(): NetworkComponentInfo {
-
     val serviceInfo = Wrapper.instance().lastServiceInfo()
     val environment: NetworkComponentType = when (serviceInfo.serviceId().environment()) {
         ServiceEnvironmentType.MINESTOM -> NetworkComponentType.MINESTOM
