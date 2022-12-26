@@ -34,7 +34,12 @@ class PlayerEvents(private val playerManager: PlayerManager) {
 
     init {
         runBlocking {
-            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig("player-authentication")
+            authConfig = if (ICoreAPI.INSTANCE.getConfigManager()
+                    .exists("player-authentication")
+            ) ICoreAPI.INSTANCE.getConfigManager()
+                .getConfig("player-authentication") else ICoreAPI.INSTANCE.getConfigManager()
+                .createConfig(PlayerAuthConfig("player-authentication"))
+
             if (authConfig.crackAllowed) {
                 ICoreAPI.INSTANCE.getCommandManager().registerCommand(RegisterCommand())
                 ICoreAPI.INSTANCE.getCommandManager().registerCommand(LoginCommand())
