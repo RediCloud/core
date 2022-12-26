@@ -84,7 +84,7 @@ abstract class CommandManager : ICommandManager {
 
     }
 
-    fun handleTabComplete(player: ICommandActor, command: ICommand, message: String): List<String> {
+    override fun handleTabComplete(player: ICommandActor, command: ICommand, message: String): List<String> {
 
         val messageArray = message.split(" ").map { it.trim() }
         val suggestions = HashSet<String>()
