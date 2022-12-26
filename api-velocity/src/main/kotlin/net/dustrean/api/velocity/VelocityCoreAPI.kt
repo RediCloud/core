@@ -24,6 +24,6 @@ object VelocityCoreAPI : CloudCoreAPI() {
         ExceptionHandler
 
         StringParser.customTypeParsers.add(PlayerParser())
-        proxyServer.eventManager.register(this, PlayerEvents(getPlayerManager()))
+        proxyServer.eventManager.register(plugin, PlayerEvents(getPlayerManager()))
     }
 }
