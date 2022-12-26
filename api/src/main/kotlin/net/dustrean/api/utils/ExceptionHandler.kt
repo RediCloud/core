@@ -39,7 +39,7 @@ object ExceptionHandler {
                         "| |_| | |_| \\__ \\ |_| | |  __/ (_| | | | |_| | | |  __/ |_ \n" +
                         "|____/ \\__,_|___/\\__|_|  \\___|\\__,_|_| |_(_)_| |_|\\___|\\__|"
             )
-            pasteBuilder.append("Service: ${service}\n")
+            pasteBuilder.append("Service: $service\n")
             pasteBuilder.append(msg.toString())
             pasteBuilder.append("\n\n_________________________________________________________________")
 
