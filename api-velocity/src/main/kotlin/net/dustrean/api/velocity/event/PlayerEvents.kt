@@ -171,21 +171,23 @@ class PlayerEvents(private val playerManager: PlayerManager) {
     }
 
     @Subscribe(order = PostOrder.LAST)
-    fun onPlayerDisconnect(event: DisconnectEvent) = runBlocking {
-        val player = runBlocking {
-            playerManager.getPlayerByUUID(
-                event.player.uniqueId
-            )
-        }
-        if (player != null) {
-            val session = player.getCurrentSession()
-            if (session != null) {
-                session.end = System.currentTimeMillis()
-                if (session.getDuration() < 5.seconds.inWholeMilliseconds) player.sessions.removeIf { it == session }
+    fun onPlayerDisconnect(event: DisconnectEvent) {
+        runBlocking {
+            val player = runBlocking {
+                playerManager.getPlayerByUUID(
+                    event.player.uniqueId
+                )
             }
-            player.update()
+            if (player != null) {
+                val session = player.getCurrentSession()
+                if (session != null) {
+                    session.end = System.currentTimeMillis()
+                    if (session.getDuration() < 5.seconds.inWholeMilliseconds) player.sessions.removeIf { it == session }
+                }
+                player.update()
+            }
+            playerManager.onlineFetcher.remove(event.player.uniqueId)
         }
-        playerManager.onlineFetcher.remove(event.player.uniqueId)
     }
 
 }
