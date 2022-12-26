@@ -1,5 +1,6 @@
 package net.dustrean.api.velocity
 
+import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.PluginContainer
 import com.velocitypowered.api.proxy.ProxyServer
 import net.dustrean.api.cloud.CloudCoreAPI
@@ -14,13 +15,13 @@ object VelocityCoreAPI : CloudCoreAPI() {
     lateinit var proxyServer: ProxyServer
         private set
 
-    lateinit var pluginContainer: PluginContainer
+    lateinit var plugin: Plugin
 
     override fun getCommandManager() = VelocityCommandManager
 
-    fun init(proxyServer: ProxyServer, plugin: PluginContainer) {
+    fun init(proxyServer: ProxyServer, plugin: Plugin) {
         this.proxyServer = proxyServer
-        this.pluginContainer = plugin
+        this.plugin = plugin
 
         ExceptionHandler
 

@@ -35,7 +35,7 @@ public class VelocityBootstrap {
 
     @Subscribe
     public void onInit(ProxyInitializeEvent event) {
-        VelocityCoreAPI.INSTANCE.init(this.proxyServer, (PluginContainer) this);
+        VelocityCoreAPI.INSTANCE.init(this.proxyServer, (Plugin) this);
         ((GsonCodec) VelocityCoreAPI.INSTANCE.getRedisConnection().redisClient.getConfig().getCodec()).getClassLoaders().add(this.getClass().getClassLoader());
     }
 
