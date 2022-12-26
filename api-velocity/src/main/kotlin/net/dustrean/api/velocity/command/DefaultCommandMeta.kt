@@ -6,8 +6,7 @@ import com.velocitypowered.api.command.CommandSource
 import net.dustrean.api.velocity.VelocityCoreAPI
 
 class DefaultCommandMeta(
-    private val aliase: Array<String>,
-    private val hint: MutableCollection<CommandNode<CommandSource>> = mutableListOf()
+    private val aliase: Array<String>, private val hint: MutableCollection<CommandNode<CommandSource>> = mutableListOf()
 ) : CommandMeta {
 
     /**
