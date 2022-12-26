@@ -34,7 +34,6 @@ class GsonCodec(val classLoaders: MutableList<ClassLoader>) : BaseCodec() {
     }
 
     private val encoder = Encoder { `in`: Any ->
-        ExceptionHandler.service = ICoreAPI.INSTANCE.javaClass.simpleName
         val out = ByteBufAllocator.DEFAULT.buffer()
         try {
             val os = ByteBufOutputStream(out)
@@ -52,7 +51,6 @@ class GsonCodec(val classLoaders: MutableList<ClassLoader>) : BaseCodec() {
 
     private val decoder =
         Decoder { buf: ByteBuf?, state: State? ->
-            ExceptionHandler.service = ICoreAPI.INSTANCE.javaClass.simpleName
             ByteBufInputStream(buf).use { stream ->
                 val string = stream.readUTF()
                 val type = stream.readUTF()
