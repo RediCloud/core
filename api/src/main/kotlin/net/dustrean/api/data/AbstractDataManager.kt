@@ -1,37 +1,22 @@
 package net.dustrean.api.data
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import net.dustrean.api.ICoreAPI
-import net.dustrean.api.data.packet.DataActionType
-import net.dustrean.api.data.packet.DataObjectPacket
-import net.dustrean.api.data.packet.cache.DataCacheActionType
-import net.dustrean.api.data.packet.cache.DataCachePacket
-import net.dustrean.api.network.NetworkComponentInfo
-import net.dustrean.api.redis.IRedisConnection
-import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
-import org.slf4j.LoggerFactory
-import java.util.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.Expose
 import kotlinx.coroutines.*
-import net.bytebuddy.build.ToStringPlugin.Exclude
+import net.dustrean.api.ICoreAPI
+import net.dustrean.api.data.packet.DataActionType
+import net.dustrean.api.data.packet.DataObjectPacket
+import net.dustrean.api.data.packet.cache.DataCacheActionType
+import net.dustrean.api.data.packet.cache.DataCachePacket
 import net.dustrean.api.event.CoreEvent
 import net.dustrean.api.event.EventType
-import net.dustrean.api.redis.codec.GsonCodec
+import net.dustrean.api.network.NetworkComponentInfo
+import net.dustrean.api.redis.IRedisConnection
+import org.slf4j.LoggerFactory
+import java.util.*
 
 abstract class AbstractDataManager<T : AbstractDataObject>(
     private val prefix: String,
@@ -188,7 +173,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         bucket.set(dataObject)
         if (dataObject.validator == null || (dataObject.validator?.isValid() == true)) {
             cachedObjects[dataObject.identifier] = dataObject
-            parkedObjects.remove(dataObject.identifier)
         }
         sendPacket(dataObject, DataActionType.UPDATE)
         return dataObject
@@ -218,8 +202,8 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     fun deserialize(json: String): T {
         val dataObject = objectMapper.fromJson(json, implClass)
-        if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
-            cachedObjects[dataObject.getIdentifier()] = dataObject
+        if (dataObject.validator == null || (dataObject.validator?.isValid() == true)) {
+            cachedObjects[dataObject.identifier] = dataObject
             cacheScope.launch {
                 sendPacket(
                     dataObject.identifier,
