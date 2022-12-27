@@ -3,6 +3,7 @@ package net.dustrean.api.config
 interface IConfigManager {
 
     suspend fun <T : IConfig> getConfig(key: String): T
+    suspend fun <T : IConfig> getConfigOrPut(key: String, default: () -> T): T
 
     suspend fun <T : IConfig> createConfig(config: T): T
 
