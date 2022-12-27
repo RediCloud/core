@@ -46,6 +46,8 @@ object ExceptionHandler {
             val paste = pasteBuilder.toString().haste() //Upload to hastebin
 
             send(paste.url) //call discord webhook
+
+            exception.printStackTrace()
         }
     }
 
