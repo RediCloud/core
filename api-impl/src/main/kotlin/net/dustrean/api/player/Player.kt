@@ -1,6 +1,5 @@
 package net.dustrean.api.player
 
-import com.google.gson.annotations.Expose
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractCacheHandler
@@ -9,6 +8,7 @@ import net.dustrean.api.data.ICacheValidator
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
 import net.dustrean.api.packet.connect.PlayerChangeServicePacket
+import net.dustrean.api.redis.codec.GsonIgnore
 import java.util.*
 
 data class Player(
@@ -29,13 +29,17 @@ data class Player(
     override var authentication: PlayerAuthentication = PlayerAuthentication()
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
     override val sessions: MutableList<PlayerSession> = mutableListOf()
-    @Expose(serialize = false, deserialize = false)
-    private val cacheHandler = object : AbstractCacheHandler() {
+
+
+    override val identifier: UUID
+        get() = uuid
+
+    override val cacheHandler = object : AbstractCacheHandler() {
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
             setOf(lastServer)
     }
-    @Expose(serialize = false, deserialize = false)
-    private val validator = object : ICacheValidator<AbstractDataObject> {
+    @GsonIgnore
+    override val validator = object : ICacheValidator<AbstractDataObject> {
         override fun isValid(): Boolean {
             return lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
         }
@@ -53,15 +57,6 @@ data class Player(
         val session = sessions.lastOrNull { !it.isActive() } ?: return null
         return session as PlayerSession
     }
-
-    override fun getIdentifier(): UUID =
-        uuid
-
-    override fun getCacheHandler(): AbstractCacheHandler =
-        cacheHandler
-
-    override fun getValidator(): ICacheValidator<AbstractDataObject> =
-        validator
 
     override fun isOnCurrent(): Boolean =
         when (ICoreAPI.INSTANCE.getNetworkComponentInfo().type) {
