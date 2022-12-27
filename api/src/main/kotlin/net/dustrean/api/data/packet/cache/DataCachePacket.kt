@@ -13,8 +13,7 @@ class DataCachePacket : Packet() {
     override fun received() {
         if(!AbstractDataManager.MANAGERS.containsKey(managerPrefix)) return
         val manager = AbstractDataManager.MANAGERS[managerPrefix]!!
-        val cachedObject = manager.getCache(identifier)
-        if(cachedObject == null) return
+        val cachedObject = manager.getCache(identifier) ?: return
         when(action) {
             DataCacheActionType.ADDED -> cachedObject.getCacheHandler().currentCached.add(packetData.senderComponent)
             DataCacheActionType.REMOVED -> cachedObject.getCacheHandler().currentCached.remove(packetData.senderComponent)
