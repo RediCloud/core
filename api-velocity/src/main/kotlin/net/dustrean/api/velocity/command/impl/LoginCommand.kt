@@ -43,11 +43,11 @@ class LoginCommand : Command("login", commandDescription = "Login to your accoun
             actor.sendMessage("§cYou are not registered!")
             return@runBlocking
         }
-        if(player.authentication.crypt == null){
+        if (player.authentication.crypt == null) {
             player.authentication.crypt = UpdatableBCrypt(authConfig.passwordRounds)
         }
         //TODO add delay, kick after 3 fails
-        if(!player.authentication.crypt!!.verifyHash(password, player.authentication.passwordHash)){
+        if (!player.authentication.crypt!!.verifyHash(password, player.authentication.passwordHash)) {
             proxyPlayer.disconnect(Component.text("§cWrong password!"))
             return@runBlocking
         }

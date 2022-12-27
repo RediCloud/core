@@ -5,7 +5,6 @@ import net.dustrean.api.cloud.utils.getCloudPlayerManager
 import net.dustrean.api.cloud.utils.getCloudServiceProvider
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.player.IPlayer
-import net.dustrean.api.player.Player
 
 fun IPlayer.connect(service: NetworkComponentInfo) {
     val cloudService = getCloudServiceProvider().service(service.identifier) ?: return
@@ -19,5 +18,4 @@ fun IPlayer.connectToGroup(group: String, serverSelectorType: ServerSelectorType
 fun IPlayer.connectToTask(task: String, serverSelectorType: ServerSelectorType) =
     getCloudPlayerManager().playerExecutor(uuid).connectToTask(task, serverSelectorType)
 
-fun IPlayer.connectToFallback() =
-    getCloudPlayerManager().playerExecutor(uuid).connectToFallback()
+fun IPlayer.connectToFallback() = getCloudPlayerManager().playerExecutor(uuid).connectToFallback()

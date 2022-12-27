@@ -4,7 +4,7 @@ import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractDataManager
 import net.dustrean.api.data.AbstractDataObject
 import net.dustrean.api.packet.Packet
-import java.util.UUID
+import java.util.*
 
 class DataObjectPacket : Packet() {
 
@@ -14,8 +14,9 @@ class DataObjectPacket : Packet() {
     lateinit var managerPrefix: String
 
     override fun received() {
-        if(!AbstractDataManager.MANAGERS.containsKey(managerPrefix)) return
-        val manager: AbstractDataManager<out AbstractDataObject> = AbstractDataManager.MANAGERS[managerPrefix]!!
+        val manager: AbstractDataManager<out AbstractDataObject> = AbstractDataManager.MANAGERS.getOrElse(managerPrefix) {
+            return
+        }
         when(type) {
             DataActionType.UPDATE -> {
                 val obj = manager.deserialize(json)

@@ -17,12 +17,19 @@ import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
 
-class GsonCodec : BaseCodec() {
-    private val gson: Gson = GsonBuilder().setExclusionStrategies(object: ExclusionStrategy {
-        override fun shouldSkipField(p0: FieldAttributes?): Boolean {
-            return p0?.getAnnotation(Expose::class.java)?.serialize == false
+class GsonCodec(val classLoaders: MutableList<ClassLoader>) : BaseCodec() {
+    private val gson: Gson = GsonBuilder().addSerializationExclusionStrategy(object : ExclusionStrategy {
+        override fun shouldSkipField(f: FieldAttributes?): Boolean {
+            return f?.getAnnotation(Expose::class.java)?.serialize == false || f?.getAnnotation(GsonIgnore::class.java) != null
         }
+
         override fun shouldSkipClass(p0: Class<*>?): Boolean = false
+    }).addDeserializationExclusionStrategy(object: ExclusionStrategy {
+        override fun shouldSkipField(f: FieldAttributes?): Boolean {
+            return f?.getAnnotation(Expose::class.java)?.deserialize == false || f?.getAnnotation(GsonIgnore::class.java) != null
+        }
+
+        override fun shouldSkipClass(clazz: Class<*>?): Boolean = false
     }).create()
     private val classMap: MutableMap<String, Class<*>?> = ConcurrentHashMap()
 
@@ -46,21 +53,32 @@ class GsonCodec : BaseCodec() {
         }
     }
 
-    private val decoder =
-        Decoder { buf: ByteBuf?, state: State? ->
-            ByteBufInputStream(buf).use { stream ->
-                val string = stream.readUTF()
-                val type = stream.readUTF()
-                return@Decoder gson.fromJson(string, getClassFromType(type))
-            }
+    private val decoder = Decoder { buf: ByteBuf?, state: State? ->
+        ByteBufInputStream(buf).use { stream ->
+            val string = stream.readUTF()
+            val type = stream.readUTF()
+            return@Decoder gson.fromJson(string, getClassFromType(type))
         }
+    }
 
 
     fun getClassFromType(name: String): Class<*> {
         var clazz = classMap[name]
         if (clazz == null) {
             try {
-                clazz = Class.forName(name)
+                clazz = try {
+                    Class.forName(name)
+                } catch (e: ClassNotFoundException) {
+                    let {
+                        for (classLoader in classLoaders) {
+                            try {
+                                return@let classLoader.loadClass(name)
+                            } catch (ignored: ClassNotFoundException) {
+                            }
+                        }
+                        throw e
+                    }
+                }
                 classMap[name] = clazz
             } catch (e: ClassNotFoundException) {
                 e.printStackTrace()
@@ -84,3 +102,5 @@ class GsonCodec : BaseCodec() {
         } else super.getClassLoader()
     }
 }
+
+annotation class GsonIgnore

@@ -12,9 +12,10 @@ abstract class Packet(
     companion object {
         val scope = CoroutineScope(Dispatchers.IO)
     }
+
     abstract fun received()
 
-    suspend fun sendPacket(){
+    suspend fun sendPacket() {
         ICoreAPI.INSTANCE.getPacketManager().sendPacket(this)
     }
 

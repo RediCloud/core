@@ -4,6 +4,24 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import net.dustrean.api.ICoreAPI
+import net.dustrean.api.data.packet.DataActionType
+import net.dustrean.api.data.packet.DataObjectPacket
+import net.dustrean.api.data.packet.cache.DataCacheActionType
+import net.dustrean.api.data.packet.cache.DataCachePacket
+import net.dustrean.api.network.NetworkComponentInfo
+import net.dustrean.api.redis.IRedisConnection
+import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
+import org.slf4j.LoggerFactory
+import java.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes
 import com.google.gson.Gson
@@ -11,21 +29,9 @@ import com.google.gson.GsonBuilder
 import com.google.gson.annotations.Expose
 import kotlinx.coroutines.*
 import net.bytebuddy.build.ToStringPlugin.Exclude
-import net.dustrean.api.ICoreAPI
-import net.dustrean.api.data.packet.DataActionType
-import net.dustrean.api.data.packet.DataObjectPacket
-import net.dustrean.api.data.packet.cache.DataCacheActionType
-import net.dustrean.api.data.packet.cache.DataCachePacket
 import net.dustrean.api.event.CoreEvent
 import net.dustrean.api.event.EventType
-import net.dustrean.api.network.NetworkComponentInfo
-import net.dustrean.api.redis.IRedisConnection
 import net.dustrean.api.redis.codec.GsonCodec
-import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
-import org.slf4j.LoggerFactory
-import reactor.core.publisher.whenComplete
-import java.util.*
-import kotlin.NoSuchElementException
 
 abstract class AbstractDataManager<T : AbstractDataObject>(
     private val prefix: String,
@@ -43,7 +49,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
     }
 
     companion object {
-
         val MANAGERS = mutableMapOf<String, AbstractDataManager<out AbstractDataObject>>()
         /*private val objectMapper = JsonMapper.builder()
             .addModule(KotlinModule.Builder().build())
@@ -73,7 +78,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         ICoreAPI.INSTANCE.getPacketManager().registerPacket(DataObjectPacket())
     }
     val cachedObjects = mutableMapOf<UUID, T>()
-
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun getCache(): List<T> {
@@ -89,16 +93,15 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         packet.sendPacket()
     }
 
-
     suspend fun sendPacket(dataObject: T, action: DataActionType) {
         val packet = DataObjectPacket()
         packet.json = serialize(dataObject)
         packet.type = action
-        packet.identifier = dataObject.getIdentifier()
+        packet.identifier = dataObject.identifier
         packet.managerPrefix = prefix
         val networkComponents =
-            dataObject.getCacheHandler().getCacheNetworkComponents().toMutableSet()
-        networkComponents.addAll(dataObject.getCacheHandler().getCurrentNetworkComponents())
+            dataObject.cacheHandler.getCacheNetworkComponents().toMutableSet()
+        networkComponents.addAll(dataObject.cacheHandler.getCurrentNetworkComponents())
         packet.packetData.receiverComponent.addAll(networkComponents)
         packet.sendPacket()
     }
@@ -106,13 +109,13 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
     override fun getCache(identifier: UUID): T? {
         if (cachedObjects.containsKey(identifier)) {
             val cachedObject = cachedObjects[identifier]!!
-            if (cachedObject.getValidator() != null) {
-                if (cachedObject.getValidator()!!.isValid()) return cachedObject
+            if (cachedObject.validator != null) {
+                if (cachedObject.validator!!.isValid()) return cachedObject
                 cachedObjects.remove(identifier)
                 cacheScope.launch {
                     val networkComponents =
-                        cachedObject.getCacheHandler().getCacheNetworkComponents().toMutableSet()
-                    networkComponents.addAll(cachedObject.getCacheHandler().getCurrentNetworkComponents())
+                        cachedObject.cacheHandler.getCacheNetworkComponents().toMutableSet()
+                    networkComponents.addAll(cachedObject.cacheHandler.getCurrentNetworkComponents())
                     sendPacket(identifier, DataCacheActionType.REMOVED, networkComponents)
                 }
                 return null
@@ -124,15 +127,15 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     override fun unregisterCache() {
         cachedObjects.forEach { (_, cachedObject) ->
-            if (cachedObject.getValidator() == null) return@forEach
-            if (!cachedObject.getValidator()!!.isValid()) return@forEach
-            cachedObjects.remove(cachedObject.getIdentifier())
+            if (cachedObject.validator == null) return@forEach
+            if (!cachedObject.validator!!.isValid()) return@forEach
+            cachedObjects.remove(cachedObject.identifier)
 
             cacheScope.launch {
                 val networkComponents =
-                    cachedObject.getCacheHandler().getCacheNetworkComponents().toMutableSet()
-                networkComponents.addAll(cachedObject.getCacheHandler().getCurrentNetworkComponents())
-                sendPacket(cachedObject.getIdentifier(), DataCacheActionType.REMOVED, networkComponents)
+                    cachedObject.cacheHandler.getCacheNetworkComponents().toMutableSet()
+                networkComponents.addAll(cachedObject.cacheHandler.getCurrentNetworkComponents())
+                sendPacket(cachedObject.identifier, DataCacheActionType.REMOVED, networkComponents)
             }
 
         }
@@ -155,47 +158,48 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         if (!bucket.isExists) throw NoSuchElementException("Object with identifier $identifier does not exist!")
         val dataObject = bucket.get()
-        if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
-            cachedObjects[dataObject.getIdentifier()] = dataObject
+        if (dataObject.validator == null || (dataObject.validator?.isValid() == true)) {
+            cachedObjects[dataObject.identifier] = dataObject
             sendPacket(
                 identifier,
                 DataCacheActionType.ADDED,
-                dataObject.getCacheHandler().getCacheNetworkComponents()
+                dataObject.cacheHandler.getCacheNetworkComponents()
             )
         }
         return dataObject
     }
 
     override suspend fun createObject(dataObject: T): T {
-        val key = "$prefix:${dataObject.getIdentifier()}"
+        val key = "$prefix:${dataObject.identifier}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        if (existsObject(dataObject.getIdentifier())) throw IllegalArgumentException("Object with identifier ${dataObject.getIdentifier()} already exists!")
+        if (existsObject(dataObject.identifier)) throw IllegalArgumentException("Object with identifier ${dataObject.identifier} already exists!")
         bucket.set(dataObject)
-        if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
-            cachedObjects[dataObject.getIdentifier()] = dataObject
+        if (dataObject.validator == null || (dataObject.validator?.isValid() == true)) {
+            cachedObjects[dataObject.identifier] = dataObject
         }
         sendPacket(dataObject, DataActionType.CREATE)
         return dataObject
     }
 
     override suspend fun updateObject(dataObject: T): T {
-        val key = "$prefix:${dataObject.getIdentifier()}"
+        val key = "$prefix:${dataObject.identifier}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        if (!existsObject(dataObject.getIdentifier())) throw NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist")
+        if (!existsObject(dataObject.identifier)) throw NoSuchElementException("Object with identifier ${dataObject.identifier} does not exist")
         bucket.set(dataObject)
-        if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
-            cachedObjects[dataObject.getIdentifier()] = dataObject
+        if (dataObject.validator == null || (dataObject.validator?.isValid() == true)) {
+            cachedObjects[dataObject.identifier] = dataObject
+            parkedObjects.remove(dataObject.identifier)
         }
         sendPacket(dataObject, DataActionType.UPDATE)
         return dataObject
     }
 
     override suspend fun deleteObject(dataObject: T) {
-        val key = "$prefix:${dataObject.getIdentifier()}"
+        val key = "$prefix:${dataObject.identifier}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        if (!existsObject(dataObject.getIdentifier())) throw NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist")
+        if (!existsObject(dataObject.identifier)) throw NoSuchElementException("Object with identifier ${dataObject.identifier} does not exist")
         bucket.delete()
-        cachedObjects.remove(dataObject.getIdentifier())
+        cachedObjects.remove(dataObject.identifier)
         sendPacket(dataObject, DataActionType.DELETE)
     }
 
@@ -203,7 +207,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         if (isCached(identifier)) {
             return true
         }
-        val key = "$prefix:<$identifier"
+        val key = "$prefix:$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         return bucket.isExists
     }
@@ -218,9 +222,9 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             cachedObjects[dataObject.getIdentifier()] = dataObject
             cacheScope.launch {
                 sendPacket(
-                    dataObject.getIdentifier(),
+                    dataObject.identifier,
                     DataCacheActionType.ADDED,
-                    dataObject.getCacheHandler().getCacheNetworkComponents()
+                    dataObject.cacheHandler.getCacheNetworkComponents()
                 )
             }
             return dataObject

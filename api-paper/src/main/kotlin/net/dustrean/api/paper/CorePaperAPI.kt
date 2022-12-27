@@ -15,9 +15,11 @@ object CorePaperAPI : CloudCoreAPI() {
 
     lateinit var plugin: JavaPlugin
         private set
+
     init {
         ExceptionHandler
     }
+
     fun init(plugin: JavaPlugin) {
         this.plugin = plugin
         StringParser.customTypeParsers.add(PlayerParser())

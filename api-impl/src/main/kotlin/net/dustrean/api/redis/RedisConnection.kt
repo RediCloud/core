@@ -1,5 +1,6 @@
 package net.dustrean.api.redis
 
+import net.dustrean.api.ICoreAPI
 import net.dustrean.api.redis.codec.GsonCodec
 import org.redisson.Redisson
 import org.redisson.api.RedissonClient
@@ -7,7 +8,7 @@ import org.redisson.config.Config
 
 class RedisConnection(
     private val configuration: RedisConfiguration = RedisConfiguration()
-): IRedisConnection{
+) : IRedisConnection {
     lateinit var redisClient: RedissonClient
     private val credentials = configuration.credentials
 
@@ -26,8 +27,7 @@ class RedisConnection(
             .setAddress("redis://${credentials.host}:${credentials.port}")
             .password = credentials.password
 
-
-        config.codec = GsonCodec()
+        config.codec = GsonCodec(mutableListOf(ICoreAPI::class.java.classLoader))
 
         redisClient = Redisson.create(config)
     }

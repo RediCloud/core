@@ -12,8 +12,8 @@ object ExceptionHandler {
     private val client = HttpClient.newHttpClient()
     private val gson = Gson()
 
-    private val service = "undefined"
-    private val hasteURL = System.getenv("EXCEPTION_HASTE_URL")
+    var service = "undefined"
+    private val hasteURL: String = System.getenv("EXCEPTION_HASTE_URL")
     private val webhookURL = URL(System.getenv("EXCEPTION_SERVICE_WEB_HOOK_URL"))
 
     init {
@@ -37,15 +37,17 @@ object ExceptionHandler {
                         "|  _ \\ _   _ ___| |_ _ __ ___  __ _ _ __    _ __   ___| |_ \n" +
                         "| | | | | | / __| __| '__/ _ \\/ _` | '_ \\  | '_ \\ / _ \\ __|\n" +
                         "| |_| | |_| \\__ \\ |_| | |  __/ (_| | | | |_| | | |  __/ |_ \n" +
-                        "|____/ \\__,_|___/\\__|_|  \\___|\\__,_|_| |_(_)_| |_|\\___|\\__|"
+                        "|____/ \\__,_|___/\\__|_|  \\___|\\__,_|_| |_(_)_| |_|\\___|\\__|\n\n"
             )
-            pasteBuilder.append("Service: ${service}\n")
+            pasteBuilder.append("Service: $service\n")
             pasteBuilder.append(msg.toString())
             pasteBuilder.append("\n\n_________________________________________________________________")
 
             val paste = pasteBuilder.toString().haste() //Upload to hastebin
 
             send(paste.url) //call discord webhook
+
+            exception.printStackTrace()
         }
     }
 

@@ -18,7 +18,6 @@ import net.dustrean.api.player.PlayerManager
 import net.dustrean.api.player.PlayerSession
 import net.dustrean.api.utils.extension.isPremium
 import net.dustrean.api.utils.fetcher.WebUniqueIdFetcher
-import net.dustrean.api.velocity.VelocityCoreAPI
 import net.dustrean.api.velocity.command.impl.ChangePasswordCommand
 import net.dustrean.api.velocity.command.impl.LoginCommand
 import net.dustrean.api.velocity.command.impl.RegisterCommand
@@ -35,8 +34,13 @@ class PlayerEvents(private val playerManager: PlayerManager) {
 
     init {
         runBlocking {
-            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig("player-authentication")
-            if(authConfig.crackAllowed) {
+            authConfig = if (ICoreAPI.INSTANCE.getConfigManager()
+                    .exists("player-authentication")
+            ) ICoreAPI.INSTANCE.getConfigManager()
+                .getConfig("player-authentication") else ICoreAPI.INSTANCE.getConfigManager()
+                .createConfig(PlayerAuthConfig("player-authentication"))
+
+            if (authConfig.crackAllowed) {
                 ICoreAPI.INSTANCE.getCommandManager().registerCommand(RegisterCommand())
                 ICoreAPI.INSTANCE.getCommandManager().registerCommand(LoginCommand())
                 ICoreAPI.INSTANCE.getCommandManager().registerCommand(ChangePasswordCommand())
@@ -155,10 +159,10 @@ class PlayerEvents(private val playerManager: PlayerManager) {
         val player = runBlocking {
             ICoreAPI.INSTANCE.getPlayerManager().getPlayerByUUID(event.player.uniqueId)
         }
-        if(player?.authentication?.isLoggedIn(player) == true) return
-        if(!target.serverInfo.name.startsWith(authConfig.verifyTask)){
+        if (player?.authentication?.isLoggedIn(player) == true) return
+        if (!target.serverInfo.name.startsWith(authConfig.verifyTask)) {
             val task = getCloudTaskProvider().serviceTask(authConfig.verifyTask)
-            if(task == null || getCloudServiceProvider().servicesByTask(authConfig.verifyTask).isEmpty()){
+            if (task == null || getCloudServiceProvider().servicesByTask(authConfig.verifyTask).isEmpty()) {
                 event.player.sendMessage(Component.text("§cThe authentication server is currently not available!"))
                 event.result = ServerPreConnectEvent.ServerResult.denied()
                 return
@@ -167,21 +171,23 @@ class PlayerEvents(private val playerManager: PlayerManager) {
     }
 
     @Subscribe(order = PostOrder.LAST)
-    fun onPlayerDisconnect(event: DisconnectEvent) = runBlocking {
-        val player = runBlocking {
-            playerManager.getPlayerByUUID(
-                event.player.uniqueId
-            )
-        }
-        if (player != null) {
-            val session = player.getCurrentSession()
-            if (session != null) {
-                session.end = System.currentTimeMillis()
-                if (session.getDuration() < 5.seconds.inWholeMilliseconds) player.sessions.removeIf { it == session }
+    fun onPlayerDisconnect(event: DisconnectEvent) {
+        runBlocking {
+            val player = runBlocking {
+                playerManager.getPlayerByUUID(
+                    event.player.uniqueId
+                )
             }
-            player.update()
+            if (player != null) {
+                val session = player.getCurrentSession()
+                if (session != null) {
+                    session.end = System.currentTimeMillis()
+                    if (session.getDuration() < 5.seconds.inWholeMilliseconds) player.sessions.removeIf { it == session }
+                }
+                player.update()
+            }
+            playerManager.onlineFetcher.remove(event.player.uniqueId)
         }
-        playerManager.onlineFetcher.remove(event.player.uniqueId)
     }
 
 }

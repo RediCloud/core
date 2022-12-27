@@ -3,14 +3,14 @@ package net.dustrean.api.data
 import java.io.Serializable
 import java.util.*
 
-abstract class AbstractDataObject() : Serializable {
+abstract class AbstractDataObject : Serializable {
 
     abstract suspend fun update(): AbstractDataObject
 
-    abstract fun getIdentifier(): UUID
+    abstract val identifier: UUID
 
-    abstract fun getCacheHandler(): AbstractCacheHandler
+    abstract val cacheHandler: AbstractCacheHandler
 
-    abstract fun getValidator(): ICacheValidator<AbstractDataObject>?
+    abstract val validator: ICacheValidator<AbstractDataObject>?
 
 }

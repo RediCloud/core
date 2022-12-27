@@ -1,7 +1,6 @@
 package net.dustrean.api.utils.crypt
 
 import org.mindrot.jbcrypt.BCrypt
-import java.util.function.Function
 
 class UpdatableBCrypt(
     private val logRounds: Int = 0

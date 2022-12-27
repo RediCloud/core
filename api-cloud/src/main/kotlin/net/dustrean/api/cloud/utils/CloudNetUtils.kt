@@ -9,10 +9,8 @@ import eu.cloudnetservice.modules.bridge.player.PlayerManager
 import eu.cloudnetservice.wrapper.Wrapper
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
-import net.dustrean.api.player.IPlayerManager
 
 fun getCurrentNetworkComponent(): NetworkComponentInfo {
-
     val serviceInfo = Wrapper.instance().lastServiceInfo()
     val environment: NetworkComponentType = when (serviceInfo.serviceId().environment()) {
         ServiceEnvironmentType.MINESTOM -> NetworkComponentType.MINESTOM
@@ -24,11 +22,9 @@ fun getCurrentNetworkComponent(): NetworkComponentInfo {
     return NetworkComponentInfo(environment, serviceInfo.serviceId().uniqueId())
 }
 
-fun getCloudServiceProvider(): CloudServiceProvider =
-    CloudNetDriver.instance<CloudNetDriver>().cloudServiceProvider()
+fun getCloudServiceProvider(): CloudServiceProvider = CloudNetDriver.instance<CloudNetDriver>().cloudServiceProvider()
 
-fun getCloudTaskProvider(): ServiceTaskProvider =
-    CloudNetDriver.instance<CloudNetDriver>().serviceTaskProvider()
+fun getCloudTaskProvider(): ServiceTaskProvider = CloudNetDriver.instance<CloudNetDriver>().serviceTaskProvider()
 
 fun getCloudGroupProvider(): GroupConfigurationProvider =
     CloudNetDriver.instance<CloudNetDriver>().groupConfigurationProvider()

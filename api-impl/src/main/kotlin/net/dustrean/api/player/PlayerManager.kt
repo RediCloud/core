@@ -25,15 +25,15 @@ class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player
     )
     override val onlineFetcher = core.getRedisConnection().getRedissonClient().getList<UUID>("fetcher:player_online")
 
-    override suspend fun getPlayerByUUID(uuid: UUID): IPlayer? = try {
+    override suspend fun getPlayerByUUID(uuid: UUID): Player? = try {
         getObject(uuid)
     } catch (e: NoSuchElementException) {
         null
     }
 
-    override suspend fun getPlayerByName(name: String): IPlayer? = nameFetcher.get(name)?.let { getPlayerByUUID(it) }
+    override suspend fun getPlayerByName(name: String): Player? = nameFetcher.get(name)?.let { getPlayerByUUID(it) }
 
-    override suspend fun getOnlinePlayers(): Collection<IPlayer> = onlineFetcher.map { getPlayerByUUID(it)!! }
+    override suspend fun getOnlinePlayers(): Collection<Player> = onlineFetcher.map { getPlayerByUUID(it)!! }
 
     internal suspend fun updatePlayer(player: Player): Player = updateObject(player)
 

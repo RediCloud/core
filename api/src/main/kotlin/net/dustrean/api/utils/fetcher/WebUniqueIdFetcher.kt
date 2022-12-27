@@ -32,7 +32,7 @@ class WebUniqueIdFetcher {
 
         suspend fun fetchUniqueId(name: String): UUID? {
             val identifierName = name.lowercase()
-            if(fetcher.uniqueIdCache.containsKey(identifierName)){
+            if (fetcher.uniqueIdCache.containsKey(identifierName)) {
                 return fetcher.uniqueIdCache[identifierName]
             }
             val connection = fetcher.createConnection("https://api.minetools.eu/uuid/$identifierName")
@@ -51,7 +51,7 @@ class WebUniqueIdFetcher {
     private val pattern = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})")
 
     private suspend fun createConnection(url: String): HttpURLConnection =
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             val connection = URL(url).openConnection() as HttpURLConnection
             connection.doOutput = false
             connection.setRequestProperty(

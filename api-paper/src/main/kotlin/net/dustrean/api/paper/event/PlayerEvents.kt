@@ -1,9 +1,7 @@
 package net.dustrean.api.paper.event
 
 import kotlinx.coroutines.runBlocking
-import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
-import net.dustrean.api.paper.CorePaperAPI.getPlayerManager
 import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
