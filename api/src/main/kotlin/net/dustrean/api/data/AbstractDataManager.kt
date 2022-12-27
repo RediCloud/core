@@ -15,6 +15,7 @@ import net.dustrean.api.event.CoreEvent
 import net.dustrean.api.event.EventType
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.redis.IRedisConnection
+import net.dustrean.api.redis.codec.GsonIgnore
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -43,13 +44,13 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             .build()*/
         private val objectMapper: Gson = GsonBuilder().addSerializationExclusionStrategy(object : ExclusionStrategy {
             override fun shouldSkipField(f: FieldAttributes?): Boolean =
-                f?.getAnnotation(Expose::class.java)?.serialize == false
+                f?.getAnnotation(Expose::class.java)?.serialize == false || f?.getAnnotation(GsonIgnore::class.java) != null
 
             override fun shouldSkipClass(clazz: Class<*>?): Boolean = false
 
         }).addSerializationExclusionStrategy(object : ExclusionStrategy {
             override fun shouldSkipField(f: FieldAttributes?): Boolean =
-                f?.getAnnotation(Expose::class.java)?.deserialize == false
+                f?.getAnnotation(Expose::class.java)?.deserialize == false || f?.getAnnotation(GsonIgnore::class.java) != null
 
             override fun shouldSkipClass(clazz: Class<*>?): Boolean = false
         }).disableHtmlEscaping().create()
