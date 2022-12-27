@@ -35,7 +35,6 @@ data class Player(
     override val identifier: UUID
         get() = uuid
 
-    @Expose(serialize = false, deserialize = false)
     override val cacheHandler = object : AbstractCacheHandler() {
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
             setOf(lastServer)
