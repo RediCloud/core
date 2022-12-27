@@ -20,12 +20,18 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 class GsonCodec(val classLoaders: MutableList<ClassLoader>) : BaseCodec() {
-    private val gson: Gson = GsonBuilder().setExclusionStrategies(object : ExclusionStrategy {
-        override fun shouldSkipField(p0: FieldAttributes?): Boolean {
-            return p0?.getAnnotation(Expose::class.java)?.serialize == false
+    private val gson: Gson = GsonBuilder().addSerializationExclusionStrategy(object : ExclusionStrategy {
+        override fun shouldSkipField(f: FieldAttributes?): Boolean {
+            return f?.getAnnotation(Expose::class.java)?.serialize == false
         }
 
         override fun shouldSkipClass(p0: Class<*>?): Boolean = false
+    }).addDeserializationExclusionStrategy(object: ExclusionStrategy {
+        override fun shouldSkipField(f: FieldAttributes?): Boolean {
+            return f?.getAnnotation(Expose::class.java)?.deserialize == false
+        }
+
+        override fun shouldSkipClass(clazz: Class<*>?): Boolean = false
     }).create()
     private val classMap: MutableMap<String, Class<*>?> = ConcurrentHashMap()
 
