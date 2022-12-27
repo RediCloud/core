@@ -1,5 +1,6 @@
 package net.dustrean.api.player
 
+import com.google.gson.annotations.Expose
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractCacheHandler
@@ -34,11 +35,12 @@ data class Player(
     override val identifier: UUID
         get() = uuid
 
+    @Expose(serialize = false, deserialize = false)
     override val cacheHandler = object : AbstractCacheHandler() {
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
             setOf(lastServer)
     }
-    @GsonIgnore
+    @Expose(serialize = false, deserialize = false)
     override val validator = object : ICacheValidator<AbstractDataObject> {
         override fun isValid(): Boolean {
             return lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
