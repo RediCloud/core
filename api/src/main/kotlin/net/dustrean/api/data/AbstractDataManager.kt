@@ -201,7 +201,7 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         if (isCached(identifier)) {
             return true
         }
-        val key = "$prefix:<$identifier"
+        val key = "$prefix:$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
         return bucket.isExists
     }
