@@ -16,10 +16,9 @@ class MinestomBootstrap : Extension() {
         ).apply { isAccessible = true }.invoke(this) as ExtensionClassLoader
         classloader.addChild(
             ExtensionClassLoader(
-                "Fake", arrayOf(), ICoreAPI::class.java.classLoader, DiscoveredExtension()
+                "Fake", arrayOf(), CoreAPI::class.java.classLoader, DiscoveredExtension()
             )
         )
-        println("${classloader.name} == ${this::class.java.classLoader.name} = ${classloader == this::class.java.classLoader}")
         Bootstrap().apply({
             classloader.addURL(it)
         }, classloader, classloader)
