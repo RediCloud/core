@@ -9,7 +9,6 @@ import net.dustrean.api.data.ICacheValidator
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
 import net.dustrean.api.packet.connect.PlayerChangeServicePacket
-import net.dustrean.api.redis.codec.GsonIgnore
 import java.util.*
 
 data class Player(
@@ -19,6 +18,12 @@ data class Player(
     override var coins: Long = 0,
     override var connected: Boolean = false,
 ) : IPlayer, AbstractDataObject() {
+    class PlayerCacheHandler(val lastServer: () -> NetworkComponentInfo): AbstractCacheHandler(), ICacheValidator<AbstractDataObject> {
+
+        override fun isValid(): Boolean = lastServer() == ICoreAPI.INSTANCE.getNetworkComponentInfo()
+        override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
+            setOf(lastServer())
+    }
     companion object {
         val INVALID_ID = UUID(0, 0)
         val INVALID_SERVICE = NetworkComponentInfo(NetworkComponentType.STANDALONE, INVALID_ID)
@@ -31,32 +36,28 @@ data class Player(
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
     override val sessions: MutableList<PlayerSession> = mutableListOf()
 
+    @Expose(serialize = false, deserialize = false)
+    private val playerCacheHandler: PlayerCacheHandler = PlayerCacheHandler { lastServer }
 
     override val identifier: UUID
         get() = uuid
 
-    override val cacheHandler = object : AbstractCacheHandler() {
-        override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
-            setOf(lastServer)
-    }
-    @Expose(serialize = false, deserialize = false)
-    override val validator = object : ICacheValidator<AbstractDataObject> {
-        override fun isValid(): Boolean {
-            return lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
-        }
-    }
+    override val cacheHandler
+        get() = playerCacheHandler
+
+    override val validator
+        get() = playerCacheHandler
 
     override suspend fun update(): Player =
         ICoreAPI.getInstance<CoreAPI>().getPlayerManager().updatePlayer(this)
 
     override fun getCurrentSession(): PlayerSession? {
         val session = sessions.lastOrNull() ?: return null
-        return if (session.isActive()) session as PlayerSession else null
+        return if (session.isActive()) session else null
     }
 
     override fun getLastSession(): PlayerSession? {
-        val session = sessions.lastOrNull { !it.isActive() } ?: return null
-        return session as PlayerSession
+        return sessions.lastOrNull { !it.isActive() }
     }
 
     override fun isOnCurrent(): Boolean =
