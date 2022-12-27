@@ -34,10 +34,7 @@ class ModuleManager(
                 val inputStream = jar.getInputStream(entry)
                 val description = gson.fromJson(inputStream.reader().readText(), ModuleDescription::class.java)
 
-                if (!loadModule(description, file)) {
-                    logger.error("Failed to load module ${file.name}")
-                    return@forEach
-                }
+                if (!loadModule(description, file)) return@forEach
                 logger.info("Loaded module ${file.name}")
 
             } catch (e: Exception) {
@@ -72,13 +69,18 @@ class ModuleManager(
             logger.info("No libloader implementation found, continuing", e)
         }
 
-        module::class.java.getDeclaredField("description").apply {
+        module::class.java.superclass.getDeclaredField("description").apply {
             isAccessible = true
             set(module, description)
             isAccessible = false
         }
 
-        module.onLoad(api)
+        try {
+            module.onLoad(api)
+        } catch (e: Exception) {
+            logger.error("Failed to load module ${description.name}", e)
+            return false
+        }
 
         module.state = ModuleState.LOADED
         modules.add(module)
@@ -87,29 +89,63 @@ class ModuleManager(
     }
 
     override fun unloadModule(module: Module): Boolean {
-        module.onDisable(api)
+        if (module.state == ModuleState.ENABLED) {
+            try {
+                module.onDisable(api)
+                logger.info("Disabled module ${module.description.name}")
+            } catch (e: Exception) {
+                logger.error("Failed to disable module ${module.description.name}", e)
+            }
+        }
         modules.remove(module)
+        module.state = ModuleState.DISABLED
+        logger.info("Unloaded module ${module.description.name}")
         return true
     }
 
     override fun unloadModule(name: String): Boolean {
         val module = getModule(name) ?: return false
-        module.onDisable(api)
+        if (module.state == ModuleState.ENABLED) {
+            try {
+                module.onDisable(api)
+                logger.info("Disabled module ${module.description.name}")
+            } catch (e: Exception) {
+                logger.error("Failed to disable module ${module.description.name}", e)
+            }
+        }
+        module.state = ModuleState.DISABLED
         modules.remove(module)
+        logger.info("Unloaded module $name")
         return true
     }
 
     override fun enableModules() {
         detectModules(getModuleFolder())
-        modules.filter { it.state == ModuleState.LOADED }.forEach { it.onEnable(api) }
+        modules.filter { it.state == ModuleState.LOADED }.forEach {
+            try {
+                it.onEnable(api)
+                logger.info("Enabled module ${it.description.name}")
+            } catch (e: Exception) {
+                logger.error("Failed to enable module ${it.description.name}", e)
+            }
+            it.state = ModuleState.ENABLED
+        }
     }
 
     override fun disableModules() {
-        modules.filter { it.state == ModuleState.LOADED || it.state == ModuleState.ENABLED }
-            .forEach { it.onDisable(api) }
+        modules.filter { it.state == ModuleState.LOADED || it.state == ModuleState.ENABLED }.forEach {
+            try {
+                it.onDisable(api)
+                logger.info("Disabled module ${it.description.name}")
+            } catch (e: Exception) {
+                logger.error("Failed to disable module ${it.description.name}", e)
+            }
+            it.state = ModuleState.DISABLED
+        }
     }
 
     override fun reloadModules() {
+        logger.info("Reloading modules...")
         disableModules()
         enableModules()
     }

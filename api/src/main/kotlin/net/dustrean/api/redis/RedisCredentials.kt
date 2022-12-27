@@ -1,6 +1,6 @@
 package net.dustrean.api.redis
 
-data class RedisCredentials (
+data class RedisCredentials(
     val host: String,
     val port: Int,
     val password: String,

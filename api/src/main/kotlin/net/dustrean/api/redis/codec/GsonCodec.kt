@@ -1,10 +1,16 @@
 package net.dustrean.api.redis.codec
 
+import com.google.gson.ExclusionStrategy
+import com.google.gson.FieldAttributes
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.annotations.Expose
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
+import net.dustrean.api.ICoreAPI
+import net.dustrean.api.utils.ExceptionHandler
 import org.redisson.client.codec.BaseCodec
 import org.redisson.client.handler.State
 import org.redisson.client.protocol.Decoder
@@ -13,8 +19,14 @@ import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
 
-class GsonCodec : BaseCodec() {
-    private val gson: Gson = Gson()
+class GsonCodec(val classLoaders: MutableList<ClassLoader>) : BaseCodec() {
+    private val gson: Gson = GsonBuilder().setExclusionStrategies(object : ExclusionStrategy {
+        override fun shouldSkipField(p0: FieldAttributes?): Boolean {
+            return p0?.getAnnotation(Expose::class.java)?.serialize == false
+        }
+
+        override fun shouldSkipClass(p0: Class<*>?): Boolean = false
+    }).create()
     private val classMap: MutableMap<String, Class<*>?> = ConcurrentHashMap()
 
     fun mapClass(clazz: Class<*>) {
@@ -51,7 +63,19 @@ class GsonCodec : BaseCodec() {
         var clazz = classMap[name]
         if (clazz == null) {
             try {
-                clazz = Class.forName(name)
+                clazz = try {
+                    Class.forName(name)
+                } catch (e: ClassNotFoundException) {
+                    let {
+                        for (classLoader in classLoaders) {
+                            try {
+                                return@let classLoader.loadClass(name)
+                            } catch (ignored: ClassNotFoundException) {
+                            }
+                        }
+                        throw e
+                    }
+                }
                 classMap[name] = clazz
             } catch (e: ClassNotFoundException) {
                 e.printStackTrace()

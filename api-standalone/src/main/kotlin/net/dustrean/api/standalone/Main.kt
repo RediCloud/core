@@ -6,7 +6,7 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     println("Starting API Standalone...")
-    val coreAPI = StandaloneCoreAPI()
+    val coreAPI = StandaloneCoreAPI
     println("API Standalone started!")
     while (true) {
         try {
@@ -16,17 +16,20 @@ fun main(args: Array<String>) {
                 "list" -> println(ModuleState.values().joinToString(separator = "\n") {
                     "${it.name}:    ${coreAPI.getModuleHandler().getModules(it).joinToString()}"
                 })
+
                 "reload" -> {
                     println("Reloading modules...")
                     coreAPI.getModuleHandler().reloadModules()
                     println("Modules reloaded!")
                 }
+
                 "stop" -> {
                     println("Stopping API Standalone...")
                     coreAPI.shutdown()
                     println("API Standalone stopped!")
                     exitProcess(0)
                 }
+
                 else -> println("Unknown command!")
             }
         } catch (t: Throwable) {

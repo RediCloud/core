@@ -14,7 +14,6 @@ val libloaderVersion: String by project
 dependencies {
     compileOnly("net.dustrean.libloader:libloader-bootstrap:${libloaderVersion}")
     compileOnly(project(":api"))
-    implementation2("org.redisson:redisson:3.18.0")
     implementation2("com.google.guava:guava:31.1-jre")
 
     testCompileOnly(project(":api"))

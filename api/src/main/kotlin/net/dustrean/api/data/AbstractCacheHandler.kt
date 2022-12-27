@@ -1,17 +1,13 @@
 package net.dustrean.api.data
 
 import net.dustrean.api.network.NetworkComponentInfo
-import net.dustrean.api.tasks.futures.FutureAction
-import java.util.*
 
-abstract class AbstractCacheHandler<T : AbstractDataObject> {
+abstract class AbstractCacheHandler {
 
-    val currentCached = mutableListOf<NetworkComponentInfo>()
+    val currentCached = mutableSetOf<NetworkComponentInfo>()
 
-    fun getCurrentNetworkComponents(): List<NetworkComponentInfo> {
-        return Collections.unmodifiableList(currentCached)
-    }
+    fun getCurrentNetworkComponents(): Set<NetworkComponentInfo> = currentCached.toSet()
 
-    abstract fun getCacheNetworkComponents(): FutureAction<List<NetworkComponentInfo>>
+    abstract suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo>
 
 }

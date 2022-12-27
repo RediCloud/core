@@ -1,10 +1,9 @@
 package net.dustrean.api.event
 
-import net.dustrean.api.packet.PacketManager
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import net.dustrean.api.packet.PacketManager
 import org.slf4j.LoggerFactory
-import java.lang.IllegalArgumentException
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
@@ -43,10 +42,10 @@ class EventManager : IEventManager {
             val handler = findHandlers(listener)
             handler.forEach { (event, methods) ->
                 val prioritiesMap = byListenerAndPriority[event]
-                if(prioritiesMap != null) {
+                if (prioritiesMap != null) {
                     methods.forEach { (priority, _) ->
                         val currentPriorityMap = prioritiesMap[priority]
-                        if(currentPriorityMap != null) {
+                        if (currentPriorityMap != null) {
                             currentPriorityMap.remove(listener)
                             if (currentPriorityMap.isEmpty()) prioritiesMap.remove(priority)
                         }
@@ -62,22 +61,25 @@ class EventManager : IEventManager {
     }
 
     fun callEvent0(event: CoreEvent, forceLocal: Boolean) {
-        if(event.type == EventType.LOCAL || forceLocal) {
+        if (event.type == EventType.LOCAL || forceLocal) {
             val handlers = byEventBaked[event::class.java] ?: return
             handlers.forEach { invoker ->
                 val time = System.nanoTime()
                 try {
                     invoker.invoke(event)
-                }catch (e: IllegalAccessException) {
+                } catch (e: IllegalAccessException) {
                     throw IllegalAccessException("Cannot access method ${invoker.method.name} in ${invoker.method.declaringClass.name}")
-                }catch (e: IllegalArgumentException) {
+                } catch (e: IllegalArgumentException) {
                     throw IllegalArgumentException("Cannot invoke method ${invoker.method.name} in ${invoker.method.declaringClass.name}")
-                }catch (e: InvocationTargetException) {
-                    throw InvocationTargetException(e, "Cannot invoke method ${invoker.method.name} in ${invoker.method.declaringClass.name}")
+                } catch (e: InvocationTargetException) {
+                    throw InvocationTargetException(
+                        e,
+                        "Cannot invoke method ${invoker.method.name} in ${invoker.method.declaringClass.name}"
+                    )
                 }
 
                 val elapsed = System.nanoTime() - time
-                if(elapsed > 50000000) {
+                if (elapsed > 50000000) {
                     logger.warn("Event ${event::class.java.name} took ${elapsed / 1000000}ms to process")
                 }
             }
@@ -93,7 +95,7 @@ class EventManager : IEventManager {
             addAll(listener::class.java.declaredMethods)
             addAll(listener::class.java.declaredMethods)
         }
-        methods.forEach{ method ->
+        methods.forEach { method ->
             val annotation = method.getAnnotation(CoreListener::class.java)
             if (annotation == null) return@forEach
             val parameters = method.parameterTypes
@@ -106,10 +108,10 @@ class EventManager : IEventManager {
         return handlers
     }
 
-    private fun bakeHandlers(eventClass: Class<*>){
+    private fun bakeHandlers(eventClass: Class<*>) {
         val handlersByPriority: MutableMap<Byte, MutableMap<Any, Array<Method>>>? = byListenerAndPriority[eventClass]
 
-        if(handlersByPriority == null){
+        if (handlersByPriority == null) {
             byEventBaked.remove(eventClass)
             return
         }
@@ -119,13 +121,13 @@ class EventManager : IEventManager {
 
         do {
             val handlersByListener: MutableMap<Any, Array<Method>>? = handlersByPriority[value]
-            if(handlersByListener == null) continue
+            if (handlersByListener == null) continue
             handlersByListener.forEach { (listener, methods) ->
                 methods.forEach { method ->
                     handlerList.add(EventInvoker(listener, method))
                 }
             }
-        }while (value++ < Byte.MAX_VALUE)
+        } while (value++ < Byte.MAX_VALUE)
         byEventBaked.put(eventClass, handlerList.toTypedArray())
     }
 }

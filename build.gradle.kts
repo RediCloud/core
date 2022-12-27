@@ -116,6 +116,7 @@ allprojects {
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
         implementation2("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
         implementation2("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
+        implementation2("org.redisson:redisson:3.18.0")
         compileOnly("eu.cloudnetservice.cloudnet:driver:4.0.0-RC5")
         compileOnly("eu.cloudnetservice.cloudnet:bridge:4.0.0-RC5")
         compileOnly("eu.cloudnetservice.cloudnet:wrapper-jvm:4.0.0-RC5")

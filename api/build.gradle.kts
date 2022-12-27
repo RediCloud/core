@@ -7,11 +7,12 @@ repositories {
     mavenCentral()
 }
 
+dependencies{
+    implementation2("org.mindrot:jbcrypt:0.4")
+}
+
 the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
     .doBootstrapShade.set(false)
-dependencies {
-    implementation2("org.redisson:redisson:3.18.0")
-}
 
 java {
     withSourcesJar()

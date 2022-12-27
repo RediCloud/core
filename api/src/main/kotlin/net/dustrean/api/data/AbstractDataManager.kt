@@ -2,9 +2,12 @@ package net.dustrean.api.data
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.packet.DataActionType
 import net.dustrean.api.data.packet.DataObjectPacket
@@ -13,7 +16,6 @@ import net.dustrean.api.data.packet.cache.DataCachePacket
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.redis.IRedisConnection
 import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
-import net.dustrean.api.tasks.futures.FutureAction
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -28,11 +30,13 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         private val objectMapper = JsonMapper.builder()
             .addModule(KotlinModule.Builder().build())
             .serializationInclusion(JsonInclude.Include.NON_NULL)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .defaultMergeable(true)
             .build()
         private val codec = JsonJacksonKotlinCodec(objectMapper)
     }
+
+    val cacheScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     init {
         MANAGERS[prefix] = this
@@ -48,33 +52,28 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         return cachedObjects.values.toList()
     }
 
-    fun sendPacket(identifier: UUID, action: DataCacheActionType, components: List<NetworkComponentInfo>) {
+    suspend fun sendPacket(identifier: UUID, action: DataCacheActionType, components: Set<NetworkComponentInfo>) {
         val packet = DataCachePacket()
         packet.identifier = identifier
         packet.managerPrefix = prefix
         packet.action = action
         packet.packetData.receiverComponent.addAll(components)
-        ICoreAPI.INSTANCE.getPacketManager().sendPacket(packet)
+        packet.sendPacket()
     }
 
-    fun sendPacket(dataObject: T, action: DataActionType): FutureAction<Unit> {
-        val future = FutureAction<Unit>()
+    suspend fun sendPacket(dataObject: T, action: DataActionType) {
         val packet = DataObjectPacket()
         packet.json = serialize(dataObject)
         packet.type = action
         packet.identifier = dataObject.getIdentifier()
         packet.managerPrefix = prefix
-        dataObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
-            if (throwable != null) {
-                future.completeExceptionally(throwable)
-                return@whenComplete
-            }
-            packet.packetData.receiverComponent.addAll(components)
-            ICoreAPI.INSTANCE.getPacketManager().sendPacket(packet)
-            future.complete(Unit)
-        }
-        return future
+        val networkComponents =
+            dataObject.getCacheHandler().getCacheNetworkComponents().toMutableSet()
+        networkComponents.addAll(dataObject.getCacheHandler().getCurrentNetworkComponents())
+        packet.packetData.receiverComponent.addAll(networkComponents)
+        packet.sendPacket()
     }
+
 
     override fun getCache(identifier: UUID): T? {
         if (cachedObjects.containsKey(identifier)) {
@@ -83,15 +82,12 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
                 if (cachedObject.getValidator()!!.isValid()) return cachedObject
                 cachedObjects.remove(identifier)
                 parkedObjects[identifier] = cachedObject
-
-                cachedObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
-                    if (throwable != null) {
-                        logger.error("Error while getting cache network components for object $identifier", throwable)
-                        return@whenComplete
-                    }
-                    sendPacket(identifier, DataCacheActionType.REMOVED, components)
+                cacheScope.launch {
+                    val networkComponents =
+                        cachedObject.getCacheHandler().getCacheNetworkComponents().toMutableSet()
+                    networkComponents.addAll(cachedObject.getCacheHandler().getCurrentNetworkComponents())
+                    sendPacket(identifier, DataCacheActionType.REMOVED, networkComponents)
                 }
-
                 return null
             }
             return cachedObject
@@ -101,17 +97,10 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
                 if (parkedObject.getValidator()!!.isValid()) {
                     cachedObjects[identifier] = parkedObject
                     parkedObjects.remove(identifier)
-
-                    parkedObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
-                        if (throwable != null) {
-                            logger.error(
-                                "Error while getting cache network components for object $identifier", throwable
-                            )
-                            return@whenComplete
-                        }
-                        sendPacket(identifier, DataCacheActionType.ADDED, components)
+                    cacheScope.launch {
+                        val networkComponents = parkedObject.getCacheHandler().getCacheNetworkComponents()
+                        sendPacket(identifier, DataCacheActionType.ADDED, networkComponents)
                     }
-
                     return parkedObject
                 }
             }
@@ -125,15 +114,11 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             if (!cachedObject.getValidator()!!.isValid()) return@forEach
             cachedObjects.remove(cachedObject.getIdentifier())
 
-            cachedObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
-                if (throwable != null) {
-                    logger.error(
-                        "Error while getting cache network components for object ${cachedObject.getIdentifier()}",
-                        throwable
-                    )
-                    return@whenComplete
-                }
-                sendPacket(cachedObject.getIdentifier(), DataCacheActionType.REMOVED, components)
+            cacheScope.launch {
+                val networkComponents =
+                    cachedObject.getCacheHandler().getCacheNetworkComponents().toMutableSet()
+                networkComponents.addAll(cachedObject.getCacheHandler().getCurrentNetworkComponents())
+                sendPacket(cachedObject.getIdentifier(), DataCacheActionType.REMOVED, networkComponents)
             }
 
         }
@@ -151,145 +136,74 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         return parkedObjects.containsKey(identifier)
     }
 
-    override fun getObject(identifier: UUID): FutureAction<T> {
-        val future = FutureAction<T>()
+    override suspend fun getObject(identifier: UUID): T {
         val cache: T? = getCache(identifier)
         if (cache != null) {
-            future.complete(cache)
-            return future
+            return cache
         }
-        val key = "$prefix@$identifier"
+        val key = "$prefix:$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        bucket.async.whenComplete { dataObject, throwable ->
-            if (throwable != null) {
-                future.completeExceptionally(throwable)
-                return@whenComplete
-            }
-            var cacheListUpdated = false
-            if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
-                cachedObjects[dataObject.getIdentifier()] = dataObject
-                cacheListUpdated = true
-            } else {
-                parkedObjects[dataObject.getIdentifier()] = dataObject
-            }
-            if(cacheListUpdated){
-                dataObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
-                    if (throwable != null) {
-                        future.completeExceptionally(throwable)
-                        return@whenComplete
-                    }
-                    sendPacket(identifier, DataCacheActionType.ADDED, components)
-                    future.complete(dataObject)
-                }
-                return@whenComplete
-            }
-            future.complete(dataObject)
+        if (!bucket.isExists) throw NoSuchElementException("Object with identifier $identifier does not exist!")
+        val dataObject = bucket.get()
+        if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
+            cachedObjects[dataObject.getIdentifier()] = dataObject
+            sendPacket(
+                identifier,
+                DataCacheActionType.ADDED,
+                dataObject.getCacheHandler().getCacheNetworkComponents()
+            )
+        } else {
+            parkedObjects[dataObject.getIdentifier()] = dataObject
         }
-        return future
+        return dataObject
     }
 
-    override fun createObject(dataObject: T): FutureAction<T> {
-        val future = FutureAction<T>()
-        val key = "$prefix@${dataObject.getIdentifier()}"
+    override suspend fun createObject(dataObject: T): T {
+        val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        bucket.setAsync(dataObject).whenComplete { _, throwable ->
-            if (throwable != null) {
-                future.completeExceptionally(throwable)
-            }
-            if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
-                cachedObjects[dataObject.getIdentifier()] = dataObject
-            } else {
-                parkedObjects[dataObject.getIdentifier()] = dataObject
-            }
-            sendPacket(dataObject, DataActionType.CREATE).whenComplete { _, throwable1 ->
-                if (throwable1 != null) {
-                    future.completeExceptionally(throwable1)
-                    return@whenComplete
-                }
-                future.complete(dataObject)
-            }
+        if (existsObject(dataObject.getIdentifier())) throw IllegalArgumentException("Object with identifier ${dataObject.getIdentifier()} already exists!")
+        bucket.set(dataObject)
+        if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
+            cachedObjects[dataObject.getIdentifier()] = dataObject
+        } else {
+            parkedObjects[dataObject.getIdentifier()] = dataObject
         }
-        return future
+        sendPacket(dataObject, DataActionType.CREATE)
+        return dataObject
     }
 
-    override fun updateObject(dataObject: T): FutureAction<T> {
-        val future = FutureAction<T>()
-        val key = "$prefix@${dataObject.getIdentifier()}"
+    override suspend fun updateObject(dataObject: T): T {
+        val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        bucket.isExistsAsync.whenComplete { exists, throwable ->
-            if (throwable != null) {
-                future.completeExceptionally(throwable)
-            }
-            if (!exists) {
-                future.completeExceptionally(NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist"))
-            }
-            bucket.setAsync(dataObject).whenComplete { _, throwable1 ->
-                if (throwable1 != null) {
-                    future.completeExceptionally(throwable1)
-                }
-                if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
-                    cachedObjects[dataObject.getIdentifier()] = dataObject
-                    parkedObjects.remove(dataObject.getIdentifier())
-                } else {
-                    parkedObjects[dataObject.getIdentifier()] = dataObject
-                }
-                sendPacket(dataObject, DataActionType.UPDATE).whenComplete { _, throwable2 ->
-                    if (throwable2 != null) {
-                        future.completeExceptionally(throwable2)
-                        return@whenComplete
-                    }
-                    future.complete(dataObject)
-                }
-            }
+        if (!existsObject(dataObject.getIdentifier())) throw NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist")
+        bucket.set(dataObject)
+        if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
+            cachedObjects[dataObject.getIdentifier()] = dataObject
+            parkedObjects.remove(dataObject.getIdentifier())
+        } else {
+            parkedObjects[dataObject.getIdentifier()] = dataObject
         }
-        return future
+        sendPacket(dataObject, DataActionType.UPDATE)
+        return dataObject
     }
 
-    override fun deleteObject(dataObject: T): FutureAction<Unit> {
-        val future = FutureAction<Unit>()
-        val key = "$prefix@${dataObject.getIdentifier()}"
+    override suspend fun deleteObject(dataObject: T) {
+        val key = "$prefix:${dataObject.getIdentifier()}"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        bucket.isExistsAsync.whenComplete { exists, throwable ->
-            if (throwable != null) {
-                future.completeExceptionally(throwable)
-            }
-            if (!exists) {
-                future.completeExceptionally(NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist"))
-            }
-            bucket.deleteAsync().whenComplete { _, throwable1 ->
-                if (throwable1 != null) {
-                    future.completeExceptionally(throwable1)
-                } else {
-                    cachedObjects.remove(dataObject.getIdentifier())
-                    parkedObjects.remove(dataObject.getIdentifier())
-                    sendPacket(dataObject, DataActionType.DELETE).whenComplete { _, throwable2 ->
-                        if (throwable2 != null) {
-                            future.completeExceptionally(throwable2)
-                            return@whenComplete
-                        }
-                        future.complete(Unit)
-                    }
-                }
-            }
-        }
-        return future
+        if (!existsObject(dataObject.getIdentifier())) throw NoSuchElementException("Object with identifier ${dataObject.getIdentifier()} does not exist")
+        bucket.delete()
+        cachedObjects.remove(dataObject.getIdentifier())
+        parkedObjects.remove(dataObject.getIdentifier())
+        sendPacket(dataObject, DataActionType.DELETE)
     }
 
-    override fun existsObject(identifier: UUID): FutureAction<Boolean> {
-        val future = FutureAction<Boolean>()
-        if(isCached(identifier)) {
-            future.complete(true)
-            return future
+    override suspend fun existsObject(identifier: UUID): Boolean {
+        if (isCached(identifier)) {
+            return true
         }
-        val key = "$prefix@$identifier"
+        val key = "$prefix:<$identifier"
         val bucket = connection.getRedissonClient().getBucket<T>(key)
-        bucket.isExistsAsync.whenComplete { exists, throwable ->
-            if (throwable != null) {
-                future.completeExceptionally(throwable)
-            }
-            future.complete(exists)
-        }
-        return future
+        return bucket.isExists
     }
 
     fun serialize(dataObject: T): String {
@@ -309,12 +223,12 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         val dataObject = objectMapper.readValue(json, implClass)
         if (dataObject.getValidator() == null || (dataObject.getValidator()?.isValid() == true)) {
             cachedObjects[dataObject.getIdentifier()] = dataObject
-            dataObject.getCacheHandler().getCacheNetworkComponents().whenComplete { components, throwable ->
-                if (throwable != null) {
-                    logger.error("Failed to get cache network components for object with identifier ${dataObject.getIdentifier()}", throwable)
-                    return@whenComplete
-                }
-                sendPacket(dataObject.getIdentifier(), DataCacheActionType.ADDED, components)
+            cacheScope.launch {
+                sendPacket(
+                    dataObject.getIdentifier(),
+                    DataCacheActionType.ADDED,
+                    dataObject.getCacheHandler().getCacheNetworkComponents()
+                )
             }
             return dataObject
         }

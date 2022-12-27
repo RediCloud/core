@@ -9,7 +9,14 @@ package net.dustrean.api.utils.extension
  */
 
 import java.net.URL
+import java.nio.charset.StandardCharsets
 import java.util.*
+
+fun String.isCrackedName(uniqueId: UUID): Boolean =
+    UUID.nameUUIDFromBytes(("OfflinePlayer:$this").toByteArray(StandardCharsets.UTF_8)).equals(uniqueId)
+
+fun String.isPremiumName(uniqueId: UUID): Boolean =
+    !isCrackedName(uniqueId)
 
 fun String.isClass(): Boolean {
     return try {

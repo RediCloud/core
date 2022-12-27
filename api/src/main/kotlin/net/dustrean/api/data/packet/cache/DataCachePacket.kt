@@ -2,7 +2,7 @@ package net.dustrean.api.data.packet.cache
 
 import net.dustrean.api.data.AbstractDataManager
 import net.dustrean.api.packet.Packet
-import java.util.UUID
+import java.util.*
 
 class DataCachePacket : Packet() {
 
@@ -11,11 +11,11 @@ class DataCachePacket : Packet() {
     lateinit var action: DataCacheActionType
 
     override fun received() {
-        if(!AbstractDataManager.MANAGERS.containsKey(managerPrefix)) return
+        if (!AbstractDataManager.MANAGERS.containsKey(managerPrefix)) return
         val manager = AbstractDataManager.MANAGERS[managerPrefix]!!
         val cachedObject = manager.getCache(identifier)
-        if(cachedObject == null) return
-        when(action) {
+        if (cachedObject == null) return
+        when (action) {
             DataCacheActionType.ADDED -> cachedObject.getCacheHandler().currentCached.add(packetData.senderComponent)
             DataCacheActionType.REMOVED -> cachedObject.getCacheHandler().currentCached.remove(packetData.senderComponent)
         }
