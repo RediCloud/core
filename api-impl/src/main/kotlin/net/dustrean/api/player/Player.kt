@@ -21,14 +21,14 @@ data class Player(
     companion object {
         val INVALID_ID = UUID(0, 0)
         val INVALID_SERVICE = NetworkComponentInfo(NetworkComponentType.STANDALONE, INVALID_ID)
-        val INVALID_IP = "UNKNOWN"
+        const val INVALID_IP = "UNKNOWN"
     }
 
     override var lastServer: NetworkComponentInfo = INVALID_SERVICE
     override var lastProxy: NetworkComponentInfo = INVALID_SERVICE
-    override var authentication: IPlayerAuthentication = PlayerAuthentication()
+    override var authentication: PlayerAuthentication = PlayerAuthentication()
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
-    override val sessions: MutableList<IPlayerSession> = mutableListOf()
+    override val sessions: MutableList<PlayerSession> = mutableListOf()
     @Expose(serialize = false, deserialize = false)
     private val cacheHandler = object : AbstractCacheHandler() {
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
