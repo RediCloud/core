@@ -37,16 +37,19 @@ data class Player(
     override val sessions: MutableList<PlayerSession> = mutableListOf()
 
     @Expose(serialize = false, deserialize = false)
-    private val playerCacheHandler: PlayerCacheHandler = PlayerCacheHandler { lastServer }
+    private var playerCacheHandler: PlayerCacheHandler? = null
+        get() = field ?: PlayerCacheHandler { lastServer }.also {
+            playerCacheHandler = it
+        }
 
     override val identifier: UUID
         get() = uuid
 
     override val cacheHandler
-        get() = playerCacheHandler
+        get() = playerCacheHandler!!
 
     override val validator
-        get() = playerCacheHandler
+        get() = playerCacheHandler!!
 
     override suspend fun update(): Player =
         ICoreAPI.getInstance<CoreAPI>().getPlayerManager().updatePlayer(this)
