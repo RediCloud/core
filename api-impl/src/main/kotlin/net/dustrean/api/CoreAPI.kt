@@ -13,6 +13,7 @@ import net.dustrean.api.packet.IPacketManager
 import net.dustrean.api.packet.PacketManager
 import net.dustrean.api.player.PlayerManager
 import net.dustrean.api.redis.RedisConnection
+import net.dustrean.api.utils.ExceptionHandler
 import net.dustrean.api.utils.coreVersion
 
 abstract class CoreAPI(
@@ -21,6 +22,7 @@ abstract class CoreAPI(
 
     init {
         ICoreAPI.INSTANCE = this
+        ExceptionHandler
     }
 
     private var redisConnection: RedisConnection = RedisConnection()

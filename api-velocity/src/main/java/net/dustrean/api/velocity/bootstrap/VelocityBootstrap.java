@@ -5,7 +5,6 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
-import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.dustrean.api.redis.codec.GsonCodec;
 import net.dustrean.api.velocity.VelocityCoreAPI;
@@ -16,13 +15,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLClassLoader;
 
-@Plugin(
-    id = "core",
-    name = "core",
-    version = "1.0.0-SNAPSHOT",
-    description = "Core plugin for the Dustrean API",
-    authors = "Dustrean-Team"
-)
+@Plugin(id = "core", name = "core", version = "1.0.0-SNAPSHOT", description = "Core plugin for the Dustrean API", authors = "Dustrean-Team")
 public class VelocityBootstrap {
 
     private final ProxyServer proxyServer;
@@ -35,7 +28,7 @@ public class VelocityBootstrap {
 
     @Subscribe
     public void onInit(ProxyInitializeEvent event) {
-        VelocityCoreAPI.INSTANCE.init(this.proxyServer, (PluginContainer) this);
+        VelocityCoreAPI.INSTANCE.init(this.proxyServer, this);
         ((GsonCodec) VelocityCoreAPI.INSTANCE.getRedisConnection().redisClient.getConfig().getCodec()).getClassLoaders().add(this.getClass().getClassLoader());
     }
 

@@ -9,6 +9,8 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
+import net.dustrean.api.ICoreAPI
+import net.dustrean.api.utils.ExceptionHandler
 import org.redisson.client.codec.BaseCodec
 import org.redisson.client.handler.State
 import org.redisson.client.protocol.Decoder

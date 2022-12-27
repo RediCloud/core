@@ -1,6 +1,5 @@
 package net.dustrean.api.redis
 
-import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.redis.codec.GsonCodec
 import org.redisson.Redisson
@@ -27,7 +26,6 @@ class RedisConnection(
             .setSubscriptionConnectionMinimumIdleSize(configuration.subscriptionConnectionMinimumIdleSize)
             .setAddress("redis://${credentials.host}:${credentials.port}")
             .password = credentials.password
-
 
         config.codec = GsonCodec(mutableListOf(ICoreAPI::class.java.classLoader))
 

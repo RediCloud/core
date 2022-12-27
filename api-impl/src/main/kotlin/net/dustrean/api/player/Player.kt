@@ -1,5 +1,6 @@
 package net.dustrean.api.player
 
+import com.google.gson.annotations.Expose
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractCacheHandler
@@ -28,10 +29,12 @@ data class Player(
     override var authentication: IPlayerAuthentication = PlayerAuthentication()
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
     override val sessions: MutableList<IPlayerSession> = mutableListOf()
+    @Expose(serialize = false, deserialize = false)
     private val cacheHandler = object : AbstractCacheHandler() {
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> =
             setOf(lastServer)
     }
+    @Expose(serialize = false, deserialize = false)
     private val validator = object : ICacheValidator<AbstractDataObject> {
         override fun isValid(): Boolean {
             return lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
@@ -50,7 +53,6 @@ data class Player(
         val session = sessions.lastOrNull { !it.isActive() } ?: return null
         return session as PlayerSession
     }
-
 
     override fun getIdentifier(): UUID =
         uuid

@@ -11,4 +11,7 @@ interface IConfigManager {
 
     suspend fun <T : IConfig> saveConfig(config: T)
 
+    suspend fun exists(key: String): Boolean
+    suspend fun exists(config: IConfig): Boolean
+
 }

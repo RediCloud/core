@@ -71,6 +71,15 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
         packet.sendPacket()
     }
 
+    override suspend fun exists(config: IConfig): Boolean {
+        return exists(config.key)
+    }
+
+    override suspend fun exists(key: String): Boolean {
+        val bucket = redisConnection.redisClient.getBucket<ConfigData>("config:$key")
+        return bucket.isExists
+    }
+
     fun readUpdate(key: String, configData: ConfigData, delete: Boolean) {
         if (delete) {
             cache.removeIf { it.key == key }

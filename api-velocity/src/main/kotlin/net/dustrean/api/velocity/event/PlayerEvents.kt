@@ -34,7 +34,12 @@ class PlayerEvents(private val playerManager: PlayerManager) {
 
     init {
         runBlocking {
-            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig("player-authentication")
+            authConfig = if (ICoreAPI.INSTANCE.getConfigManager()
+                    .exists("player-authentication")
+            ) ICoreAPI.INSTANCE.getConfigManager()
+                .getConfig("player-authentication") else ICoreAPI.INSTANCE.getConfigManager()
+                .createConfig(PlayerAuthConfig("player-authentication"))
+
             if (authConfig.crackAllowed) {
                 ICoreAPI.INSTANCE.getCommandManager().registerCommand(RegisterCommand())
                 ICoreAPI.INSTANCE.getCommandManager().registerCommand(LoginCommand())
@@ -166,21 +171,23 @@ class PlayerEvents(private val playerManager: PlayerManager) {
     }
 
     @Subscribe(order = PostOrder.LAST)
-    fun onPlayerDisconnect(event: DisconnectEvent) = runBlocking {
-        val player = runBlocking {
-            playerManager.getPlayerByUUID(
-                event.player.uniqueId
-            )
-        }
-        if (player != null) {
-            val session = player.getCurrentSession()
-            if (session != null) {
-                session.end = System.currentTimeMillis()
-                if (session.getDuration() < 5.seconds.inWholeMilliseconds) player.sessions.removeIf { it == session }
+    fun onPlayerDisconnect(event: DisconnectEvent) {
+        runBlocking {
+            val player = runBlocking {
+                playerManager.getPlayerByUUID(
+                    event.player.uniqueId
+                )
             }
-            player.update()
+            if (player != null) {
+                val session = player.getCurrentSession()
+                if (session != null) {
+                    session.end = System.currentTimeMillis()
+                    if (session.getDuration() < 5.seconds.inWholeMilliseconds) player.sessions.removeIf { it == session }
+                }
+                player.update()
+            }
+            playerManager.onlineFetcher.remove(event.player.uniqueId)
         }
-        playerManager.onlineFetcher.remove(event.player.uniqueId)
     }
 
 }
