@@ -1,21 +1,21 @@
 package net.dustrean.api.data
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import com.google.gson.ExclusionStrategy
+import com.google.gson.FieldAttributes
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.annotations.Expose
+import kotlinx.coroutines.*
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.packet.DataActionType
 import net.dustrean.api.data.packet.DataObjectPacket
 import net.dustrean.api.data.packet.cache.DataCacheActionType
 import net.dustrean.api.data.packet.cache.DataCachePacket
+import net.dustrean.api.event.CoreEvent
+import net.dustrean.api.event.EventType
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.redis.IRedisConnection
-import net.dustrean.api.redis.codec.JsonJacksonKotlinCodec
+import net.dustrean.api.redis.codec.GsonIgnore
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -24,28 +24,46 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
     private val connection: IRedisConnection,
     private val implClass: Class<T>
 ) : IDataManager<T> {
+    data class ObjectUpdateEvent <T>(
+        val prefix: String,
+        val classType: Class<T>,
+        val obj: T
+    ): CoreEvent(EventType.GLOBAL)
+
+    fun getUpdateEvent(obj: Any): ObjectUpdateEvent<T> {
+        return ObjectUpdateEvent(prefix, implClass, obj as T)
+    }
 
     companion object {
         val MANAGERS = mutableMapOf<String, AbstractDataManager<out AbstractDataObject>>()
-        private val objectMapper = JsonMapper.builder()
+        /*private val objectMapper = JsonMapper.builder()
             .addModule(KotlinModule.Builder().build())
             .serializationInclusion(JsonInclude.Include.NON_NULL)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .defaultMergeable(true)
-            .build()
-        private val codec = JsonJacksonKotlinCodec(objectMapper)
+            .build()*/
+        private val objectMapper: Gson = GsonBuilder().addSerializationExclusionStrategy(object : ExclusionStrategy {
+            override fun shouldSkipField(f: FieldAttributes?): Boolean =
+                f?.getAnnotation(Expose::class.java)?.serialize == false || f?.getAnnotation(GsonIgnore::class.java) != null
+
+            override fun shouldSkipClass(clazz: Class<*>?): Boolean = false
+
+        }).addSerializationExclusionStrategy(object : ExclusionStrategy {
+            override fun shouldSkipField(f: FieldAttributes?): Boolean =
+                f?.getAnnotation(Expose::class.java)?.deserialize == false || f?.getAnnotation(GsonIgnore::class.java) != null
+
+            override fun shouldSkipClass(clazz: Class<*>?): Boolean = false
+        }).disableHtmlEscaping().create()
     }
 
-    val cacheScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val cacheScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     init {
         MANAGERS[prefix] = this
         ICoreAPI.INSTANCE.getPacketManager().registerPacket(DataCachePacket())
         ICoreAPI.INSTANCE.getPacketManager().registerPacket(DataObjectPacket())
     }
-
     val cachedObjects = mutableMapOf<UUID, T>()
-    val parkedObjects = mutableMapOf<UUID, T>()
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun getCache(): List<T> {
@@ -74,14 +92,12 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         packet.sendPacket()
     }
 
-
     override fun getCache(identifier: UUID): T? {
         if (cachedObjects.containsKey(identifier)) {
             val cachedObject = cachedObjects[identifier]!!
             if (cachedObject.validator != null) {
                 if (cachedObject.validator!!.isValid()) return cachedObject
                 cachedObjects.remove(identifier)
-                parkedObjects[identifier] = cachedObject
                 cacheScope.launch {
                     val networkComponents =
                         cachedObject.cacheHandler.getCacheNetworkComponents().toMutableSet()
@@ -91,19 +107,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
                 return null
             }
             return cachedObject
-        } else if (parkedObjects.containsKey(identifier)) {
-            val parkedObject = parkedObjects[identifier]!!
-            if (parkedObject.validator != null) {
-                if (parkedObject.validator!!.isValid()) {
-                    cachedObjects[identifier] = parkedObject
-                    parkedObjects.remove(identifier)
-                    cacheScope.launch {
-                        val networkComponents = parkedObject.cacheHandler.getCacheNetworkComponents()
-                        sendPacket(identifier, DataCacheActionType.ADDED, networkComponents)
-                    }
-                    return parkedObject
-                }
-            }
         }
         return null
     }
@@ -132,10 +135,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         return cachedObjects.containsKey(identifier)
     }
 
-    fun containsParkedList(identifier: UUID): Boolean {
-        return parkedObjects.containsKey(identifier)
-    }
-
     override suspend fun getObject(identifier: UUID): T {
         val cache: T? = getCache(identifier)
         if (cache != null) {
@@ -152,8 +151,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
                 DataCacheActionType.ADDED,
                 dataObject.cacheHandler.getCacheNetworkComponents()
             )
-        } else {
-            parkedObjects[dataObject.identifier] = dataObject
         }
         return dataObject
     }
@@ -165,8 +162,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         bucket.set(dataObject)
         if (dataObject.validator == null || (dataObject.validator?.isValid() == true)) {
             cachedObjects[dataObject.identifier] = dataObject
-        } else {
-            parkedObjects[dataObject.identifier] = dataObject
         }
         sendPacket(dataObject, DataActionType.CREATE)
         return dataObject
@@ -179,9 +174,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         bucket.set(dataObject)
         if (dataObject.validator == null || (dataObject.validator?.isValid() == true)) {
             cachedObjects[dataObject.identifier] = dataObject
-            parkedObjects.remove(dataObject.identifier)
-        } else {
-            parkedObjects[dataObject.identifier] = dataObject
         }
         sendPacket(dataObject, DataActionType.UPDATE)
         return dataObject
@@ -193,7 +185,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
         if (!existsObject(dataObject.identifier)) throw NoSuchElementException("Object with identifier ${dataObject.identifier} does not exist")
         bucket.delete()
         cachedObjects.remove(dataObject.identifier)
-        parkedObjects.remove(dataObject.identifier)
         sendPacket(dataObject, DataActionType.DELETE)
     }
 
@@ -207,20 +198,11 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
     }
 
     fun serialize(dataObject: T): String {
-        return objectMapper.writeValueAsString(dataObject)
+        return objectMapper.toJson(dataObject)
     }
 
-    fun deserialize(identifier: UUID?, json: String): T {
-        if (identifier != null) {
-            var dataObject: T? = null
-            if (cachedObjects.containsKey(identifier)) dataObject = cachedObjects[identifier]
-            if (parkedObjects.containsKey(identifier)) dataObject = parkedObjects[identifier]
-            if (dataObject != null) {
-                objectMapper.readerForUpdating(dataObject).readValue<T>(json)
-                return dataObject
-            }
-        }
-        val dataObject = objectMapper.readValue(json, implClass)
+    fun deserialize(json: String): T {
+        val dataObject = objectMapper.fromJson(json, implClass)
         if (dataObject.validator == null || (dataObject.validator?.isValid() == true)) {
             cachedObjects[dataObject.identifier] = dataObject
             cacheScope.launch {
@@ -232,7 +214,6 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
             }
             return dataObject
         }
-        parkedObjects[dataObject.identifier] = dataObject
         return dataObject
     }
 
