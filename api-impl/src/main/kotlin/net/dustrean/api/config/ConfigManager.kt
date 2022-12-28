@@ -18,21 +18,21 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
         PacketManager.INSTANCE.registerPacket(ConfigUpdatePacket())
     }
 
-    override suspend fun <T : IConfig> getConfig(key: String): T {
+    override suspend fun <T : IConfig> getConfig(key: String, clazz: Class<T>): T {
         if (cache.any { it.key == key }) {
             return cache.first { it.key == key } as T
         }
         val bucket = redisConnection.redisClient.getBucket<ConfigData>("config:$key")
         if (!bucket.isExists) throw NoSuchElementException("Config with key $key does not exists")
         val configData = bucket.get()
-        val config = gson.fromJson(configData.json, Class.forName(configData.clazz))
+        val config = gson.fromJson(configData.json, clazz)
         cache.add(config as IConfig)
         return config as T
     }
 
-    override suspend fun <T : IConfig> getConfigOrPut(key: String, default: () -> T): T {
+    override suspend fun <T : IConfig> getConfigOrPut(key: String, clazz: Class<T>, default: () -> T): T {
         return try {
-            getConfig(key)
+            getConfig(key, clazz)
         } catch(e: NoSuchElementException) {
             val conf = default()
             GlobalScope.launch {
@@ -99,15 +99,11 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
             cache.removeIf { it.key == key }
             return
         }
-        val clazzName = configData.clazz
-        val clazz = Class.forName(clazzName)
         if (cache.any { it.key == key }) {
             val config = cache.first { it.key == key }
             objectMapper.readerForUpdating(config).readValue<IConfig>(configData.json)
             return
         }
-        val config = gson.fromJson(configData.json, clazz)
-        cache.add(config as IConfig)
     }
 
 }
