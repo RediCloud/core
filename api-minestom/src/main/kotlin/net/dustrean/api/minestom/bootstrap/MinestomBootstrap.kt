@@ -13,9 +13,7 @@ import java.net.URL
 class MinestomBootstrap : Extension() {
     lateinit var classloader: ExtensionClassLoader
     override fun preInitialize() {
-        val classloader = this.javaClass.superclass.getDeclaredMethod(
-            "getExtensionClassLoader"
-        ).apply { isAccessible = true }.invoke(this) as ExtensionClassLoader
+        val classloader = this.javaClass.superclass.classLoader as ExtensionClassLoader
         this.classloader = classloader
         Bootstrap().apply({
             classloader.addURL(it)
