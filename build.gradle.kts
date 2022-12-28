@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm")
     id("net.dustrean.libloader")
@@ -115,6 +116,7 @@ allprojects {
         implementation2("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
         implementation2("org.redisson:redisson:3.18.0")
         compileOnly("eu.cloudnetservice.cloudnet:driver:4.0.0-RC5")
+        compileOnly("net.kyori:adventure-text-minimessage:4.12.0")
         compileOnly("eu.cloudnetservice.cloudnet:bridge:4.0.0-RC5")
         compileOnly("eu.cloudnetservice.cloudnet:wrapper-jvm:4.0.0-RC5")
         compileOnly("eu.cloudnetservice.cloudnet:cloudperms:4.0.0-RC5")

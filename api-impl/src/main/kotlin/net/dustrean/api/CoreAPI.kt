@@ -4,6 +4,8 @@ import net.dustrean.api.config.ConfigManager
 import net.dustrean.api.data.AbstractDataManager
 import net.dustrean.api.event.EventManager
 import net.dustrean.api.event.IEventManager
+import net.dustrean.api.language.ILanguageManager
+import net.dustrean.api.language.LanguageManger
 import net.dustrean.api.module.IModuleManager
 import net.dustrean.api.module.ModuleManager
 import net.dustrean.api.network.INetworkComponentManager
@@ -62,4 +64,6 @@ abstract class CoreAPI(
     override fun getConfigManager(): ConfigManager = configManager
 
     override fun getPlayerManager(): PlayerManager = playerManager
+
+    override fun getLanguageManager(): ILanguageManager = LanguageManger
 }

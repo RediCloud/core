@@ -8,6 +8,7 @@ package net.dustrean.api.utils.extension
  * Remove once SteinGaming rewrote vexention
  */
 
+import net.kyori.adventure.text.Component
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -99,3 +100,5 @@ fun String.toUUID(): UUID {
         UUID.fromString(uuid)
     }
 }
+
+fun String.toComponent() = Component.text(this)

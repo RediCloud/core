@@ -10,8 +10,6 @@ interface IPlayer {
 
     var name: String
 
-    var languageID: Int
-
     var coins: Long
 
     var connected: Boolean

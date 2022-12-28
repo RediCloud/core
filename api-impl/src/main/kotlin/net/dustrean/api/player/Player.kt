@@ -14,7 +14,6 @@ import java.util.*
 data class Player(
     override val uuid: UUID,
     override var name: String,
-    override var languageID: Int = 0,
     override var coins: Long = 0,
     override var connected: Boolean = false,
 ) : IPlayer, AbstractDataObject() {
