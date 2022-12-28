@@ -24,9 +24,7 @@ class MinestomBootstrap : Extension() {
         MinestomCoreAPI.init()
         (ICoreAPI.getInstance<CoreAPI>()
             .getRedisConnection().redisClient.config.codec as GsonCodec).classLoaders.add(
-            this.javaClass.superclass.getDeclaredMethod(
-                "getExtensionClassLoader"
-            ).apply { isAccessible = true }.invoke(this) as ExtensionClassLoader
+            classloader
         )
     }
 
