@@ -5,7 +5,7 @@ import net.dustrean.api.data.AbstractDataManager
 import net.dustrean.api.event.EventManager
 import net.dustrean.api.event.IEventManager
 import net.dustrean.api.language.ILanguageManager
-import net.dustrean.api.language.LanguageManger
+import net.dustrean.api.language.LanguageManager
 import net.dustrean.api.module.IModuleManager
 import net.dustrean.api.module.ModuleManager
 import net.dustrean.api.network.INetworkComponentManager
@@ -36,6 +36,7 @@ abstract class CoreAPI(
     private var configManager: ConfigManager = ConfigManager(redisConnection)
     private var playerManager: PlayerManager = PlayerManager(this)
     private var moduleManager: ModuleManager = ModuleManager(this).also { it.enableModules() }
+    private var languageManager: LanguageManager = LanguageManager(this)
 
     override fun shutdown() {
         moduleManager.disableModules()
@@ -65,5 +66,5 @@ abstract class CoreAPI(
 
     override fun getPlayerManager(): PlayerManager = playerManager
 
-    override fun getLanguageManager(): ILanguageManager = LanguageManger
+    override fun getLanguageManager(): LanguageManager = languageManager
 }
