@@ -64,7 +64,7 @@ class ModuleManager(
             loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).newInstance() as Module
 
         try {
-            Bootstrap().apply(URLClassLoaderJarLoader(loader), loader, loader)
+            Bootstrap().apply(ModuleClassLoader(loader), loader, loader)
         } catch (e: Throwable) {
             logger.info("No libloader implementation found, continuing", e)
         }
