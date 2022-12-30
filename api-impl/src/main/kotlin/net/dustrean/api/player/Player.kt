@@ -13,6 +13,7 @@ import net.dustrean.api.data.ICacheValidator
 import net.dustrean.api.language.ILanguagePlayer
 import net.dustrean.api.language.LanguageManager
 import net.dustrean.api.language.component.chat.ChatComponentBuilder
+import net.dustrean.api.language.component.tablist.TabListComponentBuilder
 import net.dustrean.api.language.placeholder.collection.PlaceholderCollection
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
@@ -94,6 +95,12 @@ data class Player(
         = defaultScope.async {
             val component = ICoreAPI.INSTANCE.getLanguageManager().getChatMessage(languageId, provider)
             ICoreAPI.INSTANCE.getLanguageBridge().sendMessage(this@Player, provider, component)
+        }
+
+    override fun sendTabList(provider: TabListComponentBuilder.LanguageTabListComponentProvider): Deferred<Unit>
+        = defaultScope.async {
+            val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, provider)
+            ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, provider, component)
         }
 
     override fun getPlaceholders(prefix: String): PlaceholderCollection {

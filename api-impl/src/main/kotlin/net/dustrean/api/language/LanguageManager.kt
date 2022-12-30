@@ -4,6 +4,8 @@ import net.dustrean.api.CoreAPI
 import net.dustrean.api.language.component.ILanguageComponent
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentBuilder
+import net.dustrean.api.language.component.tablist.TabListComponent
+import net.dustrean.api.language.component.tablist.TabListComponentBuilder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
@@ -29,7 +31,6 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
     private val componentMaps = mutableMapOf<LanguageType, RLocalCachedMap<String, ILanguageComponent>>()
 
     init {
-
         if (!languages.containsKey(DEFAULT_LANGUAGE_ID)) {
             languages[DEFAULT_LANGUAGE_ID] = Language(
                 DEFAULT_LANGUAGE_ID,
@@ -72,6 +73,27 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
             return fallbackComponent
         }
         return components[provider.key] as ChatComponent
+    }
+
+    override suspend fun getTabList(
+        languageId: Int,
+        provider: TabListComponentBuilder.LanguageTabListComponentProvider
+    ): TabListComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(provider.type)
+        if (!components.containsKey(provider.key)) {
+            val fallbackComponent = TabListComponent(
+                provider.key,
+                provider.type,
+                language.id,
+                DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.header, DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.footer, DEFAULT_SERIALIZER_TYPE),
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as TabListComponent
     }
 
 

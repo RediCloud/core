@@ -5,14 +5,8 @@ import net.dustrean.api.language.placeholder.PlaceholderProvider
 
 abstract class LanguageComponentBuilder<T>(type: LanguageType) {
 
-    private var key: String = ""
+    var key: String = ""
     private val placeholderProvider: PlaceholderProvider<T> = PlaceholderProvider(this)
-
-    fun key(key: String): T {
-        this.key = key
-        return this as T
-    }
-    fun key() = key
 
     fun placeholderProvider() = placeholderProvider
 
