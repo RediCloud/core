@@ -1,6 +1,10 @@
 package net.dustrean.api.player
 
 import com.google.gson.annotations.Expose
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractCacheHandler
@@ -32,6 +36,7 @@ data class Player(
     companion object {
         val INVALID_ID = UUID(0, 0)
         val INVALID_SERVICE = NetworkComponentInfo(NetworkComponentType.STANDALONE, INVALID_ID)
+        val defaultScope = CoroutineScope(Dispatchers.Default)
         const val INVALID_IP = "UNKNOWN"
     }
 
@@ -85,10 +90,11 @@ data class Player(
         packet.sendPacket()
     }
 
-    override suspend fun sendMessage(provider: ChatComponentBuilder.LanguageChatComponentProvider) {
-        val component = ICoreAPI.INSTANCE.getLanguageManager().getChatMessage(languageId, provider)
-        ICoreAPI.INSTANCE.getLanguageBridge().sendMessage(this, provider, component)
-    }
+    override fun sendMessage(provider: ChatComponentBuilder.LanguageChatComponentProvider): Deferred<Unit>
+        = defaultScope.async {
+            val component = ICoreAPI.INSTANCE.getLanguageManager().getChatMessage(languageId, provider)
+            ICoreAPI.INSTANCE.getLanguageBridge().sendMessage(this@Player, provider, component)
+        }
 
     override fun getPlaceholders(prefix: String): PlaceholderCollection {
         if(prefix.isEmpty()) return placeholders

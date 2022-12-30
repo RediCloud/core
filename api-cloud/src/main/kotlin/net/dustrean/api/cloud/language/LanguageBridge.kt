@@ -10,8 +10,11 @@ import net.dustrean.api.language.component.chat.ChatComponentBuilder
 
 class LanguageBridge : ILanguageBridge {
 
+
     override suspend fun sendMessage(
-        player: ILanguagePlayer, provider: ChatComponentBuilder.LanguageChatComponentProvider, chatComponent: ChatComponent
+        player: ILanguagePlayer,
+        provider: ChatComponentBuilder.LanguageChatComponentProvider,
+        chatComponent: ChatComponent
     ) {
         val textComponent = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
             chatComponent.rawComponent,
@@ -20,5 +23,4 @@ class LanguageBridge : ILanguageBridge {
         )
         getCloudPlayerManager().playerExecutor(player.uuid).sendChatMessage(textComponent)
     }
-
 }

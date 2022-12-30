@@ -2,7 +2,6 @@ package net.dustrean.api.language
 
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentBuilder
-import net.dustrean.api.player.IPlayer
 
 interface ILanguageBridge {
 
