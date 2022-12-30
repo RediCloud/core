@@ -49,7 +49,7 @@ data class Player(
     override val sessions: MutableList<PlayerSession> = mutableListOf()
 
     @Expose(serialize = false, deserialize = false)
-    override val placeholders = PlaceholderCollection()
+    override val placeholders = PlaceholderCollection("player")
 
     @Expose(serialize = false, deserialize = false)
     private var playerCacheHandler: PlayerCacheHandler? = null
@@ -109,7 +109,7 @@ data class Player(
         }
 
     override fun getPlaceholders(prefix: String): PlaceholderCollection {
-        if (prefix.isEmpty()) return placeholders
+        if (prefix == "player") return placeholders
         return placeholders.copy(prefix)
     }
 
