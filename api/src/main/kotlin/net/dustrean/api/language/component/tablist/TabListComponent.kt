@@ -9,6 +9,6 @@ class TabListComponent(
     override val languageId: Int,
     override val type: LanguageType = LanguageType.TAB_LIST,
     override val serializerType: LanguageSerializerType,
-    val rawHeaderComponent: String,
-    val rawFooterComponent: String,
+    val rawHeader: String,
+    val rawFooter: String,
 ) : ILanguageComponent

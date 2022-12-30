@@ -9,7 +9,7 @@ class BookComponent(
     override val languageId: Int,
     override val type: LanguageType,
     override val serializerType: LanguageSerializerType,
-    val rawTitleComponent: String,
-    val rawAuthorComponent: String,
-    val rawPagesComponent: List<String>,
+    val rawTitle: String,
+    val rawAuthor: String,
+    val rawPages: List<String>,
 ) : ILanguageComponent
