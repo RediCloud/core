@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.7.22"
+    kotlin("jvm")
 }
 
 the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)

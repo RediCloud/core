@@ -1,9 +1,9 @@
 package net.dustrean.api.packet
 
-import com.google.gson.annotations.Expose
 import kotlinx.coroutines.CompletableDeferred
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.packet.response.PacketResponse
+import net.dustrean.api.redis.codec.GsonIgnore
 import java.io.Serializable
 import java.util.*
 
@@ -14,7 +14,7 @@ class PacketData : Serializable {
     var allowSenderAsReceiver: Boolean = false
     var responsePacketData: PacketData? = null
 
-    @Expose(serialize = false, deserialize = false)
+    @GsonIgnore
     var futureResponse: CompletableDeferred<PacketResponse>? = null
 
     fun allowSenderAsReceiver() {

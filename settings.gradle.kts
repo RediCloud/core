@@ -27,8 +27,8 @@ pluginManagement {
     }
     val libloaderVersion: String by settings
     plugins {
-        kotlin("jvm") version "1.7.22"
         kotlin("plugin.serialization") version "1.7.22"
+        kotlin("jvm") version "1.8.0"
         id("net.dustrean.libloader") version libloaderVersion
     }
 }

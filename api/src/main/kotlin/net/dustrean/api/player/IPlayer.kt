@@ -20,11 +20,11 @@ interface IPlayer {
 
     var lastProxy: NetworkComponentInfo
 
-    var authentication: IPlayerAuthentication
+    val authentication: IPlayerAuthentication
 
     val nameHistory: MutableList<Pair<Long, String>>
 
-    val sessions: MutableList<IPlayerSession>
+    val sessions: MutableList<out IPlayerSession>
 
 
     fun isOnCurrent(): Boolean

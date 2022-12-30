@@ -1,7 +1,7 @@
 import net.dustrean.libloader.plugin.LibraryLoader
 
 plugins {
-    kotlin("jvm") version "1.7.22"
+    kotlin("jvm")
 }
 
 

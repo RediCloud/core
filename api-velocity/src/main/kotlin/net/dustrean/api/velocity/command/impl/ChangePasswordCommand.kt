@@ -21,7 +21,7 @@ class ChangePasswordCommand : Command(
 
     init {
         runBlocking {
-            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig("player-authentication")
+            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig("player-authentication", PlayerAuthConfig::class.java)
         }
     }
 

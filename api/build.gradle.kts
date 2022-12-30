@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.7.22"
+    kotlin("jvm")
     `maven-publish`
 }
 val maven by extra(true)
