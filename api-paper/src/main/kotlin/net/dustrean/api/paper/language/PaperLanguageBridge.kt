@@ -22,14 +22,14 @@ class PaperLanguageBridge : CloudLanguageBridge() {
         val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val header = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
-            tabListComponent.rawHeaderComponent,
+            tabListComponent.rawHeader,
             tabListComponent.serializerType,
-            placeholderProvider.parse(tabListComponent.rawHeaderComponent)
+            placeholderProvider.parse(tabListComponent.rawHeader)
         )
         val footer = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
-            tabListComponent.rawFooterComponent,
+            tabListComponent.rawFooter,
             tabListComponent.serializerType,
-            placeholderProvider.parse(tabListComponent.rawFooterComponent)
+            placeholderProvider.parse(tabListComponent.rawFooter)
         )
         paperPlayer.sendPlayerListHeaderAndFooter(header, footer)
     }
@@ -43,16 +43,16 @@ class PaperLanguageBridge : CloudLanguageBridge() {
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val book = Book.book(
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
-                bookComponent.rawTitleComponent,
+                bookComponent.rawTitle,
                 bookComponent.serializerType,
-                placeholderProvider.parse(bookComponent.rawTitleComponent)
+                placeholderProvider.parse(bookComponent.rawTitle)
             ),
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
-                bookComponent.rawAuthorComponent,
+                bookComponent.rawAuthor,
                 bookComponent.serializerType,
-                placeholderProvider.parse(bookComponent.rawAuthorComponent)
+                placeholderProvider.parse(bookComponent.rawAuthor)
             ),
-            *bookComponent.rawPagesComponent.map { page ->
+            *bookComponent.rawPages.map { page ->
                 ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
                     page,
                     bookComponent.serializerType,
