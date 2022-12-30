@@ -13,14 +13,15 @@ import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.placeholder.PlaceholderProvider
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 
 class MinestomLanguageBridge : CloudLanguageBridge() {
 
     override suspend fun sendTabList(
         player: ILanguagePlayer, provider: TabListComponentProvider, tabListComponent: TabListComponent
-    ) {
-        val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return
+    ): Pair<Component, Component>? {
+        val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val header = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
             tabListComponent.rawHeader,
@@ -33,14 +34,15 @@ class MinestomLanguageBridge : CloudLanguageBridge() {
             placeholderProvider.parse(tabListComponent.rawFooter)
         )
         minestomPlayer.sendPlayerListHeaderAndFooter(header, footer)
+        return header to footer
     }
 
     override suspend fun openBook(
         player: ILanguagePlayer,
         provider: BookComponentProvider,
         bookComponent: BookComponent
-    ) {
-        val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return
+    ): Book? {
+        val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val book = Book.book(
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
@@ -62,14 +64,15 @@ class MinestomLanguageBridge : CloudLanguageBridge() {
             }.toTypedArray()
         )
         minestomPlayer.openBook(book)
+        return book
     }
 
     override suspend fun sendBossBar(
         player: ILanguagePlayer,
         provider: BossBarComponentProvider,
         bossBarComponent: BossBarComponent
-    ) {
-        val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return
+    ): BossBar? {
+        val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val bossBar = BossBar.bossBar(
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
@@ -81,8 +84,8 @@ class MinestomLanguageBridge : CloudLanguageBridge() {
             bossBarComponent.color,
             bossBarComponent.overlay
         )
-        //TODO: hide/show
         minestomPlayer.showBossBar(bossBar)
+        return bossBar
     }
 
 }

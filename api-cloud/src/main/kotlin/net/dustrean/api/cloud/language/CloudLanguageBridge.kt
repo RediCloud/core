@@ -10,6 +10,7 @@ import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.title.TitleComponent
 import net.dustrean.api.language.component.title.TitleComponentProvider
 import net.dustrean.api.language.placeholder.PlaceholderProvider
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import java.time.Duration
 
@@ -20,7 +21,7 @@ abstract class CloudLanguageBridge : ILanguageBridge {
         player: ILanguagePlayer,
         provider: ChatComponentProvider,
         chatComponent: ChatComponent
-    ) {
+    ): Component? {
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val textComponent = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
             chatComponent.rawMessage,
@@ -28,13 +29,14 @@ abstract class CloudLanguageBridge : ILanguageBridge {
             placeholderProvider.parse(chatComponent.rawMessage)
         )
         getCloudPlayerManager().playerExecutor(player.uuid).sendChatMessage(textComponent)
+        return textComponent
     }
 
     override suspend fun sendTitle(
         player: ILanguagePlayer,
         provider: TitleComponentProvider,
         titleComponent: TitleComponent
-    ) {
+    ): Title? {
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val title = Title.title(
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
@@ -54,6 +56,7 @@ abstract class CloudLanguageBridge : ILanguageBridge {
             )
         )
         getCloudPlayerManager().playerExecutor(player.uuid).sendTitle(title)
+        return title
     }
 
 }

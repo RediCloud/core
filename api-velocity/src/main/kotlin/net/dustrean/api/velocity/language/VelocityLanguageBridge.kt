@@ -14,6 +14,7 @@ import net.dustrean.api.language.placeholder.PlaceholderProvider
 import net.dustrean.api.velocity.VelocityCoreAPI
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.text.Component
 import kotlin.jvm.optionals.getOrNull
 
 class VelocityLanguageBridge : CloudLanguageBridge() {
@@ -22,8 +23,8 @@ class VelocityLanguageBridge : CloudLanguageBridge() {
         player: ILanguagePlayer,
         provider: TabListComponentProvider,
         tabListComponent: TabListComponent
-    ) {
-        val velocityPlayer = VelocityCoreAPI.proxyServer.getPlayer(player.uuid).getOrNull() ?: return
+    ): Pair<Component, Component>? {
+        val velocityPlayer = VelocityCoreAPI.proxyServer.getPlayer(player.uuid).getOrNull() ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val header = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
             tabListComponent.rawHeader,
@@ -36,14 +37,15 @@ class VelocityLanguageBridge : CloudLanguageBridge() {
             placeholderProvider.parse(tabListComponent.rawFooter)
         )
         velocityPlayer.sendPlayerListHeaderAndFooter(header, footer)
+        return header to footer
     }
 
     override suspend fun openBook(
         player: ILanguagePlayer,
         provider: BookComponentProvider,
         bookComponent: BookComponent
-    ) {
-        val velocityPlayer = VelocityCoreAPI.proxyServer.getPlayer(player.uuid).getOrNull() ?: return
+    ): Book? {
+        val velocityPlayer = VelocityCoreAPI.proxyServer.getPlayer(player.uuid).getOrNull() ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val book = Book.book(
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
@@ -65,14 +67,15 @@ class VelocityLanguageBridge : CloudLanguageBridge() {
             }.toTypedArray()
         )
         velocityPlayer.openBook(book)
+        return book
     }
 
     override suspend fun sendBossBar(
         player: ILanguagePlayer,
         provider: BossBarComponentProvider,
         bossBarComponent: BossBarComponent
-    ) {
-val velocityPlayer = VelocityCoreAPI.proxyServer.getPlayer(player.uuid).getOrNull() ?: return
+    ): BossBar? {
+        val velocityPlayer = VelocityCoreAPI.proxyServer.getPlayer(player.uuid).getOrNull() ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val bossBar = BossBar.bossBar(
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
@@ -84,8 +87,8 @@ val velocityPlayer = VelocityCoreAPI.proxyServer.getPlayer(player.uuid).getOrNul
             bossBarComponent.color,
             bossBarComponent.overlay
         )
-        //TODO: show/hide
         velocityPlayer.showBossBar(bossBar)
+        return bossBar
     }
 
 }

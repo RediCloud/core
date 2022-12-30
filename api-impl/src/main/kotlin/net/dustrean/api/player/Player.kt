@@ -21,7 +21,11 @@ import net.dustrean.api.language.placeholder.collection.PlaceholderCollection
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
 import net.dustrean.api.packet.connect.PlayerChangeServicePacket
-import java.lang.IllegalArgumentException
+import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
+import java.lang.IllegalStateException
 import java.util.*
 
 data class Player(
@@ -96,39 +100,45 @@ data class Player(
         packet.sendPacket()
     }
 
-    override fun sendMessage(provider: ChatComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
+    override fun sendMessage(provider: ChatComponentProvider.() -> Unit): Deferred<Component> = defaultScope.async {
         val built = ChatComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
         val component = ICoreAPI.INSTANCE.getLanguageManager().getChatMessage(languageId, built)
-        ICoreAPI.INSTANCE.getLanguageBridge().sendMessage(this@Player, built, component)
+        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendMessage(this@Player, built, component) ?:
+        throw IllegalStateException("Player is not connected")
     }
 
-    override fun sendTabList(provider: TabListComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
-        val built = TabListComponentProvider().apply(provider)
-        if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
-        val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, built)
-        ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, built, component)
-    }
+    override fun sendTabList(provider: TabListComponentProvider.() -> Unit): Deferred<Pair<Component, Component>> =
+        defaultScope.async {
+            val built = TabListComponentProvider().apply(provider)
+            if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
+            val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, built)
+            return@async ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, built, component) ?:
+            throw IllegalStateException("Player is not connected")
+        }
 
-    override fun sendTitle(provider: TitleComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
+    override fun sendTitle(provider: TitleComponentProvider.() -> Unit): Deferred<Title> = defaultScope.async {
         val built = TitleComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
         val component = ICoreAPI.INSTANCE.getLanguageManager().getTitle(languageId, built)
-        ICoreAPI.INSTANCE.getLanguageBridge().sendTitle(this@Player, built, component)
+        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendTitle(this@Player, built, component) ?:
+        throw IllegalStateException("Player is not connected")
     }
 
-    override fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
+    override fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Book> = defaultScope.async {
         val built = BookComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
         val component = ICoreAPI.INSTANCE.getLanguageManager().getBook(languageId, built)
-        ICoreAPI.INSTANCE.getLanguageBridge().openBook(this@Player, built, component)
+        return@async ICoreAPI.INSTANCE.getLanguageBridge().openBook(this@Player, built, component) ?:
+        throw IllegalStateException("Player is not connected")
     }
 
-    override fun sendBossBar(provider: BossBarComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
+    override fun sendBossBar(provider: BossBarComponentProvider.() -> Unit): Deferred<BossBar> = defaultScope.async {
         val built = BossBarComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
         val component = ICoreAPI.INSTANCE.getLanguageManager().getBossBar(languageId, built)
-        ICoreAPI.INSTANCE.getLanguageBridge().sendBossBar(this@Player, built, component)
+        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendBossBar(this@Player, built, component) ?:
+        throw IllegalStateException("Player is not connected")
     }
 
     override fun getPlaceholders(prefix: String): PlaceholderCollection {

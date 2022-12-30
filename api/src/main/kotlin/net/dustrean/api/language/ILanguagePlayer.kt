@@ -7,6 +7,10 @@ import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.component.title.TitleComponentProvider
 import net.dustrean.api.language.placeholder.collection.PlaceholderCollection
+import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
 import java.util.*
 
 interface ILanguagePlayer {
@@ -15,15 +19,15 @@ interface ILanguagePlayer {
     var languageId: Int
     val placeholders: PlaceholderCollection
 
-    fun sendMessage(provider: ChatComponentProvider.() -> Unit): Deferred<Unit>
+    fun sendMessage(provider: ChatComponentProvider.() -> Unit): Deferred<Component>
 
-    fun sendTabList(provider: TabListComponentProvider.() -> Unit): Deferred<Unit>
+    fun sendTabList(provider: TabListComponentProvider.() -> Unit): Deferred<Pair<Component, Component>>
 
-    fun sendTitle(provider: TitleComponentProvider.() -> Unit): Deferred<Unit>
+    fun sendTitle(provider: TitleComponentProvider.() -> Unit): Deferred<Title>
 
-    fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Unit>
+    fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Book>
 
-    fun sendBossBar(provider: BossBarComponentProvider.() -> Unit): Deferred<Unit>
+    fun sendBossBar(provider: BossBarComponentProvider.() -> Unit): Deferred<BossBar>
 
     fun getPlaceholders(prefix: String = ""): PlaceholderCollection
 

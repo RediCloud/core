@@ -13,6 +13,7 @@ import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.placeholder.PlaceholderProvider
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 
 class PaperLanguageBridge : CloudLanguageBridge() {
@@ -21,8 +22,8 @@ class PaperLanguageBridge : CloudLanguageBridge() {
         player: ILanguagePlayer,
         provider: TabListComponentProvider,
         tabListComponent: TabListComponent
-    ) {
-        val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return
+    ): Pair<Component, Component>? {
+        val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val header = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
             tabListComponent.rawHeader,
@@ -35,14 +36,15 @@ class PaperLanguageBridge : CloudLanguageBridge() {
             placeholderProvider.parse(tabListComponent.rawFooter)
         )
         paperPlayer.sendPlayerListHeaderAndFooter(header, footer)
+        return header to footer
     }
 
     override suspend fun openBook(
         player: ILanguagePlayer,
         provider: BookComponentProvider,
         bookComponent: BookComponent
-    ) {
-        val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return
+    ): Book? {
+        val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val book = Book.book(
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
@@ -64,14 +66,15 @@ class PaperLanguageBridge : CloudLanguageBridge() {
             }.toTypedArray()
         )
         paperPlayer.openBook(book)
+        return book
     }
 
     override suspend fun sendBossBar(
         player: ILanguagePlayer,
         provider: BossBarComponentProvider,
         bossBarComponent: BossBarComponent
-    ) {
-        val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return
+    ): BossBar? {
+        val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val bossBar = BossBar.bossBar(
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
@@ -83,8 +86,8 @@ class PaperLanguageBridge : CloudLanguageBridge() {
             bossBarComponent.color,
             bossBarComponent.overlay
         )
-        //TODO: show/hide
         paperPlayer.showBossBar(bossBar)
+        return bossBar
     }
 
 }
