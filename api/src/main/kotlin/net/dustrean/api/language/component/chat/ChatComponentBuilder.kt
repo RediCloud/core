@@ -5,7 +5,7 @@ import net.dustrean.api.language.component.LanguageComponentBuilder
 import net.dustrean.api.language.placeholder.PlaceholderProvider
 import net.kyori.adventure.text.Component
 
-class ChatComponentBuilder : LanguageComponentBuilder(LanguageType.CHAT_MESSAGE) {
+class ChatComponentBuilder : LanguageComponentBuilder<ChatComponentBuilder>(LanguageType.CHAT_MESSAGE) {
 
     private var component: Component = Component.text("!!")
 
@@ -18,7 +18,7 @@ class ChatComponentBuilder : LanguageComponentBuilder(LanguageType.CHAT_MESSAGE)
     }
 
     class LanguageChatComponentProvider(
-        key: String, placeholderProvider: PlaceholderProvider, val component: Component
+        key: String, placeholderProvider: PlaceholderProvider<ChatComponentBuilder>, val component: Component
     ) : LanguageComponentProvider(key, LanguageType.CHAT_MESSAGE, placeholderProvider)
 
 }
