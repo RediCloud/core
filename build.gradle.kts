@@ -118,6 +118,15 @@ allprojects {
         compileOnly("eu.cloudnetservice.cloudnet:bridge:4.0.0-RC5")
         compileOnly("eu.cloudnetservice.cloudnet:wrapper-jvm:4.0.0-RC5")
         compileOnly("eu.cloudnetservice.cloudnet:cloudperms:4.0.0-RC5")
+
+        implementation2("net.kyori:adventure-api:4.12.0")
+        implementation2("net.kyori:adventure-text-serializer-gson:4.12.0")
+        implementation2("net.kyori:adventure-text-serializer-gson-legacy-impl:4.12.0")
+        implementation2("net.kyori:adventure-text-serializer-plain:4.12.0")
+        implementation2("net.kyori:adventure-text-serializer-legacy:4.12.0")
+        implementation2("net.kyori:adventure-text-minimessage:4.12.0")
+        implementation2("net.kyori:adventure-platform-api:4.1.2")
+        implementation2("net.kyori:adventure-platform-facet:4.1.2")
     }
 
     tasks {
