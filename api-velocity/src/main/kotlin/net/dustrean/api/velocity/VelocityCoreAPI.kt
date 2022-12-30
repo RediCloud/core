@@ -6,16 +6,17 @@ import net.dustrean.api.utils.ExceptionHandler
 import net.dustrean.api.utils.parser.string.StringParser
 import net.dustrean.api.velocity.command.VelocityCommandManager
 import net.dustrean.api.velocity.event.PlayerEvents
+import net.dustrean.api.velocity.language.VelocityLanguageBridge
 import net.dustrean.api.velocity.utils.parser.PlayerParser
 
 object VelocityCoreAPI : CloudCoreAPI() {
 
+    private val languageBridge = VelocityLanguageBridge()
     lateinit var proxyServer: ProxyServer
         private set
 
     lateinit var plugin: Any
 
-    override fun getCommandManager() = VelocityCommandManager
 
     fun init(proxyServer: ProxyServer, plugin: Any) {
         this.proxyServer = proxyServer
@@ -26,4 +27,8 @@ object VelocityCoreAPI : CloudCoreAPI() {
         StringParser.customTypeParsers.add(PlayerParser())
         proxyServer.eventManager.register(plugin, PlayerEvents(getPlayerManager()))
     }
+
+    override fun getCommandManager() = VelocityCommandManager
+
+    override fun getLanguageBridge() = languageBridge
 }

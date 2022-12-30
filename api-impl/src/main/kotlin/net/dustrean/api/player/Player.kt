@@ -105,7 +105,7 @@ data class Player(
             val built = TabListComponentProvider().apply(provider)
             if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
             val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, built)
-            ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, provider, component)
+            ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, built, component)
         }
 
     override fun getPlaceholders(prefix: String): PlaceholderCollection {
