@@ -14,6 +14,7 @@ import net.dustrean.api.language.ILanguagePlayer
 import net.dustrean.api.language.LanguageManager
 import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
+import net.dustrean.api.language.component.title.TitleComponentProvider
 import net.dustrean.api.language.placeholder.collection.PlaceholderCollection
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
@@ -100,13 +101,18 @@ data class Player(
         ICoreAPI.INSTANCE.getLanguageBridge().sendMessage(this@Player, built, component)
     }
 
-    override fun sendTabList(provider: TabListComponentProvider.() -> Unit): Deferred<Unit> =
-        defaultScope.async {
-            val built = TabListComponentProvider().apply(provider)
-            if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
-            val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, built)
-            ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, built, component)
-        }
+    override fun sendTabList(provider: TabListComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
+        val built = TabListComponentProvider().apply(provider)
+        if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
+        val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, built)
+        ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, built, component)
+    }
+
+    override fun sendTitle(provider: TitleComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
+        val built = TitleComponentProvider().apply(provider)
+        if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
+        val component = ICoreAPI.INSTANCE.getLanguageManager().getTitle(languageId, built)
+    }
 
     override fun getPlaceholders(prefix: String): PlaceholderCollection {
         if (prefix == "player") return placeholders

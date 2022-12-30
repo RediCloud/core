@@ -6,6 +6,8 @@ import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
+import net.dustrean.api.language.component.title.TitleComponent
+import net.dustrean.api.language.component.title.TitleComponentProvider
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
@@ -84,8 +86,8 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = TabListComponent(
                 provider.key,
-                provider.type,
                 language.id,
+                provider.type,
                 DEFAULT_SERIALIZER_TYPE,
                 serialize(provider.header, DEFAULT_SERIALIZER_TYPE),
                 serialize(provider.footer, DEFAULT_SERIALIZER_TYPE),
@@ -94,6 +96,29 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
             return fallbackComponent
         }
         return components[provider.key] as TabListComponent
+    }
+    override suspend fun getTitle(
+        languageId: Int,
+        provider: TitleComponentProvider
+    ): TitleComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(provider.type)
+        if (!components.containsKey(provider.key)) {
+            val fallbackComponent = TitleComponent(
+                provider.key,
+                language.id,
+                provider.type,
+                DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.title, DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.subtitle, DEFAULT_SERIALIZER_TYPE),
+                provider.fadeIn,
+                provider.stay,
+                provider.fadeOut
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as TitleComponent
     }
 
 

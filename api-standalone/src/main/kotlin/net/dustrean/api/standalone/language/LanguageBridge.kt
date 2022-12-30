@@ -6,6 +6,8 @@ import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
+import net.dustrean.api.language.component.title.TitleComponent
+import net.dustrean.api.language.component.title.TitleComponentProvider
 
 class LanguageBridge : ILanguageBridge {
     override suspend fun sendMessage(
@@ -20,6 +22,14 @@ class LanguageBridge : ILanguageBridge {
         player: ILanguagePlayer,
         provider: TabListComponentProvider,
         tabListComponent: TabListComponent
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun sendTitle(
+        player: ILanguagePlayer,
+        provider: TitleComponentProvider,
+        titleComponent: TitleComponent
     ) {
         TODO("Not yet implemented")
     }
