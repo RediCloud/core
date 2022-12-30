@@ -12,6 +12,7 @@ import net.dustrean.api.data.AbstractDataObject
 import net.dustrean.api.data.ICacheValidator
 import net.dustrean.api.language.ILanguagePlayer
 import net.dustrean.api.language.LanguageManager
+import net.dustrean.api.language.component.book.BookComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.component.title.TitleComponentProvider
@@ -112,8 +113,14 @@ data class Player(
         val built = TitleComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
         val component = ICoreAPI.INSTANCE.getLanguageManager().getTitle(languageId, built)
+        ICoreAPI.INSTANCE.getLanguageBridge().sendTitle(this@Player, built, component)
     }
 
+    override fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Unit> {
+        val built = BookComponentProvider().apply(provider)
+        if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
+        val component = ICoreAPI.INSTANCE.getLanguageManager().get(languageId, built)
+    }
     override fun getPlaceholders(prefix: String): PlaceholderCollection {
         if (prefix == "player") return placeholders
         return placeholders.copy(prefix)

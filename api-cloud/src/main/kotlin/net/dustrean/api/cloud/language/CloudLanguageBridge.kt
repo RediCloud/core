@@ -7,8 +7,6 @@ import net.dustrean.api.language.ILanguageBridge
 import net.dustrean.api.language.ILanguagePlayer
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
-import net.dustrean.api.language.component.tablist.TabListComponent
-import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.component.title.TitleComponent
 import net.dustrean.api.language.component.title.TitleComponentProvider
 import net.dustrean.api.language.placeholder.PlaceholderProvider
@@ -25,9 +23,9 @@ abstract class CloudLanguageBridge : ILanguageBridge {
     ) {
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val textComponent = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
-            chatComponent.rawComponent,
+            chatComponent.rawMessage,
             chatComponent.serializerType,
-            placeholderProvider.parse(chatComponent.rawComponent)
+            placeholderProvider.parse(chatComponent.rawMessage)
         )
         getCloudPlayerManager().playerExecutor(player.uuid).sendChatMessage(textComponent)
     }
@@ -40,14 +38,14 @@ abstract class CloudLanguageBridge : ILanguageBridge {
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val title = Title.title(
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
-                titleComponent.rawTitleComponent,
+                titleComponent.rawTitle,
                 titleComponent.serializerType,
-                placeholderProvider.parse(titleComponent.rawTitleComponent)
+                placeholderProvider.parse(titleComponent.rawTitle)
             ),
             ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
-                titleComponent.rawSubtitleComponent,
+                titleComponent.rawSubtitle,
                 titleComponent.serializerType,
-                placeholderProvider.parse(titleComponent.rawSubtitleComponent)
+                placeholderProvider.parse(titleComponent.rawSubtitle)
             ),
             Title.Times.times(
                 Duration.ofMillis(titleComponent.fadeIn),
