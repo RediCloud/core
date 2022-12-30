@@ -32,4 +32,8 @@ interface ILanguageManager {
         languageId: Int, provider: BookComponentProvider
     ): BookComponent
 
+    suspend fun getBossBar(
+        languageId: Int, provider: BossBarComponentProvider
+    ): BossBarComponent
+
 }

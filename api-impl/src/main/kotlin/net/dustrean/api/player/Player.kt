@@ -13,6 +13,7 @@ import net.dustrean.api.data.ICacheValidator
 import net.dustrean.api.language.ILanguagePlayer
 import net.dustrean.api.language.LanguageManager
 import net.dustrean.api.language.component.book.BookComponentProvider
+import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.component.title.TitleComponentProvider
@@ -116,11 +117,20 @@ data class Player(
         ICoreAPI.INSTANCE.getLanguageBridge().sendTitle(this@Player, built, component)
     }
 
-    override fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Unit> {
+    override fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
         val built = BookComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
-        val component = ICoreAPI.INSTANCE.getLanguageManager().get(languageId, built)
+        val component = ICoreAPI.INSTANCE.getLanguageManager().getBook(languageId, built)
+        ICoreAPI.INSTANCE.getLanguageBridge().openBook(this@Player, built, component)
     }
+
+    override fun sendBossBar(provider: BossBarComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
+        val built = BossBarComponentProvider().apply(provider)
+        if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
+        val component = ICoreAPI.INSTANCE.getLanguageManager().getBossBar(languageId, built)
+        ICoreAPI.INSTANCE.getLanguageBridge().sendBossBar(this@Player, built, component)
+    }
+
     override fun getPlaceholders(prefix: String): PlaceholderCollection {
         if (prefix == "player") return placeholders
         return placeholders.copy(prefix)

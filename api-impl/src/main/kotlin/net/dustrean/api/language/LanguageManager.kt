@@ -82,8 +82,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
     }
 
     override suspend fun getTabList(
-        languageId: Int,
-        provider: TabListComponentProvider
+        languageId: Int, provider: TabListComponentProvider
     ): TabListComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
         val components = getMap(provider.type)
@@ -113,7 +112,9 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 DEFAULT_SERIALIZER_TYPE,
                 serialize(provider.title, DEFAULT_SERIALIZER_TYPE),
                 serialize(provider.author, DEFAULT_SERIALIZER_TYPE),
-
+                provider.pages.map {
+                    serialize(it, DEFAULT_SERIALIZER_TYPE)
+                }.toTypedArray().toList()
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -122,8 +123,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
     }
 
     override suspend fun getTitle(
-        languageId: Int,
-        provider: TitleComponentProvider
+        languageId: Int, provider: TitleComponentProvider
     ): TitleComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
         val components = getMap(provider.type)
@@ -143,6 +143,26 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
             return fallbackComponent
         }
         return components[provider.key] as TitleComponent
+    }
+
+    override suspend fun getBossBar(languageId: Int, provider: BossBarComponentProvider): BossBarComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(provider.type)
+        if (!components.containsKey(provider.key)) {
+            val fallbackComponent = BossBarComponent(
+                provider.key,
+                language.id,
+                provider.type,
+                DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.name, DEFAULT_SERIALIZER_TYPE),
+                provider.progress,
+                provider.color,
+                provider.overlay
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as BossBarComponent
     }
 
     private fun getMap(type: LanguageType): RLocalCachedMap<String, ILanguageComponent> {

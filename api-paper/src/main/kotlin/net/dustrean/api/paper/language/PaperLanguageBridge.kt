@@ -6,9 +6,12 @@ import net.dustrean.api.cloud.language.CloudLanguageBridge
 import net.dustrean.api.language.ILanguagePlayer
 import net.dustrean.api.language.component.book.BookComponent
 import net.dustrean.api.language.component.book.BookComponentProvider
+import net.dustrean.api.language.component.bossbar.BossBarComponent
+import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.placeholder.PlaceholderProvider
+import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
 import org.bukkit.Bukkit
 
@@ -61,6 +64,27 @@ class PaperLanguageBridge : CloudLanguageBridge() {
             }.toTypedArray()
         )
         paperPlayer.openBook(book)
+    }
+
+    override suspend fun sendBossBar(
+        player: ILanguagePlayer,
+        provider: BossBarComponentProvider,
+        bossBarComponent: BossBarComponent
+    ) {
+        val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return
+        val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
+        val bossBar = BossBar.bossBar(
+            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+                bossBarComponent.rawName,
+                bossBarComponent.serializerType,
+                placeholderProvider.parse(bossBarComponent.rawName)
+            ),
+            bossBarComponent.progress,
+            bossBarComponent.color,
+            bossBarComponent.overlay
+        )
+        //TODO: show/hide
+        paperPlayer.showBossBar(bossBar)
     }
 
 }

@@ -23,6 +23,8 @@ interface ILanguagePlayer {
 
     fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Unit>
 
+    fun sendBossBar(provider: BossBarComponentProvider.() -> Unit): Deferred<Unit>
+
     fun getPlaceholders(prefix: String = ""): PlaceholderCollection
 
 }
