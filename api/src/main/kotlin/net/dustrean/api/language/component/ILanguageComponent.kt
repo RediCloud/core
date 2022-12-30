@@ -5,7 +5,7 @@ import net.dustrean.api.language.LanguageType
 
 interface ILanguageComponent {
     val key: String
-    val type: LanguageType
     val languageId: Int
+    val type: LanguageType
     val serializerType: LanguageSerializerType
 }

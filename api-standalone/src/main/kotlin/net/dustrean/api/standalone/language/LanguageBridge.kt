@@ -2,6 +2,8 @@ package net.dustrean.api.standalone.language
 
 import net.dustrean.api.language.ILanguageBridge
 import net.dustrean.api.language.ILanguagePlayer
+import net.dustrean.api.language.component.book.BookComponent
+import net.dustrean.api.language.component.book.BookComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
@@ -30,6 +32,14 @@ class LanguageBridge : ILanguageBridge {
         player: ILanguagePlayer,
         provider: TitleComponentProvider,
         titleComponent: TitleComponent
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun openBook(
+        player: ILanguagePlayer,
+        provider: BookComponentProvider,
+        bookComponent: BookComponent
     ) {
         TODO("Not yet implemented")
     }
