@@ -1,5 +1,9 @@
 package net.dustrean.api.language
 
+import net.dustrean.api.language.component.book.BookComponent
+import net.dustrean.api.language.component.book.BookComponentProvider
+import net.dustrean.api.language.component.bossbar.BossBarComponent
+import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
@@ -23,5 +27,9 @@ interface ILanguageManager {
     suspend fun getTitle(
         languageId: Int, provider: TitleComponentProvider
     ): TitleComponent
+
+    suspend fun getBook(
+        languageId: Int, provider: BookComponentProvider
+    ): BookComponent
 
 }

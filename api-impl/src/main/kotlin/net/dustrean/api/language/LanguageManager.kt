@@ -2,6 +2,10 @@ package net.dustrean.api.language
 
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.language.component.ILanguageComponent
+import net.dustrean.api.language.component.book.BookComponent
+import net.dustrean.api.language.component.book.BookComponentProvider
+import net.dustrean.api.language.component.bossbar.BossBarComponent
+import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
@@ -69,7 +73,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 language.id,
                 provider.type,
                 DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.component, DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.message, DEFAULT_SERIALIZER_TYPE),
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -97,6 +101,26 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         }
         return components[provider.key] as TabListComponent
     }
+
+    override suspend fun getBook(languageId: Int, provider: BookComponentProvider): BookComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(provider.type)
+        if (!components.containsKey(provider.key)) {
+            val fallbackComponent = BookComponent(
+                provider.key,
+                language.id,
+                provider.type,
+                DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.title, DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.author, DEFAULT_SERIALIZER_TYPE),
+
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as BookComponent
+    }
+
     override suspend fun getTitle(
         languageId: Int,
         provider: TitleComponentProvider
@@ -120,7 +144,6 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         }
         return components[provider.key] as TitleComponent
     }
-
 
     private fun getMap(type: LanguageType): RLocalCachedMap<String, ILanguageComponent> {
         return componentMaps[type]!!
