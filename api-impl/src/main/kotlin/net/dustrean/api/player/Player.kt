@@ -41,7 +41,7 @@ data class Player(
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
     override val sessions: MutableList<PlayerSession> = mutableListOf()
     @Expose(serialize = false, deserialize = false)
-    private val placeholders = PlaceholderCollection()
+    override val placeholders = PlaceholderCollection()
 
     @Expose(serialize = false, deserialize = false)
     private var playerCacheHandler: PlayerCacheHandler? = null

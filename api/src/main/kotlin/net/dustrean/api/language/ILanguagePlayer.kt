@@ -8,6 +8,7 @@ interface ILanguagePlayer {
 
     val uuid: UUID
     var languageId: Int
+    val placeholders: PlaceholderCollection
 
     suspend fun sendMessage(provider: ChatComponentBuilder.LanguageChatComponentProvider)
 
