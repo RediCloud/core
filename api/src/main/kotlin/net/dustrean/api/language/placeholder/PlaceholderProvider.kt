@@ -4,7 +4,7 @@ import net.dustrean.api.language.component.LanguageComponentBuilder
 import net.dustrean.api.language.placeholder.collection.PlaceholderCollection
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
-class PlaceholderProvider<out LanguageComponentBuilder>(private val builder: LanguageComponentBuilder) {
+class PlaceholderProvider<T>(private val builder: LanguageComponentBuilder<T>) {
 
     private val placeholders = mutableListOf<Placeholder>()
     private val placeholderCollections = mutableListOf<PlaceholderCollection>()
