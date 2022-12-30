@@ -9,9 +9,9 @@ import kotlin.time.Duration.Companion.seconds
 
 class Placeholder(
     private val key: String,
+    val value: suspend () -> String,
     val cacheDuration: Duration = 3.seconds,
-    val parsed: Boolean = true,
-    val value: suspend () -> String
+    val parsed: Boolean = true
 ) {
     private var cacheTime: Long = 1L
     private var cachedValue: String = ""

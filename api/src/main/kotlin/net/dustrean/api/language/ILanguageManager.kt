@@ -1,9 +1,9 @@
 package net.dustrean.api.language
 
 import net.dustrean.api.language.component.chat.ChatComponent
-import net.dustrean.api.language.component.chat.ChatComponentBuilder
+import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
-import net.dustrean.api.language.component.tablist.TabListComponentBuilder
+import net.dustrean.api.language.component.tablist.TabListComponentProvider
 
 interface ILanguageManager {
 
@@ -11,11 +11,11 @@ interface ILanguageManager {
     suspend fun getDefaultLanguage(): Language
 
     suspend fun getChatMessage(
-        languageId: Int, provider: ChatComponentBuilder.LanguageChatComponentProvider
+        languageId: Int, provider: ChatComponentProvider
     ): ChatComponent
 
     suspend fun getTabList(
-        languageId: Int, provider: TabListComponentBuilder.LanguageTabListComponentProvider
+        languageId: Int, provider: TabListComponentProvider
     ): TabListComponent
 
 }

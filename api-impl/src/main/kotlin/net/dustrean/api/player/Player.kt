@@ -12,12 +12,13 @@ import net.dustrean.api.data.AbstractDataObject
 import net.dustrean.api.data.ICacheValidator
 import net.dustrean.api.language.ILanguagePlayer
 import net.dustrean.api.language.LanguageManager
-import net.dustrean.api.language.component.chat.ChatComponentBuilder
-import net.dustrean.api.language.component.tablist.TabListComponentBuilder
+import net.dustrean.api.language.component.chat.ChatComponentProvider
+import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.placeholder.collection.PlaceholderCollection
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
 import net.dustrean.api.packet.connect.PlayerChangeServicePacket
+import java.lang.IllegalArgumentException
 import java.util.*
 
 data class Player(
@@ -26,7 +27,7 @@ data class Player(
     override var coins: Long = 0,
     override var languageId: Int = LanguageManager.DEFAULT_LANGUAGE_ID,
     override var connected: Boolean = false,
-) : IPlayer, ILanguagePlayer, AbstractDataObject(){
+) : IPlayer, ILanguagePlayer, AbstractDataObject() {
     class PlayerCacheHandler(val lastServer: () -> NetworkComponentInfo) : AbstractCacheHandler(),
         ICacheValidator<AbstractDataObject> {
 
@@ -46,6 +47,7 @@ data class Player(
     override var authentication: PlayerAuthentication = PlayerAuthentication()
     override val nameHistory: MutableList<Pair<Long, String>> = mutableListOf()
     override val sessions: MutableList<PlayerSession> = mutableListOf()
+
     @Expose(serialize = false, deserialize = false)
     override val placeholders = PlaceholderCollection()
 
@@ -91,20 +93,23 @@ data class Player(
         packet.sendPacket()
     }
 
-    override fun sendMessage(provider: ChatComponentBuilder.LanguageChatComponentProvider): Deferred<Unit>
-        = defaultScope.async {
-            val component = ICoreAPI.INSTANCE.getLanguageManager().getChatMessage(languageId, provider)
-            ICoreAPI.INSTANCE.getLanguageBridge().sendMessage(this@Player, provider, component)
-        }
+    override fun sendMessage(provider: ChatComponentProvider.() -> Unit): Deferred<Unit> = defaultScope.async {
+        val built = ChatComponentProvider().apply(provider)
+        if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
+        val component = ICoreAPI.INSTANCE.getLanguageManager().getChatMessage(languageId, built)
+        ICoreAPI.INSTANCE.getLanguageBridge().sendMessage(this@Player, built, component)
+    }
 
-    override fun sendTabList(provider: TabListComponentBuilder.LanguageTabListComponentProvider): Deferred<Unit>
-        = defaultScope.async {
-            val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, provider)
+    override fun sendTabList(provider: TabListComponentProvider.() -> Unit): Deferred<Unit> =
+        defaultScope.async {
+            val built = TabListComponentProvider().apply(provider)
+            if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
+            val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, built)
             ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, provider, component)
         }
 
     override fun getPlaceholders(prefix: String): PlaceholderCollection {
-        if(prefix.isEmpty()) return placeholders
+        if (prefix.isEmpty()) return placeholders
         return placeholders.copy(prefix)
     }
 

@@ -3,9 +3,9 @@ package net.dustrean.api.language
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.language.component.ILanguageComponent
 import net.dustrean.api.language.component.chat.ChatComponent
-import net.dustrean.api.language.component.chat.ChatComponentBuilder
+import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
-import net.dustrean.api.language.component.tablist.TabListComponentBuilder
+import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
@@ -57,7 +57,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
     }
 
     override suspend fun getChatMessage(
-        languageId: Int, provider: ChatComponentBuilder.LanguageChatComponentProvider
+        languageId: Int, provider: ChatComponentProvider
     ): ChatComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
         val components = getMap(provider.type)
@@ -77,7 +77,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getTabList(
         languageId: Int,
-        provider: TabListComponentBuilder.LanguageTabListComponentProvider
+        provider: TabListComponentProvider
     ): TabListComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
         val components = getMap(provider.type)

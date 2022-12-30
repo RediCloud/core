@@ -1,24 +1,16 @@
 package net.dustrean.api.language.placeholder
 
-import net.dustrean.api.language.component.LanguageComponentBuilder
 import net.dustrean.api.language.placeholder.collection.PlaceholderCollection
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
-class PlaceholderProvider<T>(private val builder: LanguageComponentBuilder<T>) {
+class PlaceholderProvider {
 
-    private val placeholders = mutableListOf<Placeholder>()
-    private val placeholderCollections = mutableListOf<PlaceholderCollection>()
-
-    fun addPlaceholder(placeholder: Placeholder) = apply { placeholders.add(placeholder) }
-    fun addPlaceholderCollection(collection: PlaceholderCollection) = apply {
-        placeholderCollections.add(collection)
-    }
+    val placeholders = mutableListOf<Placeholder>()
+    val placeholderCollections = mutableListOf<PlaceholderCollection>()
 
     fun addStaticPlaceholder(key: String, value: String) = apply {
         placeholders.add(Placeholder(key, value = { value }))
     }
-
-    fun builder() = builder
 
     suspend fun parse(text: String): TagResolver {
         val tagResolvers = mutableListOf<TagResolver>()
