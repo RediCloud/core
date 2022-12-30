@@ -64,8 +64,8 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = ChatComponent(
                 provider.key,
-                provider.type,
                 language.id,
+                provider.type,
                 DEFAULT_SERIALIZER_TYPE,
                 serialize(provider.component, DEFAULT_SERIALIZER_TYPE),
             )

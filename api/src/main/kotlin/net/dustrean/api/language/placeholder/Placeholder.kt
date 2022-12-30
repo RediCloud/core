@@ -3,7 +3,6 @@ package net.dustrean.api.language.placeholder
 import net.dustrean.api.language.placeholder.collection.PlaceholderCollection
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import java.util.UUID
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
