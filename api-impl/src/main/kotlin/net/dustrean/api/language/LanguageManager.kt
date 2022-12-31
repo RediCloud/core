@@ -2,6 +2,8 @@ package net.dustrean.api.language
 
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.language.component.ILanguageComponent
+import net.dustrean.api.language.component.actionbar.ActionbarComponent
+import net.dustrean.api.language.component.actionbar.ActionbarComponentProvider
 import net.dustrean.api.language.component.book.BookComponent
 import net.dustrean.api.language.component.book.BookComponentProvider
 import net.dustrean.api.language.component.bossbar.BossBarComponent
@@ -243,6 +245,24 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
             return fallbackComponent
         }
         return components[provider.key] as TextComponent
+    }
+
+    override suspend fun getActionbar(languageId: Int, provider: ActionbarComponentProvider): ActionbarComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(provider.type)
+        if (!components.containsKey(provider.key)) {
+            val fallbackComponent = ActionbarComponent(
+                provider.key,
+                language.id,
+                provider.type,
+                DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.content, DEFAULT_SERIALIZER_TYPE),
+                provider.stay
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as ActionbarComponent
     }
 
     private fun getMap(type: LanguageType): RLocalCachedMap<String, ILanguageComponent> {

@@ -1,5 +1,7 @@
 package net.dustrean.api.language
 
+import net.dustrean.api.language.component.actionbar.ActionbarComponent
+import net.dustrean.api.language.component.actionbar.ActionbarComponentProvider
 import net.dustrean.api.language.component.book.BookComponent
 import net.dustrean.api.language.component.book.BookComponentProvider
 import net.dustrean.api.language.component.bossbar.BossBarComponent
@@ -53,5 +55,9 @@ interface ILanguageManager {
     suspend fun getText(
         languageId: Int, provider: TextComponentProvider
     ): TextComponent
+
+    suspend fun getActionbar(
+        languageId: Int, provider: ActionbarComponentProvider
+    ): ActionbarComponent
 
 }
