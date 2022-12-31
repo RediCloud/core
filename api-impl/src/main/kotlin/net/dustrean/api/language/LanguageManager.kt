@@ -14,6 +14,8 @@ import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponent
 import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
+import net.dustrean.api.language.component.text.TextComponent
+import net.dustrean.api.language.component.text.TextComponentProvider
 import net.dustrean.api.language.component.title.TitleComponent
 import net.dustrean.api.language.component.title.TitleComponentProvider
 import net.kyori.adventure.text.Component
@@ -224,6 +226,23 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
             return fallbackComponent
         }
         return components[provider.key] as ItemComponent
+    }
+
+    override suspend fun getText(languageId: Int, provider: TextComponentProvider): TextComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(provider.type)
+        if (!components.containsKey(provider.key)) {
+            val fallbackComponent = TextComponent(
+                provider.key,
+                language.id,
+                provider.type,
+                DEFAULT_SERIALIZER_TYPE,
+                provider.text
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as TextComponent
     }
 
     private fun getMap(type: LanguageType): RLocalCachedMap<String, ILanguageComponent> {
