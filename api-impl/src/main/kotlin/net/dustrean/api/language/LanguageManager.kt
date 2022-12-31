@@ -8,6 +8,8 @@ import net.dustrean.api.language.component.bossbar.BossBarComponent
 import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
+import net.dustrean.api.language.component.item.ItemComponent
+import net.dustrean.api.language.component.item.ItemComponentProvider
 import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponent
 import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
@@ -188,6 +190,40 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
             return fallbackComponent
         }
         return components[provider.key] as ScoreboardLineComponent
+    }
+
+    override suspend fun getItem(
+        languageId: Int,
+        provider: ItemComponentProvider
+    ): ItemComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(provider.type)
+        if (!components.containsKey(provider.key)) {
+            val fallbackComponent = ItemComponent(
+                provider.key,
+                language.id,
+                provider.type,
+                DEFAULT_SERIALIZER_TYPE,
+                provider.material.name,
+                serialize(provider.name, DEFAULT_SERIALIZER_TYPE),
+                provider.amount,
+                provider.damage,
+                provider.lore.map {
+                    serialize(it, DEFAULT_SERIALIZER_TYPE)
+                }.toTypedArray().toList(),
+                provider.unbreakable,
+                provider.blockDrop,
+                provider.blockInteract,
+                provider.blockClick,
+                provider.permission,
+                provider.skullOwner,
+                provider.skullTexture,
+                provider.properties
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as ItemComponent
     }
 
     private fun getMap(type: LanguageType): RLocalCachedMap<String, ILanguageComponent> {
