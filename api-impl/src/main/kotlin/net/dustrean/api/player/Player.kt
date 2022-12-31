@@ -17,6 +17,7 @@ import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.component.title.TitleComponentProvider
+import net.dustrean.api.language.placeholder.Placeholder
 import net.dustrean.api.language.placeholder.collection.PlaceholderCollection
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
@@ -56,7 +57,17 @@ data class Player(
     override val sessions: MutableList<PlayerSession> = mutableListOf()
 
     @Expose(serialize = false, deserialize = false)
-    override val placeholders = PlaceholderCollection("player")
+    override val placeholders = PlaceholderCollection("player").apply {
+        add(Placeholder("name", { name }))
+        add(Placeholder("uuid", { "$uuid" }))
+        add(Placeholder("coins", { "$coins" }))
+        add(
+            Placeholder("language", {
+                ICoreAPI.INSTANCE.getLanguageManager().getLanguage(languageId)?.name
+                    ?: ICoreAPI.INSTANCE.getLanguageManager().getDefaultLanguage().name
+            })
+        )
+    }
 
     @Expose(serialize = false, deserialize = false)
     private var playerCacheHandler: PlayerCacheHandler? = null
