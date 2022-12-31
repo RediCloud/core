@@ -8,6 +8,8 @@ import net.dustrean.api.language.component.bossbar.BossBarComponent
 import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
+import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponent
+import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.component.title.TitleComponent
@@ -163,6 +165,29 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
             return fallbackComponent
         }
         return components[provider.key] as BossBarComponent
+    }
+
+    override suspend fun getScoreboardLine(
+        languageId: Int,
+        provider: ScoreboardLineComponentProvider
+    ): ScoreboardLineComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(provider.type)
+        if (!components.containsKey(provider.key)) {
+            val fallbackComponent = ScoreboardLineComponent(
+                provider.key,
+                language.id,
+                provider.type,
+                DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.content, DEFAULT_SERIALIZER_TYPE),
+                provider.id,
+                provider.score,
+                provider.lineType
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as ScoreboardLineComponent
     }
 
     private fun getMap(type: LanguageType): RLocalCachedMap<String, ILanguageComponent> {
