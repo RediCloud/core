@@ -14,6 +14,8 @@ import net.dustrean.api.language.component.item.ItemComponent
 import net.dustrean.api.language.component.item.ItemComponentProvider
 import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponent
 import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponentProvider
+import net.dustrean.api.language.component.sign.SignComponent
+import net.dustrean.api.language.component.sign.SignComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.component.text.TextComponent
@@ -263,6 +265,26 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
             return fallbackComponent
         }
         return components[provider.key] as ActionbarComponent
+    }
+
+    override suspend fun getSign(languageId: Int, provider: SignComponentProvider): SignComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(provider.type)
+        if (!components.containsKey(provider.key)) {
+            val fallbackComponent = SignComponent(
+                provider.key,
+                language.id,
+                provider.type,
+                DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.line1, DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.line2, DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.line3, DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.line4, DEFAULT_SERIALIZER_TYPE)
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as SignComponent
     }
 
     private fun getMap(type: LanguageType): RLocalCachedMap<String, ILanguageComponent> {

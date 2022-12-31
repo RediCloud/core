@@ -12,6 +12,8 @@ import net.dustrean.api.language.component.item.ItemComponent
 import net.dustrean.api.language.component.item.ItemComponentProvider
 import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponent
 import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponentProvider
+import net.dustrean.api.language.component.sign.SignComponent
+import net.dustrean.api.language.component.sign.SignComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
 import net.dustrean.api.language.component.text.TextComponent
@@ -59,5 +61,9 @@ interface ILanguageManager {
     suspend fun getActionbar(
         languageId: Int, provider: ActionbarComponentProvider
     ): ActionbarComponent
+
+    suspend fun getSign(
+        languageId: Int, provider: SignComponentProvider
+    ): SignComponent
 
 }
