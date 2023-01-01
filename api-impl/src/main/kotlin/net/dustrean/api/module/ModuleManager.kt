@@ -60,6 +60,8 @@ class ModuleManager(
 
         val loader = URLClassLoader(arrayListOf(file.toURI().toURL()).toTypedArray(), javaClass.classLoader)
 
+        if(description.mainClasses[api.getNetworkComponentInfo().type] == null) return false
+
         val module =
             loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).newInstance() as Module
 
