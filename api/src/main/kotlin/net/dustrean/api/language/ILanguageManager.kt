@@ -8,6 +8,8 @@ import net.dustrean.api.language.component.bossbar.BossBarComponent
 import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
+import net.dustrean.api.language.component.inventory.InventoryComponent
+import net.dustrean.api.language.component.inventory.InventoryComponentProvider
 import net.dustrean.api.language.component.item.ItemComponent
 import net.dustrean.api.language.component.item.ItemComponentProvider
 import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponent
@@ -65,5 +67,9 @@ interface ILanguageManager {
     suspend fun getSign(
         languageId: Int, provider: SignComponentProvider
     ): SignComponent
+
+    suspend fun getInventory(
+        languageId: Int, provider: InventoryComponentProvider
+    ): InventoryComponent
 
 }

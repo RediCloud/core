@@ -10,6 +10,8 @@ import net.dustrean.api.language.component.bossbar.BossBarComponent
 import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.chat.ChatComponent
 import net.dustrean.api.language.component.chat.ChatComponentProvider
+import net.dustrean.api.language.component.inventory.InventoryComponent
+import net.dustrean.api.language.component.inventory.InventoryComponentProvider
 import net.dustrean.api.language.component.item.ItemComponent
 import net.dustrean.api.language.component.item.ItemComponentProvider
 import net.dustrean.api.language.component.scoreboard.ScoreboardLineComponent
@@ -44,7 +46,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         LocalCachedMapOptions.defaults<Int?, Language?>().storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
             .syncStrategy(LocalCachedMapOptions.SyncStrategy.UPDATE)
     )
-    private val componentMaps = mutableMapOf<LanguageType, RLocalCachedMap<String, ILanguageComponent>>()
+    private val componentMaps = mutableMapOf<Int, MutableMap<LanguageType, RLocalCachedMap<String, ILanguageComponent>>>()
 
     init {
         if (!languages.containsKey(DEFAULT_LANGUAGE_ID)) {
@@ -54,13 +56,16 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 "http://textures.minecraft.net/texture/879d99d9c46474e2713a7e84a95e4ce7e8ff8ea4d164413a592e4435d2c6f9dc"
             )
         }
-        LanguageType.values().forEach {
-            componentMaps[it] = core.getRedisConnection().redisClient.getLocalCachedMap(
-                "language:${it.name.lowercase()}",
-                LocalCachedMapOptions.defaults<String?, ILanguageComponent?>()
-                    .storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
-                    .syncStrategy(LocalCachedMapOptions.SyncStrategy.UPDATE)
-            )
+        languages.keys.forEach { languageId ->
+            LanguageType.values().forEach {type ->
+                val map = core.getRedisConnection().redisClient.getLocalCachedMap(
+                    "language:${type.name.lowercase()}",
+                    LocalCachedMapOptions.defaults<String?, ILanguageComponent?>()
+                        .storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
+                        .syncStrategy(LocalCachedMapOptions.SyncStrategy.UPDATE)
+                )
+                componentMaps.computeIfAbsent(languageId) { mutableMapOf() }[type] = map
+            }
         }
     }
 
@@ -76,7 +81,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         languageId: Int, provider: ChatComponentProvider
     ): ChatComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = ChatComponent(
                 provider.key,
@@ -95,7 +100,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         languageId: Int, provider: TabListComponentProvider
     ): TabListComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = TabListComponent(
                 provider.key,
@@ -113,7 +118,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getBook(languageId: Int, provider: BookComponentProvider): BookComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = BookComponent(
                 provider.key,
@@ -136,7 +141,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         languageId: Int, provider: TitleComponentProvider
     ): TitleComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = TitleComponent(
                 provider.key,
@@ -157,7 +162,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getBossBar(languageId: Int, provider: BossBarComponentProvider): BossBarComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = BossBarComponent(
                 provider.key,
@@ -180,7 +185,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         provider: ScoreboardLineComponentProvider
     ): ScoreboardLineComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = ScoreboardLineComponent(
                 provider.key,
@@ -203,7 +208,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         provider: ItemComponentProvider
     ): ItemComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = ItemComponent(
                 provider.key,
@@ -234,7 +239,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getText(languageId: Int, provider: TextComponentProvider): TextComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = TextComponent(
                 provider.key,
@@ -251,7 +256,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getActionbar(languageId: Int, provider: ActionbarComponentProvider): ActionbarComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = ActionbarComponent(
                 provider.key,
@@ -269,7 +274,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getSign(languageId: Int, provider: SignComponentProvider): SignComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(provider.type)
+        val components = getMap(languageId, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = SignComponent(
                 provider.key,
@@ -287,8 +292,31 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         return components[provider.key] as SignComponent
     }
 
-    private fun getMap(type: LanguageType): RLocalCachedMap<String, ILanguageComponent> {
-        return componentMaps[type]!!
+    override suspend fun getInventory(languageId: Int, provider: InventoryComponentProvider): InventoryComponent {
+        val language = getLanguage(languageId) ?: getDefaultLanguage()
+        val components = getMap(languageId, provider.type)
+        if(!components.containsKey(provider.key)) {
+            val rawItems = mutableMapOf<Int, String>()
+            rawItems.putAll(provider.itemComponents.mapValues { it.value.key })
+            rawItems.putAll(provider.itemProvider.mapValues { it.value.key })
+            val fallbackComponent = InventoryComponent(
+                provider.key,
+                language.id,
+                provider.type,
+                DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.title, DEFAULT_SERIALIZER_TYPE),
+                provider.inventoryType,
+                provider.size,
+                rawItems.toMap()
+            )
+            components[provider.key] = fallbackComponent
+            return fallbackComponent
+        }
+        return components[provider.key] as InventoryComponent
+    }
+
+    private fun getMap(languageId: Int, type: LanguageType): RLocalCachedMap<String, ILanguageComponent> {
+        return componentMaps[languageId]!![type]!!
     }
 
     fun deserialize(input: String, type: LanguageSerializerType, vararg tagResolvers: TagResolver): Component =
