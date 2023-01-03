@@ -79,4 +79,7 @@ interface ILanguageManager {
         languageId: Int, provider: InventoryComponentProvider
     ): InventoryComponent
 
+    fun deserialize(input: String, type: LanguageSerializerType, vararg tagResolvers: TagResolver): Component
+    fun serialize(component: Component, type: LanguageSerializerType): String
+
 }
