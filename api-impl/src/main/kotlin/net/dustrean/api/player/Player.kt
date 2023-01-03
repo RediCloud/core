@@ -126,7 +126,7 @@ data class Player(
             val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, built)
             return@async ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, built, component) ?:
             throw IllegalStateException("Player is not connected")
-        }
+    }
 
     override fun sendTitle(provider: TitleComponentProvider.() -> Unit): Deferred<Title> = defaultScope.async {
         val built = TitleComponentProvider().apply(provider)

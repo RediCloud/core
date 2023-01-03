@@ -5,6 +5,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 class PlaceholderProvider {
 
+    val referenceClass: Class<*>? = null
     val placeholders = mutableListOf<Placeholder>()
     val placeholderCollections = mutableListOf<PlaceholderCollection>()
 
