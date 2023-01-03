@@ -312,7 +312,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         return componentMaps[languageId]!![type]!!
     }
 
-    fun deserialize(input: String, type: LanguageSerializerType, vararg tagResolvers: TagResolver): Component =
+    override fun deserialize(input: String, type: LanguageSerializerType, vararg tagResolvers: TagResolver): Component =
         when (type) {
             LanguageSerializerType.MINI_MESSAGES -> MiniMessage.miniMessage().deserialize(input, *tagResolvers)
             LanguageSerializerType.GSON -> GsonComponentSerializer.gson().deserialize(input)
@@ -324,7 +324,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
             else -> Component.text(input)
         }
 
-    fun serialize(component: Component, type: LanguageSerializerType): String = when (type) {
+    override fun serialize(component: Component, type: LanguageSerializerType): String = when (type) {
         LanguageSerializerType.MINI_MESSAGES -> MiniMessage.miniMessage().serialize(component)
         LanguageSerializerType.GSON -> GsonComponentSerializer.gson().serialize(component)
         LanguageSerializerType.LEGACY_SECTION -> LegacyComponentSerializer.legacySection().serialize(component)
