@@ -10,6 +10,7 @@ import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractCacheHandler
 import net.dustrean.api.data.AbstractDataObject
 import net.dustrean.api.data.ICacheValidator
+import net.dustrean.api.language.ILanguageManager
 import net.dustrean.api.language.ILanguagePlayer
 import net.dustrean.api.language.LanguageManager
 import net.dustrean.api.language.component.book.BookComponentProvider
@@ -33,7 +34,7 @@ data class Player(
     override val uuid: UUID,
     override var name: String,
     override var coins: Long = 0,
-    override var languageId: Int = LanguageManager.DEFAULT_LANGUAGE_ID,
+    override var languageId: Int = ILanguageManager.DEFAULT_LANGUAGE_ID,
     override var connected: Boolean = false,
 ) : IPlayer, ILanguagePlayer, AbstractDataObject() {
     class PlayerCacheHandler(val lastServer: () -> NetworkComponentInfo) : AbstractCacheHandler(),
