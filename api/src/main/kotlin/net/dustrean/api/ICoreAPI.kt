@@ -3,6 +3,8 @@ package net.dustrean.api
 import net.dustrean.api.command.ICommandManager
 import net.dustrean.api.config.IConfigManager
 import net.dustrean.api.event.IEventManager
+import net.dustrean.api.language.ILanguageBridge
+import net.dustrean.api.language.ILanguageManager
 import net.dustrean.api.module.IModuleManager
 import net.dustrean.api.network.INetworkComponentManager
 import net.dustrean.api.network.NetworkComponentInfo
@@ -39,6 +41,10 @@ interface ICoreAPI {
     fun getNetworkComponentManager(): INetworkComponentManager
 
     fun getPlayerManager(): IPlayerManager
+
+    fun getLanguageManager(): ILanguageManager
+
+    fun getLanguageBridge(): ILanguageBridge
 
     fun shutdown()
 }

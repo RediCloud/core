@@ -2,7 +2,9 @@ package net.dustrean.api.minestom
 
 import kotlinx.coroutines.runBlocking
 import net.dustrean.api.cloud.CloudCoreAPI
+import net.dustrean.api.language.ILanguageBridge
 import net.dustrean.api.minestom.command.MinestomCommandManager
+import net.dustrean.api.minestom.language.MinestomLanguageBridge
 import net.dustrean.api.minestom.utils.parser.PlayerParser
 import net.dustrean.api.utils.parser.string.StringParser
 import net.minestom.server.MinecraftServer
@@ -12,7 +14,7 @@ import net.minestom.server.event.player.PlayerSpawnEvent
 
 object MinestomCoreAPI : CloudCoreAPI() {
 
-    override fun getCommandManager() = MinestomCommandManager
+    private val languageBridge = MinestomLanguageBridge()
 
     private val playerNode = EventNode.type("player_node", EventFilter.PLAYER).apply {
         addListener(PlayerSpawnEvent::class.java) { event ->
@@ -29,10 +31,13 @@ object MinestomCoreAPI : CloudCoreAPI() {
         }
     }
 
-
     fun init() {
         MinecraftServer.getGlobalEventHandler().addChild(playerNode)
         StringParser.customTypeParsers.add(PlayerParser())
     }
+
+    override fun getLanguageBridge(): MinestomLanguageBridge = languageBridge
+
+    override fun getCommandManager() = MinestomCommandManager
 
 }
