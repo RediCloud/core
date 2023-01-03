@@ -25,6 +25,13 @@ import net.dustrean.api.language.component.title.TitleComponentProvider
 
 interface ILanguageManager {
 
+    companion object {
+        const val DEFAULT_LANGUAGE_ID = 0
+        const val DEFAULT_PRIMARY_COLOR = "#3ABFF8"
+        const val DEFAULT_SECONDARY_COLOR = "#3b82f6"
+        val DEFAULT_SERIALIZER_TYPE = LanguageSerializerType.MINI_MESSAGES
+    }
+
     suspend fun getLanguage(languageId: Int): Language?
     suspend fun getDefaultLanguage(): Language
 

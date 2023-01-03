@@ -34,13 +34,6 @@ import org.redisson.api.RLocalCachedMap
 
 class LanguageManager(core: CoreAPI) : ILanguageManager {
 
-    companion object {
-        const val DEFAULT_LANGUAGE_ID = 0
-        const val DEFAULT_PRIMARY_COLOR = "#3ABFF8"
-        const val DEFAULT_SECONDARY_COLOR = "#3b82f6"
-        val DEFAULT_SERIALIZER_TYPE = LanguageSerializerType.MINI_MESSAGES
-    }
-
     private val languages: RLocalCachedMap<Int, Language> = core.getRedisConnection().redisClient.getLocalCachedMap(
         "language:languages",
         LocalCachedMapOptions.defaults<Int?, Language?>().storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
