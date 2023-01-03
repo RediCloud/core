@@ -22,6 +22,8 @@ import net.dustrean.api.language.component.text.TextComponent
 import net.dustrean.api.language.component.text.TextComponentProvider
 import net.dustrean.api.language.component.title.TitleComponent
 import net.dustrean.api.language.component.title.TitleComponentProvider
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 interface ILanguageManager {
 
