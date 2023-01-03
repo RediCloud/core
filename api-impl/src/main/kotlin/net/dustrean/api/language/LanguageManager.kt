@@ -42,9 +42,9 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
     private val componentMaps = mutableMapOf<Int, MutableMap<LanguageType, RLocalCachedMap<String, ILanguageComponent>>>()
 
     init {
-        if (!languages.containsKey(DEFAULT_LANGUAGE_ID)) {
-            languages[DEFAULT_LANGUAGE_ID] = Language(
-                DEFAULT_LANGUAGE_ID,
+        if (!languages.containsKey(ILanguageManager.DEFAULT_LANGUAGE_ID)) {
+            languages[ILanguageManager.DEFAULT_LANGUAGE_ID] = Language(
+                ILanguageManager.DEFAULT_LANGUAGE_ID,
                 "English",
                 "http://textures.minecraft.net/texture/879d99d9c46474e2713a7e84a95e4ce7e8ff8ea4d164413a592e4435d2c6f9dc"
             )
@@ -67,7 +67,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
     }
 
     override suspend fun getDefaultLanguage(): Language {
-        return languages[DEFAULT_LANGUAGE_ID]!!
+        return languages[ILanguageManager.DEFAULT_LANGUAGE_ID]!!
     }
 
     override suspend fun getChatMessage(
@@ -80,8 +80,8 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.message, DEFAULT_SERIALIZER_TYPE),
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.message, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -99,9 +99,9 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.header, DEFAULT_SERIALIZER_TYPE),
-                serialize(provider.footer, DEFAULT_SERIALIZER_TYPE),
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.header, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.footer, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -117,11 +117,11 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.title, DEFAULT_SERIALIZER_TYPE),
-                serialize(provider.author, DEFAULT_SERIALIZER_TYPE),
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.title, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.author, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
                 provider.pages.map {
-                    serialize(it, DEFAULT_SERIALIZER_TYPE)
+                    serialize(it, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
                 }.toTypedArray().toList()
             )
             components[provider.key] = fallbackComponent
@@ -140,9 +140,9 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.title, DEFAULT_SERIALIZER_TYPE),
-                serialize(provider.subtitle, DEFAULT_SERIALIZER_TYPE),
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.title, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.subtitle, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
                 provider.fadeIn,
                 provider.stay,
                 provider.fadeOut
@@ -161,8 +161,8 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.name, DEFAULT_SERIALIZER_TYPE),
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.name, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
                 provider.progress,
                 provider.color,
                 provider.overlay
@@ -184,8 +184,8 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.content, DEFAULT_SERIALIZER_TYPE),
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.content, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
                 provider.id,
                 provider.score,
                 provider.lineType
@@ -207,13 +207,13 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
                 provider.material.name,
-                serialize(provider.name, DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.name, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
                 provider.amount,
                 provider.damage,
                 provider.lore.map {
-                    serialize(it, DEFAULT_SERIALIZER_TYPE)
+                    serialize(it, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
                 }.toTypedArray().toList(),
                 provider.unbreakable,
                 provider.blockDrop,
@@ -238,7 +238,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
                 provider.text
             )
             components[provider.key] = fallbackComponent
@@ -255,8 +255,8 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.content, DEFAULT_SERIALIZER_TYPE),
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.content, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
                 provider.stay
             )
             components[provider.key] = fallbackComponent
@@ -273,11 +273,11 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.line1, DEFAULT_SERIALIZER_TYPE),
-                serialize(provider.line2, DEFAULT_SERIALIZER_TYPE),
-                serialize(provider.line3, DEFAULT_SERIALIZER_TYPE),
-                serialize(provider.line4, DEFAULT_SERIALIZER_TYPE)
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.line1, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.line2, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.line3, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
+                serialize(provider.line4, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -296,8 +296,8 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.key,
                 language.id,
                 provider.type,
-                DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.title, DEFAULT_SERIALIZER_TYPE),
+                ILanguageManager.DEFAULT_SERIALIZER_TYPE,
+                serialize(provider.title, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
                 provider.inventoryType,
                 provider.size,
                 rawItems.toMap()
