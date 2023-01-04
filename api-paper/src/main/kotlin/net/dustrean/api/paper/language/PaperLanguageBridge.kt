@@ -10,13 +10,44 @@ import net.dustrean.api.language.component.bossbar.BossBarComponent
 import net.dustrean.api.language.component.bossbar.BossBarComponentProvider
 import net.dustrean.api.language.component.tablist.TabListComponent
 import net.dustrean.api.language.component.tablist.TabListComponentProvider
+import net.dustrean.api.language.component.title.TitleComponent
+import net.dustrean.api.language.component.title.TitleComponentProvider
 import net.dustrean.api.language.placeholder.PlaceholderProvider
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
+import java.time.Duration
 
 class PaperLanguageBridge : CloudLanguageBridge() {
+
+    override suspend fun sendTitle(
+        player: ILanguagePlayer,
+        provider: TitleComponentProvider,
+        titleComponent: TitleComponent,
+        fadeIn: Duration,
+        stay: Duration,
+        fadeOut: Duration
+    ): Title? {
+        val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return null
+        val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
+        val title = Title.title(
+            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+                titleComponent.rawTitle,
+                titleComponent.serializerType,
+                placeholderProvider.parse(titleComponent.rawTitle)
+            ),
+            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+                titleComponent.rawSubtitle,
+                titleComponent.serializerType,
+                placeholderProvider.parse(titleComponent.rawSubtitle)
+            ),
+            Title.Times.times(fadeIn, stay, fadeOut)
+        )
+        paperPlayer.showTitle(title)
+        return title
+    }
 
     override suspend fun sendTabList(
         player: ILanguagePlayer,
@@ -72,7 +103,10 @@ class PaperLanguageBridge : CloudLanguageBridge() {
     override suspend fun sendBossBar(
         player: ILanguagePlayer,
         provider: BossBarComponentProvider,
-        bossBarComponent: BossBarComponent
+        bossBarComponent: BossBarComponent,
+        overlay: BossBar.Overlay,
+        color: BossBar.Color,
+        progress: Float
     ): BossBar? {
         val paperPlayer = Bukkit.getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
@@ -82,9 +116,9 @@ class PaperLanguageBridge : CloudLanguageBridge() {
                 bossBarComponent.serializerType,
                 placeholderProvider.parse(bossBarComponent.rawName)
             ),
-            bossBarComponent.progress,
-            bossBarComponent.color,
-            bossBarComponent.overlay
+            progress,
+            color,
+            overlay
         )
         paperPlayer.showBossBar(bossBar)
         return bossBar

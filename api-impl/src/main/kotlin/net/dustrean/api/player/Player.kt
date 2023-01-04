@@ -28,6 +28,7 @@ import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import java.lang.IllegalStateException
+import java.time.Duration
 import java.util.*
 
 data class Player(
@@ -129,11 +130,11 @@ data class Player(
             throw IllegalStateException("Player is not connected")
     }
 
-    override fun sendTitle(provider: TitleComponentProvider.() -> Unit): Deferred<Title> = defaultScope.async {
+    override fun sendTitle(provider: TitleComponentProvider.() -> Unit, fadeIn: Duration, stay: Duration, fadeOut: Duration): Deferred<Title> = defaultScope.async {
         val built = TitleComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
         val component = ICoreAPI.INSTANCE.getLanguageManager().getTitle(languageId, built)
-        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendTitle(this@Player, built, component) ?:
+        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendTitle(this@Player, built, component, fadeIn, stay, fadeOut) ?:
         throw IllegalStateException("Player is not connected")
     }
 
@@ -145,11 +146,11 @@ data class Player(
         throw IllegalStateException("Player is not connected")
     }
 
-    override fun sendBossBar(provider: BossBarComponentProvider.() -> Unit): Deferred<BossBar> = defaultScope.async {
+    override fun sendBossBar(provider: BossBarComponentProvider.() -> Unit, overlay: BossBar.Overlay, color: BossBar.Color, progress: Float): Deferred<BossBar> = defaultScope.async {
         val built = BossBarComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
         val component = ICoreAPI.INSTANCE.getLanguageManager().getBossBar(languageId, built)
-        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendBossBar(this@Player, built, component) ?:
+        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendBossBar(this@Player, built, component, overlay, color, progress) ?:
         throw IllegalStateException("Player is not connected")
     }
 
