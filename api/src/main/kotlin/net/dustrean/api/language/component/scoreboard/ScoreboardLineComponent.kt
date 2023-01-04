@@ -9,13 +9,5 @@ class ScoreboardLineComponent(
     override val languageId: Int,
     override val type: LanguageType,
     override val serializerType: LanguageSerializerType,
-    val rawContent: String,
-    val id: String,
-    val score: Int,
-    val lineType: ScoreboardLineType
+    val rawContent: String
 ) : ILanguageComponent
-
-enum class ScoreboardLineType {
-    TITLE,
-    LINE;
-}

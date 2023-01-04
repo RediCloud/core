@@ -16,6 +16,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
+import java.time.Duration
 
 class LanguageBridge : ILanguageBridge {
     override suspend fun sendMessage(
@@ -37,7 +38,10 @@ class LanguageBridge : ILanguageBridge {
     override suspend fun sendTitle(
         player: ILanguagePlayer,
         provider: TitleComponentProvider,
-        titleComponent: TitleComponent
+        titleComponent: TitleComponent,
+        fadeIn: Duration,
+        stay: Duration,
+        fadeOut: Duration
     ): Title? {
         TODO("Not yet implemented")
     }
@@ -53,7 +57,10 @@ class LanguageBridge : ILanguageBridge {
     override suspend fun sendBossBar(
         player: ILanguagePlayer,
         provider: BossBarComponentProvider,
-        bossBarComponent: BossBarComponent
+        bossBarComponent: BossBarComponent,
+        overlay: BossBar.Overlay,
+        color: BossBar.Color,
+        progress: Float
     ): BossBar? {
         TODO("Not yet implemented")
     }

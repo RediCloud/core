@@ -35,7 +35,10 @@ abstract class CloudLanguageBridge : ILanguageBridge {
     override suspend fun sendTitle(
         player: ILanguagePlayer,
         provider: TitleComponentProvider,
-        titleComponent: TitleComponent
+        titleComponent: TitleComponent,
+        fadeIn: Duration,
+        stay: Duration,
+        fadeOut: Duration
     ): Title? {
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val title = Title.title(
@@ -50,9 +53,9 @@ abstract class CloudLanguageBridge : ILanguageBridge {
                 placeholderProvider.parse(titleComponent.rawSubtitle)
             ),
             Title.Times.times(
-                Duration.ofMillis(titleComponent.fadeIn),
-                Duration.ofMillis(titleComponent.stay),
-                Duration.ofMillis(titleComponent.fadeOut)
+                fadeIn,
+                stay,
+                fadeOut
             )
         )
         getCloudPlayerManager().playerExecutor(player.uuid).sendTitle(title)

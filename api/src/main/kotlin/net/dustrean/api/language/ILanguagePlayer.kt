@@ -11,6 +11,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
+import java.time.Duration
 import java.util.*
 
 interface ILanguagePlayer {
@@ -23,11 +24,11 @@ interface ILanguagePlayer {
 
     fun sendTabList(provider: TabListComponentProvider.() -> Unit): Deferred<Pair<Component, Component>>
 
-    fun sendTitle(provider: TitleComponentProvider.() -> Unit): Deferred<Title>
+    fun sendTitle(provider: TitleComponentProvider.() -> Unit, fadeIn: Duration, stay: Duration, fadeOut: Duration): Deferred<Title>
 
     fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Book>
 
-    fun sendBossBar(provider: BossBarComponentProvider.() -> Unit): Deferred<BossBar>
+    fun sendBossBar(provider: BossBarComponentProvider.() -> Unit, overlay: BossBar.Overlay, color: BossBar.Color, progress: Float): Deferred<BossBar>
 
     fun getPlaceholders(prefix: String = ""): PlaceholderCollection
 

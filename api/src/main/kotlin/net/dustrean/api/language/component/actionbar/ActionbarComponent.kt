@@ -9,6 +9,5 @@ class ActionbarComponent(
     override val languageId: Int,
     override val type: LanguageType,
     override val serializerType: LanguageSerializerType,
-    val rawContent: String,
-    val stay: Long
+    val rawContent: String
 ) : ILanguageComponent

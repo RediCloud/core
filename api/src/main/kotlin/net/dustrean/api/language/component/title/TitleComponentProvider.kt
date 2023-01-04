@@ -9,7 +9,4 @@ import kotlin.time.Duration.Companion.seconds
 class TitleComponentProvider : LanguageComponentProvider(LanguageType.TITLE) {
     var title = Component.empty()
     var subtitle = Component.empty()
-    var fadeIn = 0.5.seconds.inWholeMilliseconds
-    var stay = 1.seconds.inWholeMilliseconds
-    var fadeOut = 0.5.seconds.inWholeMilliseconds
 }
