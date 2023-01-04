@@ -26,6 +26,8 @@ fun getCloudServiceProvider(): CloudServiceProvider = CloudNetDriver.instance<Cl
 
 fun getCloudTaskProvider(): ServiceTaskProvider = CloudNetDriver.instance<CloudNetDriver>().serviceTaskProvider()
 
+fun getCurrentServerInfo() = Wrapper.instance().currentServiceInfo()
+
 fun getCloudGroupProvider(): GroupConfigurationProvider =
     CloudNetDriver.instance<CloudNetDriver>().groupConfigurationProvider()
 
