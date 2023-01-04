@@ -10,8 +10,5 @@ class BossBarComponent(
     override val languageId: Int,
     override val type: LanguageType,
     override val serializerType: LanguageSerializerType,
-    val rawName: String,
-    val progress: Float,
-    val color: BossBar.Color,
-    val overlay: BossBar.Overlay
+    val rawName: String
 ) : ILanguageComponent

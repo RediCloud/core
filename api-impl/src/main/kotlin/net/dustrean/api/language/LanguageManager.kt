@@ -74,7 +74,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         languageId: Int, provider: ChatComponentProvider
     ): ChatComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = ChatComponent(
                 provider.key,
@@ -93,7 +93,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         languageId: Int, provider: TabListComponentProvider
     ): TabListComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = TabListComponent(
                 provider.key,
@@ -111,7 +111,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getBook(languageId: Int, provider: BookComponentProvider): BookComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = BookComponent(
                 provider.key,
@@ -134,7 +134,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         languageId: Int, provider: TitleComponentProvider
     ): TitleComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = TitleComponent(
                 provider.key,
@@ -142,10 +142,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.type,
                 ILanguageManager.DEFAULT_SERIALIZER_TYPE,
                 serialize(provider.title, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
-                serialize(provider.subtitle, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
-                provider.fadeIn,
-                provider.stay,
-                provider.fadeOut
+                serialize(provider.subtitle, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -155,17 +152,14 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getBossBar(languageId: Int, provider: BossBarComponentProvider): BossBarComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = BossBarComponent(
                 provider.key,
                 language.id,
                 provider.type,
                 ILanguageManager.DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.name, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
-                provider.progress,
-                provider.color,
-                provider.overlay
+                serialize(provider.name, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -178,17 +172,14 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         provider: ScoreboardLineComponentProvider
     ): ScoreboardLineComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = ScoreboardLineComponent(
                 provider.key,
                 language.id,
                 provider.type,
                 ILanguageManager.DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.content, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
-                provider.id,
-                provider.score,
-                provider.lineType
+                serialize(provider.content, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -201,25 +192,17 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         provider: ItemComponentProvider
     ): ItemComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = ItemComponent(
                 provider.key,
                 language.id,
                 provider.type,
                 ILanguageManager.DEFAULT_SERIALIZER_TYPE,
-                provider.material.name,
                 serialize(provider.name, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
-                provider.amount,
-                provider.damage,
                 provider.lore.map {
                     serialize(it, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
-                }.toTypedArray().toList(),
-                provider.unbreakable,
-                provider.permission,
-                provider.skullOwner,
-                provider.skullTexture,
-                provider.properties
+                }.toTypedArray().toList()
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -229,7 +212,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getText(languageId: Int, provider: TextComponentProvider): TextComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = TextComponent(
                 provider.key,
@@ -246,15 +229,14 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getActionbar(languageId: Int, provider: ActionbarComponentProvider): ActionbarComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = ActionbarComponent(
                 provider.key,
                 language.id,
                 provider.type,
                 ILanguageManager.DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.content, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
-                provider.stay
+                serialize(provider.content, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
@@ -264,7 +246,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getSign(languageId: Int, provider: SignComponentProvider): SignComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if (!components.containsKey(provider.key)) {
             val fallbackComponent = SignComponent(
                 provider.key,
@@ -284,7 +266,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
 
     override suspend fun getInventory(languageId: Int, provider: InventoryComponentProvider): InventoryComponent {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
-        val components = getMap(languageId, provider.type)
+        val components = getMap(language.id, provider.type)
         if(!components.containsKey(provider.key)) {
             val rawItems = mutableMapOf<Int, String>()
             rawItems.putAll(provider.itemComponents.mapValues { it.value.key })
@@ -295,8 +277,6 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 provider.type,
                 ILanguageManager.DEFAULT_SERIALIZER_TYPE,
                 serialize(provider.title, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
-                provider.inventoryType,
-                provider.size,
                 rawItems.toMap()
             )
             components[provider.key] = fallbackComponent

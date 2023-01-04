@@ -10,8 +10,5 @@ class TitleComponent(
     override val type: LanguageType,
     override val serializerType: LanguageSerializerType,
     val rawTitle: String,
-    val rawSubtitle: String,
-    val fadeIn: Long,
-    val stay: Long,
-    val fadeOut: Long,
+    val rawSubtitle: String
 ) : ILanguageComponent

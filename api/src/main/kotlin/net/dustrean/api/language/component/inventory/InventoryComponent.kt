@@ -10,8 +10,6 @@ class InventoryComponent(
     override val type: LanguageType,
     override val serializerType: LanguageSerializerType,
     val rawTitle: String,
-    val inventoryType: InventoryType,
-    val size: Int,
     val rawItems: Map<Int, String>
 ) : ILanguageComponent
 
