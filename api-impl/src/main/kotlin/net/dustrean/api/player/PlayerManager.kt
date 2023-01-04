@@ -6,6 +6,7 @@ import net.dustrean.api.ICoreAPI
 import net.dustrean.api.data.AbstractDataManager
 import net.dustrean.api.packet.PacketManager
 import net.dustrean.api.packet.connect.PlayerChangeServicePacket
+import net.dustrean.api.utils.fetcher.UniqueIdFetcher
 import org.redisson.api.LocalCachedMapOptions
 import java.util.*
 
@@ -25,10 +26,14 @@ class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player
     )
     override val onlineFetcher = core.getRedisConnection().getRedissonClient().getList<UUID>("fetcher:player_online")
 
-    override suspend fun getPlayerByUUID(uuid: UUID): Player? = try {
-        getObject(uuid)
-    } catch (e: NoSuchElementException) {
-        null
+    override suspend fun getPlayerByUUID(uuid: UUID): Player? {
+        try {
+            val player = getObject(uuid)
+            UniqueIdFetcher.registerCache(uuid, player.name)
+            return player
+        } catch (e: NoSuchElementException) {
+            return null
+        }
     }
 
     override suspend fun getPlayerByName(name: String): Player? = nameFetcher.get(name)?.let { getPlayerByUUID(it) }

@@ -72,7 +72,7 @@ class PlayerEvents(private val playerManager: PlayerManager) {
         }
 
         try {
-            val premiumUniqueId = UniqueIdFetcher.fetchUniqueId(name)
+            val premiumUniqueId = UniqueIdFetcher.fetchUniqueId(name, false)
             if (premiumUniqueId == null) {
                 event.result = PreLoginEvent.PreLoginComponentResult.forceOfflineMode()
             } else {

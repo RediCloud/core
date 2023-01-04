@@ -2,6 +2,7 @@ package net.dustrean.api.paper.event
 
 import kotlinx.coroutines.runBlocking
 import net.dustrean.api.ICoreAPI
+import net.dustrean.api.utils.fetcher.UniqueIdFetcher
 import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -19,5 +20,7 @@ class PlayerEvents : Listener {
 
         player.lastServer = ICoreAPI.INSTANCE.getNetworkComponentInfo()
         player.update()
+
+        UniqueIdFetcher.registerCache(event.player.uniqueId, player.name)
     }
 }

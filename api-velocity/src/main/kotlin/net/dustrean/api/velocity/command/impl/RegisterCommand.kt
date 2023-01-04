@@ -11,6 +11,7 @@ import net.dustrean.api.player.Player
 import net.dustrean.api.player.PlayerAuthentication
 import net.dustrean.api.player.PlayerSession
 import net.dustrean.api.utils.crypt.UpdatableBCrypt
+import net.dustrean.api.utils.fetcher.UniqueIdFetcher
 import net.dustrean.api.velocity.VelocityCoreAPI
 import net.dustrean.api.velocity.config.PlayerAuthConfig
 
@@ -84,6 +85,7 @@ class RegisterCommand : Command("register", commandDescription = "Register your 
             this.lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
             nameHistory.add(System.currentTimeMillis() to proxyPlayer.username)
         }
+        UniqueIdFetcher.registerCache(player.uuid, player.name)
         VelocityCoreAPI.getPlayerManager().createObject(player)
         ICoreAPI.INSTANCE.getPlayerManager().nameFetcher[proxyPlayer.username.lowercase()] = actor.uuid
 

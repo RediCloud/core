@@ -16,8 +16,8 @@ class UniqueIdFetcher {
     companion object {
         private val fetcher = UniqueIdFetcher()
 
-        suspend fun fetchName(uniqueId: UUID): String? {
-            if (fetcher.nameCache.containsKey(uniqueId)) {
+        suspend fun fetchName(uniqueId: UUID, useCache: Boolean = true): String? {
+            if (fetcher.nameCache.containsKey(uniqueId) && useCache) {
                 return fetcher.nameCache[uniqueId]
             }
             val connection = fetcher.createConnection("https://api.minetools.eu/profile/$uniqueId")
@@ -30,9 +30,9 @@ class UniqueIdFetcher {
         }
 
 
-        suspend fun fetchUniqueId(name: String): UUID? {
+        suspend fun fetchUniqueId(name: String, useCache: Boolean = true): UUID? {
             val identifierName = name.lowercase()
-            if (fetcher.uniqueIdCache.containsKey(identifierName)) {
+            if (fetcher.uniqueIdCache.containsKey(identifierName) && useCache) {
                 return fetcher.uniqueIdCache[identifierName]
             }
             val connection = fetcher.createConnection("https://api.minetools.eu/uuid/$identifierName")

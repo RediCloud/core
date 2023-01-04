@@ -6,6 +6,7 @@ import net.dustrean.api.language.ILanguageBridge
 import net.dustrean.api.minestom.command.MinestomCommandManager
 import net.dustrean.api.minestom.language.MinestomLanguageBridge
 import net.dustrean.api.minestom.utils.parser.PlayerParser
+import net.dustrean.api.utils.fetcher.UniqueIdFetcher
 import net.dustrean.api.utils.parser.string.StringParser
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.EventFilter
@@ -27,6 +28,8 @@ object MinestomCoreAPI : CloudCoreAPI() {
                     }
                     player.lastServer = getNetworkComponentInfo()
                     player.update()
+
+                    UniqueIdFetcher.registerCache(event.player.uuid, player.name)
                 }
         }
     }
