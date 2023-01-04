@@ -11,10 +11,10 @@ import java.util.*
 import java.util.regex.Pattern
 import java.util.stream.Stream
 
-class WebUniqueIdFetcher {
+class UniqueIdFetcher {
 
     companion object {
-        private val fetcher = WebUniqueIdFetcher()
+        private val fetcher = UniqueIdFetcher()
 
         suspend fun fetchName(uniqueId: UUID): String? {
             if (fetcher.nameCache.containsKey(uniqueId)) {
@@ -42,6 +42,11 @@ class WebUniqueIdFetcher {
             fetcher.uniqueIdCache[identifierName] = uniqueId
             fetcher.nameCache[uniqueId] = name
             return uniqueId
+        }
+
+        fun registerCache(uniqueId: UUID, name: String) {
+            fetcher.uniqueIdCache[name.lowercase()] = uniqueId
+            fetcher.nameCache[uniqueId] = name
         }
 
     }
