@@ -216,9 +216,6 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                     serialize(it, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
                 }.toTypedArray().toList(),
                 provider.unbreakable,
-                provider.blockDrop,
-                provider.blockInteract,
-                provider.blockClick,
                 provider.permission,
                 provider.skullOwner,
                 provider.skullTexture,
