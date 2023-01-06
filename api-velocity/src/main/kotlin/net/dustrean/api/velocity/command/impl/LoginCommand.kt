@@ -10,6 +10,7 @@ import net.dustrean.api.command.annotations.CommandArgument
 import net.dustrean.api.command.annotations.CommandSubPath
 import net.dustrean.api.player.PlayerSession
 import net.dustrean.api.utils.crypt.UpdatableBCrypt
+import net.dustrean.api.utils.fetcher.UniqueIdFetcher
 import net.dustrean.api.velocity.VelocityCoreAPI
 import net.dustrean.api.velocity.config.PlayerAuthConfig
 import net.kyori.adventure.text.Component
@@ -71,6 +72,8 @@ class LoginCommand : Command("login", commandDescription = "Login to your accoun
         player.connected = true
         player.sessions.add(session)
         player.update()
+
+        UniqueIdFetcher.registerCache(player.uuid, player.name)
 
         actor.sendMessage("§aYou are now logged in!")
         player.connectToFallback()

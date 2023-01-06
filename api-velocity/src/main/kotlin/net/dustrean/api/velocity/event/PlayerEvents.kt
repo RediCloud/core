@@ -17,7 +17,7 @@ import net.dustrean.api.player.PlayerAuthentication
 import net.dustrean.api.player.PlayerManager
 import net.dustrean.api.player.PlayerSession
 import net.dustrean.api.utils.extension.isPremium
-import net.dustrean.api.utils.fetcher.WebUniqueIdFetcher
+import net.dustrean.api.utils.fetcher.UniqueIdFetcher
 import net.dustrean.api.velocity.command.impl.ChangePasswordCommand
 import net.dustrean.api.velocity.command.impl.LoginCommand
 import net.dustrean.api.velocity.command.impl.RegisterCommand
@@ -72,7 +72,7 @@ class PlayerEvents(private val playerManager: PlayerManager) {
         }
 
         try {
-            val premiumUniqueId = WebUniqueIdFetcher.fetchUniqueId(name)
+            val premiumUniqueId = UniqueIdFetcher.fetchUniqueId(name, false)
             if (premiumUniqueId == null) {
                 event.result = PreLoginEvent.PreLoginComponentResult.forceOfflineMode()
             } else {
