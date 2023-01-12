@@ -11,10 +11,6 @@ import java.util.*
 
 object StandaloneCoreAPI : CoreAPI(NetworkComponentInfo(NetworkComponentType.STANDALONE, UUID.randomUUID())) {
 
-    init {
-        ExceptionHandler.service = "StandaloneCoreAPI"
-    }
-
     private val languageBridge = LanguageBridge()
 
     override fun getCommandManager() = StandaloneCommandManager

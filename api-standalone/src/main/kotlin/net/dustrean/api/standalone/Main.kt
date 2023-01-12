@@ -2,9 +2,11 @@ package net.dustrean.api.standalone
 
 import net.dustrean.api.module.ModuleState
 import net.dustrean.api.standalone.impl.StandaloneCoreAPI
+import net.dustrean.api.utils.ExceptionHandler
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
+    ExceptionHandler.service = "StandaloneCoreAPI"
     println("Starting API Standalone...")
     val coreAPI = StandaloneCoreAPI
     println("API Standalone started!")
