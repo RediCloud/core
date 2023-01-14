@@ -17,6 +17,15 @@ object ExceptionHandler {
     private val webhookURL = URL(System.getenv("EXCEPTION_SERVICE_WEB_HOOK_URL"))
 
     init {
+        fun stackTraceToString(exception: Throwable): String {
+            val msg = StringBuilder()
+            exception.stackTrace.forEach {
+                msg.append("${it.classLoaderName} -> ${it.className}.${it.methodName} Line: ${it.lineNumber} (File: ${it.fileName}, Module: ${it.moduleName}-${it.moduleVersion})\n")
+            }
+            msg.append("Child: \n")
+            msg.append(exception.cause?.let { stackTraceToString(it) } ?: "None")
+            return msg.toString()
+        }
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             exception.printStackTrace()
 
@@ -26,10 +35,8 @@ object ExceptionHandler {
             msg.append("Message: ${exception.message}\n")
             msg.append("Stacktrace: \n")
 
+            msg.append(stackTraceToString(exception))
 
-            exception.stackTrace.forEach {
-                msg.append("${it.classLoaderName} -> ${it.className}.${it.methodName} Line: ${it.lineNumber} (File: ${it.fileName}, Module: ${it.moduleName}-${it.moduleVersion})\n")
-            }
 
             val pasteBuilder =
                 StringBuilder("_________________________________________________________________\n\n")
