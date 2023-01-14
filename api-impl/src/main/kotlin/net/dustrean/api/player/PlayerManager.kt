@@ -16,7 +16,6 @@ class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player
 
     init {
         PacketManager.INSTANCE.registerPacket(PlayerChangeServicePacket())
-        println("PlayerManager initialized")
     }
 
     private val scope = CoroutineScope(Dispatchers.IO)

@@ -17,7 +17,6 @@ class PacketManager(
 
     init {
         INSTANCE = this
-        println("PacketManager initialized")
     }
 
     private val packets = arrayListOf<Class<out Packet>>()

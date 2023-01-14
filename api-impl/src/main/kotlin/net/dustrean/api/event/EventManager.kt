@@ -16,7 +16,6 @@ class EventManager : IEventManager {
     init {
         INSTANCE = this
         PacketManager.INSTANCE.registerPacket(EventPacket())
-        println("EventManager initialized")
     }
 
     private val byListenerAndPriority = mutableMapOf<Class<*>, MutableMap<Byte, MutableMap<Any, Array<Method>>>>()
