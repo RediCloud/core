@@ -129,6 +129,8 @@ class ModuleManager(
                 logger.info("Enabled module ${it.description.name}")
             } catch (e: Exception) {
                 logger.error("Failed to enable module ${it.description.name}", e)
+                it.state = ModuleState.ERROR
+                return@forEach
             }
             it.state = ModuleState.ENABLED
         }
