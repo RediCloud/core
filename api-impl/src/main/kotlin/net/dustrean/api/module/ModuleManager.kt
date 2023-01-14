@@ -1,6 +1,7 @@
 package net.dustrean.api.module
 
 import com.google.gson.Gson
+import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.utils.getModuleFolder
 import net.dustrean.libloader.boot.Bootstrap
@@ -80,6 +81,8 @@ class ModuleManager(
         try {
             module.onLoad(api)
         } catch (e: Exception) {
+            print("Failed to load module ${description.name}!")
+            e.printStackTrace()
             logger.error("Failed to load module ${description.name}", e)
             return false
         }
