@@ -21,4 +21,7 @@ dependencies {
     testCompileOnly(kotlin("reflect"))
     testCompileOnly("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
     testCompileOnly("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
+
+    implementation2("org.slf4j:slf4j-api:2.0.6")
+    implementation2("org.slf4j:slf4j-simple:2.0.6")
 }
