@@ -5,6 +5,7 @@ import net.dustrean.api.ICoreAPI
 import net.dustrean.api.minestom.MinestomCoreAPI
 import net.dustrean.api.redis.codec.GsonCodec
 import net.dustrean.libloader.boot.Bootstrap
+import net.dustrean.libloader.boot.apply.impl.ClassLoaderResourceLoader
 import net.minestom.server.extensions.DiscoveredExtension
 import net.minestom.server.extensions.Extension
 import net.minestom.server.extensions.ExtensionClassLoader
@@ -17,7 +18,7 @@ class MinestomBootstrap : Extension() {
         this.classloader = classloader
         Bootstrap().apply({
             classloader.addURL(it)
-        }, classloader, classloader)
+        }, classloader, ClassLoaderResourceLoader("core-minestom_plugin", classloader))
     }
 
     override fun initialize() {

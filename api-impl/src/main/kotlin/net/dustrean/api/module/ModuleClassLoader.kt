@@ -6,7 +6,7 @@ import java.net.URLClassLoader
 
 class ModuleClassLoader(
     urls: Array<URL>,
-    val children: List<ClassLoader>
+    private val children: List<ClassLoader>
 ): JarLoader, URLClassLoader(urls) {
 
     override fun load(javaFile: URL?) {

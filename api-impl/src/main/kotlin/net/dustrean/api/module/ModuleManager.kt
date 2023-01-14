@@ -4,10 +4,9 @@ import com.google.gson.Gson
 import net.dustrean.api.ICoreAPI
 import net.dustrean.api.utils.getModuleFolder
 import net.dustrean.libloader.boot.Bootstrap
-import net.dustrean.libloader.boot.loaders.URLClassLoaderJarLoader
+import net.dustrean.libloader.boot.apply.impl.JarResourceLoader
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.net.URLClassLoader
 import java.util.jar.JarFile
 
 class ModuleManager(
@@ -66,7 +65,7 @@ class ModuleManager(
             loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).getDeclaredConstructor().newInstance() as Module
 
         try {
-            Bootstrap().apply(loader, loader, loader)
+            Bootstrap().apply(loader, loader, JarResourceLoader(description.name, file))
         } catch (e: Throwable) {
             logger.info("No libloader implementation found, continuing", e)
         }
