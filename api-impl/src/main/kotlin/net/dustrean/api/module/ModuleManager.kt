@@ -58,15 +58,15 @@ class ModuleManager(
 
     override fun loadModule(description: ModuleDescription, file: File): Boolean {
 
-        val loader = URLClassLoader(arrayListOf(file.toURI().toURL()).toTypedArray(), javaClass.classLoader)
+        val loader = ModuleClassLoader(arrayListOf(file.toURI().toURL()).toTypedArray(), javaClass.classLoader)
 
         if(description.mainClasses[api.getNetworkComponentInfo().type] == null) return false
 
         val module =
-            loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).newInstance() as Module
+            loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).getDeclaredConstructor().newInstance() as Module
 
         try {
-            Bootstrap().apply(ModuleClassLoader(loader), loader, loader)
+            Bootstrap().apply(loader, loader, loader)
         } catch (e: Throwable) {
             logger.info("No libloader implementation found, continuing", e)
         }
@@ -129,6 +129,8 @@ class ModuleManager(
                 logger.info("Enabled module ${it.description.name}")
             } catch (e: Exception) {
                 logger.error("Failed to enable module ${it.description.name}", e)
+                it.state = ModuleState.ERROR
+                return@forEach
             }
             it.state = ModuleState.ENABLED
         }

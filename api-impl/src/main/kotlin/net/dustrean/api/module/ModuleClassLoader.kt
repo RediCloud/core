@@ -5,11 +5,10 @@ import java.net.URL
 import java.net.URLClassLoader
 
 class ModuleClassLoader(
-    private val classLoader: URLClassLoader
-): JarLoader {
+    urls: Array<URL>,
+    parent: ClassLoader
+): JarLoader, URLClassLoader(urls, parent) {
     override fun load(javaFile: URL?) {
-        classLoader.javaClass.getDeclaredMethod("addURL", URL::class.java).apply {
-            isAccessible = true
-        }.invoke(classLoader, javaFile)
+        addURL(javaFile)
     }
 }
