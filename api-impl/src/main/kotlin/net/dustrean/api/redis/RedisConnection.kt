@@ -13,9 +13,7 @@ class RedisConnection(
     private val credentials = configuration.credentials
 
     init {
-        print("CONNECT")
         connect()
-        print("CONNECT FINISH")
     }
 
     override fun connect() {

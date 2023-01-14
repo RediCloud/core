@@ -16,6 +16,7 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
 
     init {
         PacketManager.INSTANCE.registerPacket(ConfigUpdatePacket())
+        println("ConfigManager initialized")
     }
 
     override suspend fun <T : IConfig> getConfig(key: String, clazz: Class<T>): T {

@@ -7,6 +7,10 @@ import java.util.*
 
 open class NetworkComponentManager(redisConnection: IRedisConnection) : INetworkComponentManager {
 
+    init {
+        println("NetworkComponentManager initialized")
+    }
+
     override val networkComponents: RMap<String, NetworkComponentInfo> =
         redisConnection.getRedissonClient().getLocalCachedMap(
             "networkComponents",

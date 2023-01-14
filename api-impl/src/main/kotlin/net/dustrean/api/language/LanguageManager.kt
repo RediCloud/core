@@ -60,6 +60,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
                 componentMaps.computeIfAbsent(languageId) { mutableMapOf() }[type] = map
             }
         }
+        println("LanguageManager initialized")
     }
 
     override suspend fun getLanguage(languageId: Int): Language? {
