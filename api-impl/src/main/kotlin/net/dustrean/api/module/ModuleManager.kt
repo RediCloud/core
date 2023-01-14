@@ -58,7 +58,7 @@ class ModuleManager(
 
     override fun loadModule(description: ModuleDescription, file: File): Boolean {
 
-        val loader = ModuleClassLoader(arrayListOf(file.toURI().toURL()).toTypedArray(), javaClass.classLoader)
+        val loader = ModuleClassLoader(arrayOf(file.toURI().toURL()), listOf(this.javaClass.classLoader))
 
         if(description.mainClasses[api.getNetworkComponentInfo().type] == null) return false
 
@@ -70,6 +70,8 @@ class ModuleManager(
         } catch (e: Throwable) {
             logger.info("No libloader implementation found, continuing", e)
         }
+
+
 
         module::class.java.superclass.getDeclaredField("description").apply {
             isAccessible = true

@@ -6,9 +6,25 @@ import java.net.URLClassLoader
 
 class ModuleClassLoader(
     urls: Array<URL>,
-    parent: ClassLoader
-): JarLoader, URLClassLoader(urls, parent) {
+    val children: List<ClassLoader>
+): JarLoader, URLClassLoader(urls) {
+
     override fun load(javaFile: URL?) {
         addURL(javaFile)
+    }
+
+    override fun loadClass(name: String?, resolve: Boolean): Class<*> {
+        try {
+            return super.loadClass(name, resolve)
+        } catch (e: ClassNotFoundException) {
+            for (child in children) {
+                try {
+                    return child.loadClass(name)
+                } catch (e: ClassNotFoundException) {
+                    continue
+                }
+            }
+        }
+        throw ClassNotFoundException(name)
     }
 }
