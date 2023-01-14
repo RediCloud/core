@@ -18,6 +18,8 @@ object ExceptionHandler {
 
     init {
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
+            exception.printStackTrace()
+
             val msg =
                 StringBuilder("Got Exception in Thread ${thread.name} with Id: ${thread.id} [Daemon: ${if (thread.isDaemon) "yes" else "no"}, Priority: ${thread.priority}]\n\n")
 
@@ -46,8 +48,6 @@ object ExceptionHandler {
             val paste = pasteBuilder.toString().haste() //Upload to hastebin
 
             send(paste.url) //call discord webhook
-
-            exception.printStackTrace()
         }
     }
 
