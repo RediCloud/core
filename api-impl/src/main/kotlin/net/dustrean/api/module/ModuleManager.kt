@@ -58,7 +58,7 @@ class ModuleManager(
 
     override fun loadModule(description: ModuleDescription, file: File): Boolean {
 
-        val loader = URLClassLoader(arrayListOf(file.toURI().toURL()).toTypedArray(), javaClass.classLoader)
+        val loader = ModuleClassLoader(arrayListOf(file.toURI().toURL()).toTypedArray(), javaClass.classLoader)
 
         if(description.mainClasses[api.getNetworkComponentInfo().type] == null) return false
 
@@ -66,7 +66,7 @@ class ModuleManager(
             loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).newInstance() as Module
 
         try {
-            Bootstrap().apply(ModuleClassLoader(loader), loader, loader)
+            Bootstrap().apply(loader, loader, loader)
         } catch (e: Throwable) {
             logger.info("No libloader implementation found, continuing", e)
         }
