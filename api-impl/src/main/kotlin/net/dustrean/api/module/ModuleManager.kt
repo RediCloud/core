@@ -63,7 +63,7 @@ class ModuleManager(
         if(description.mainClasses[api.getNetworkComponentInfo().type] == null) return false
 
         val module =
-            loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).newInstance() as Module
+            loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).getDeclaredConstructor().newInstance() as Module
 
         try {
             Bootstrap().apply(loader, loader, loader)
