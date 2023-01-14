@@ -24,6 +24,5 @@ dependencies {
 
     implementation2("org.slf4j:slf4j-api:2.0.6")
     implementation2("org.slf4j:slf4j-simple:2.0.6")
-    implementation2("org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0")
-    implementation2("org.apache.logging.log4j:log4j-core:2.19.0")
+    implementation2("org.apache.logging.log4j:log4j-slf4j-impl:2.19.0")
 }
