@@ -14,6 +14,7 @@ fun main(args: Array<String>) {
         println("API Standalone stopped!")
     })
     println("API Standalone started!")
+    if (System.getProperty("dustrean.service") == null)
     while (true) {
         try {
             print("\nAvailable commands: list, reload, stop\n> ")
