@@ -9,6 +9,10 @@ fun main(args: Array<String>) {
     ExceptionHandler.service = "StandaloneCoreAPI"
     println("Starting API Standalone...")
     val coreAPI = StandaloneCoreAPI
+    Runtime.getRuntime().addShutdownHook(Thread {
+        coreAPI.shutdown()
+        println("API Standalone stopped!")
+    })
     println("API Standalone started!")
     while (true) {
         try {
@@ -27,8 +31,6 @@ fun main(args: Array<String>) {
 
                 "stop" -> {
                     println("Stopping API Standalone...")
-                    coreAPI.shutdown()
-                    println("API Standalone stopped!")
                     exitProcess(0)
                 }
 
