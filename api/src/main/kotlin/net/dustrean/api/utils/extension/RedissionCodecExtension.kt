@@ -3,6 +3,7 @@ package net.dustrean.api.utils.extension
 import com.google.gson.Gson
 import net.dustrean.api.ICoreAPI
 import org.redisson.api.RList
+import org.redisson.api.RMap
 import org.redisson.api.RedissonClient
 import java.util.function.Predicate
 
@@ -88,5 +89,51 @@ class ExternalRList<V>(private val sourceList: RList<JsonObjectData>) : List<V> 
         val data = sourceList.firstOrNull { filter(it.toObject()) }
         return data?.toObject()
     }
+
+}
+
+fun <K, R> RedissonClient.getExternalMap(name: String): ExternalRMap<K, R> =
+    ExternalRMap(ICoreAPI.INSTANCE.getRedisConnection().getRedissonClient().getMap(name))
+
+class ExternalRMap<K, V>(private val sourceMap: RMap<K, JsonObjectData>) : MutableMap<K, V> {
+    override val entries: MutableSet<MutableMap.MutableEntry<K, V>> get() = sourceMap.entries.map {
+        object : MutableMap.MutableEntry<K, V> {
+            override val key: K get() = it.key
+            override val value: V get() = it.value.toObject()
+            override fun setValue(newValue: V): V {
+                val old = it.value.toObject() as V
+                sourceMap[it.key] = newValue!!.toJsonObjectData()
+                return old
+            }
+        }
+    }.toMutableSet()
+    override val keys: MutableSet<K> = sourceMap.keys
+    override val size: Int = sourceMap.size
+    override val values: MutableCollection<V> = sourceMap.values.map { it.toObject() as V }.toMutableList()
+
+    override fun clear() = sourceMap.clear()
+
+    override fun isEmpty(): Boolean = sourceMap.isEmpty()
+
+    override fun remove(key: K): V? {
+        val data = sourceMap.remove(key)
+        return data?.toObject()
+    }
+
+    override fun putAll(from: Map<out K, V>) = sourceMap.putAll(from.mapValues { it.value!!.toJsonObjectData() })
+
+    override fun put(key: K, value: V): V? {
+        val data = sourceMap.put(key, value!!.toJsonObjectData())
+        return data?.toObject()
+    }
+
+    override fun get(key: K): V? {
+        val data = sourceMap.get(key)
+        return data?.toObject()
+    }
+
+    override fun containsValue(value: V): Boolean = sourceMap.containsValue(value!!.toJsonObjectData())
+
+    override fun containsKey(key: K): Boolean = sourceMap.containsKey(key)
 
 }
