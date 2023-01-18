@@ -14,7 +14,7 @@ fun <T> JsonObjectData.toObject(): T = gson.fromJson(json, Class.forName(clazz))
 
 fun Any.toJsonObjectData(): JsonObjectData = JsonObjectData(gson.toJson(this), this::class.java.name)
 
-fun <R> RedissonClient.getExternalList(name: String, src: R): ExternalRList<R> =
+fun <R> RedissonClient.getExternalList(name: String): ExternalRList<R> =
     ExternalRList(ICoreAPI.INSTANCE.getRedisConnection().getRedissonClient().getList(name))
 
 class ExternalRList<V>(private val sourceList: RList<JsonObjectData>) {
