@@ -14,10 +14,8 @@ fun <T> JsonObjectData.toObject(): T {
     try {
         return gson.fromJson(json, Class.forName(clazz)) as T
     } catch (e: ClassNotFoundException) {
-        println("Default class loader failed to load class ${clazz}")
         try {
             for (loader in ICoreAPI.INSTANCE.getModuleHandler().getModuleLoaders()) {
-                println("Trying to load class ${clazz} with loader ${loader.javaClass.name}")
                 try {
                     return gson.fromJson(json, loader.loadClass(clazz)) as T
                 } catch (ignored: ClassNotFoundException) {
