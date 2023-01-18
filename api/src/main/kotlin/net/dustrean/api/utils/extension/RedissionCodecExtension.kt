@@ -11,21 +11,22 @@ val gson = Gson()
 data class JsonObjectData(val json: String, val clazz: String)
 
 fun <T> JsonObjectData.toObject(): T {
-    var clazz: Class<*>
     try {
-        clazz = Class.forName(this.clazz)
-    }catch (e: ClassNotFoundException) {
+        return gson.fromJson(json, Class.forName(clazz)) as T
+    } catch (e: ClassNotFoundException) {
+        println("Default class loader failed to load class ${clazz}")
         try {
             for (loader in ICoreAPI.INSTANCE.getModuleHandler().getModuleLoaders()) {
+                println("Trying to load class ${clazz} with loader ${loader.javaClass.name}")
                 try {
-                    clazz = loader.loadClass(this.clazz)
-                    break
-                }catch (ignored: ClassNotFoundException) { }
+                    return gson.fromJson(json, loader.loadClass(clazz)) as T
+                } catch (ignored: ClassNotFoundException) {
+                }
             }
-        }catch (ignored: ClassNotFoundException) { }
-        throw e
+        } catch (ignored: ClassNotFoundException) {
+        }
     }
-    return gson.fromJson(json, clazz) as T
+    throw ClassNotFoundException("Could not find a class named: ${clazz}")
 }
 
 fun Any.toJsonObjectData(): JsonObjectData = JsonObjectData(gson.toJson(this), this::class.java.name)
