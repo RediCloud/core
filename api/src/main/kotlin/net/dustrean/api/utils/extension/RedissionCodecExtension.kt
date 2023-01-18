@@ -3,6 +3,7 @@ package net.dustrean.api.utils.extension
 import com.google.gson.Gson
 import net.dustrean.api.ICoreAPI
 import org.redisson.api.RList
+import org.redisson.api.RedissonClient
 
 
 val gson = Gson()
@@ -13,8 +14,8 @@ fun <T> JsonObjectData.toObject(): T = gson.fromJson(json, Class.forName(clazz))
 
 fun Any.toJsonObjectData(): JsonObjectData = JsonObjectData(gson.toJson(this), this::class.java.name)
 
-fun <R, V> RList<V>.useExternal(src: R): ExternalRList<R> =
-    ExternalRList<R>(ICoreAPI.INSTANCE.getRedisConnection().getRedissonClient().getList(name))
+fun <R> RedissonClient.getExternalList(name: String, src: R): ExternalRList<R> =
+    ExternalRList(ICoreAPI.INSTANCE.getRedisConnection().getRedissonClient().getList(name))
 
 class ExternalRList<V>(private val sourceList: RList<JsonObjectData>) {
 
