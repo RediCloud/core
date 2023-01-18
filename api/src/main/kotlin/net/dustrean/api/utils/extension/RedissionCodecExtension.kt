@@ -27,8 +27,6 @@ class ExternalRList<V>(private val sourceList: RList<JsonObjectData>): List<V> {
 
     override fun contains(element: V) = sourceList.contains(element!!.toJsonObjectData())
 
-    fun size() = sourceList.size
-
     override fun isEmpty() = sourceList.isEmpty()
     override fun iterator(): Iterator<V> = sourceList.readAll().map { it.toObject() as V }.iterator()
 
