@@ -28,6 +28,7 @@ class ExternalRList<V>(private val sourceList: RList<JsonObjectData>): List<V> {
     override fun contains(element: V) = sourceList.contains(element!!.toJsonObjectData())
 
     override fun isEmpty() = sourceList.isEmpty()
+
     override fun iterator(): Iterator<V> = sourceList.readAll().map { it.toObject() as V }.iterator()
 
     override fun listIterator(): ListIterator<V> = sourceList.readAll().map { it.toObject() as V }.listIterator()
@@ -35,6 +36,7 @@ class ExternalRList<V>(private val sourceList: RList<JsonObjectData>): List<V> {
     override fun listIterator(index: Int): ListIterator<V> = sourceList.readAll().map { it.toObject() as V }.listIterator(index)
 
     override fun subList(fromIndex: Int, toIndex: Int): List<V> = sourceList.readAll().map { it.toObject() as V }.subList(fromIndex, toIndex)
+
     override fun lastIndexOf(element: V): Int = sourceList.readAll().map { it.toObject() as V }.lastIndexOf(element)
 
     fun addAll(elements: Collection<V>) = sourceList.addAll(elements.map { it!!.toJsonObjectData() })
@@ -48,12 +50,16 @@ class ExternalRList<V>(private val sourceList: RList<JsonObjectData>): List<V> {
     override fun containsAll(elements: Collection<V>): Boolean = sourceList.containsAll(elements.map { it!!.toJsonObjectData() })
 
     override fun get(index: Int): V = sourceList.get(index).toObject()
+
     override fun indexOf(element: V): Int = sourceList.readAll().map { it.toObject() as V }.indexOf(element)
 
     fun removeIf(filter: (V) -> Boolean) = sourceList.removeIf { filter(it.toObject()) }
 
     fun count(filter: (V) -> Boolean) = sourceList.count { filter(it.toObject()) }
 
-    fun firstOrNull(filter: (V) -> Boolean) = sourceList.firstOrNull { filter(it.toObject()) }?.toObject() as V
+    fun firstOrNull(filter: (V) -> Boolean): V? {
+        val data = sourceList.firstOrNull { filter(it.toObject()) }
+        return data?.toObject()
+    }
 
 }
