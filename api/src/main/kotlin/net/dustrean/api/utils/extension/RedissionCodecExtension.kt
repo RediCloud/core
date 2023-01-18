@@ -54,4 +54,6 @@ class ExternalRList<V>(private val sourceList: RList<JsonObjectData>): List<V> {
 
     fun count(filter: (V) -> Boolean) = sourceList.count { filter(it.toObject()) }
 
+    fun firstOrNull(filter: (V) -> Boolean) = sourceList.firstOrNull { filter(it.toObject()) }?.toObject() as V
+
 }
