@@ -9,6 +9,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
+import net.dustrean.api.ICoreAPI
 import org.redisson.client.codec.BaseCodec
 import org.redisson.client.handler.State
 import org.redisson.client.protocol.Decoder
@@ -61,7 +62,6 @@ class GsonCodec(val classLoaders: MutableList<ClassLoader>) : BaseCodec() {
         }
     }
 
-
     fun getClassFromType(name: String): Class<*> {
         var clazz = classMap[name]
         if (clazz == null) {
@@ -70,7 +70,10 @@ class GsonCodec(val classLoaders: MutableList<ClassLoader>) : BaseCodec() {
                     Class.forName(name)
                 } catch (e: ClassNotFoundException) {
                     let {
-                        for (classLoader in classLoaders) {
+                        val loaders = mutableListOf<ClassLoader>()
+                        loaders.addAll(classLoaders)
+                        loaders.addAll(ICoreAPI.INSTANCE.getModuleHandler().getModuleLoaders())
+                        for (classLoader in loaders) {
                             try {
                                 return@let classLoader.loadClass(name)
                             } catch (ignored: ClassNotFoundException) {

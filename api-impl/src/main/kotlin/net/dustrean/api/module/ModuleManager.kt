@@ -17,6 +17,7 @@ class ModuleManager(
     private val gson = Gson()
 
     private val modules = mutableListOf<Module>()
+    private val moduleLoaders = mutableMapOf<Module, ModuleClassLoader>()
 
     fun detectModules(folder: File) {
         folder.listFiles()?.forEach { file ->
@@ -80,6 +81,7 @@ class ModuleManager(
 
         try {
             module.onLoad(api)
+            moduleLoaders[module] = loader
         } catch (e: Exception) {
             logger.error("Failed to load module ${description.name}", e)
             return false
@@ -100,6 +102,7 @@ class ModuleManager(
                 logger.error("Failed to disable module ${module.description.name}", e)
             }
         }
+        moduleLoaders.remove(module)
         modules.remove(module)
         module.state = ModuleState.DISABLED
         logger.info("Unloaded module ${module.description.name}")
@@ -154,5 +157,7 @@ class ModuleManager(
         disableModules()
         enableModules()
     }
+
+    override fun getModuleLoaders() = moduleLoaders.values.toList()
 
 }

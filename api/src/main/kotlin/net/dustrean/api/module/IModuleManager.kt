@@ -20,4 +20,6 @@ interface IModuleManager {
     fun disableModules()
 
     fun reloadModules()
+
+    fun getModuleLoaders(): List<ModuleClassLoader>
 }

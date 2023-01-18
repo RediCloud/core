@@ -7,8 +7,10 @@ repositories {
     mavenCentral()
 }
 
+val libloaderVersion: String by project
 dependencies{
     implementation2("org.mindrot:jbcrypt:0.4")
+    compileOnly("net.dustrean.libloader:libloader-bootstrap:${libloaderVersion}")
 }
 
 the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
