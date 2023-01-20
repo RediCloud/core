@@ -107,9 +107,9 @@ class ExternalRMap<K, V>(private val sourceMap: RMap<K, JsonObjectData>) : Mutab
             }
         }
     }.toMutableSet()
-    override val keys: MutableSet<K> = sourceMap.keys
-    override val size: Int = sourceMap.size
-    override val values: MutableCollection<V> = sourceMap.values.map { it.toObject() as V }.toMutableList()
+    override val keys: MutableSet<K> get() = sourceMap.keys
+    override val size: Int get() = sourceMap.size
+    override val values: MutableCollection<V> get() = sourceMap.values.map { it.toObject() as V }.toMutableList()
 
     override fun clear() = sourceMap.clear()
 
