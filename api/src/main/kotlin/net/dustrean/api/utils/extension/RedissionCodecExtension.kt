@@ -17,7 +17,7 @@ fun <T> JsonObjectData.toObject(): T {
         return gson.fromJson(json, Class.forName(clazz)) as T
     } catch (e: ClassNotFoundException) {
         try {
-            for (loader in ICoreAPI.INSTANCE.getModuleHandler().getModuleLoaders()) {
+            for (loader in ICoreAPI.INSTANCE.moduleManager.getModuleLoaders()) {
                 try {
                     return gson.fromJson(json, loader.loadClass(clazz)) as T
                 } catch (ignored: ClassNotFoundException) {
@@ -32,7 +32,7 @@ fun <T> JsonObjectData.toObject(): T {
 fun Any.toJsonObjectData(): JsonObjectData = JsonObjectData(gson.toJson(this), this::class.java.name)
 
 fun <R> RedissonClient.getExternalList(name: String): ExternalRList<R> =
-    ExternalRList(ICoreAPI.INSTANCE.getRedisConnection().getRedissonClient().getList(name))
+    ExternalRList(ICoreAPI.INSTANCE.redisConnection.getRedissonClient().getList(name))
 
 class ExternalRList<V>(private val sourceList: RList<JsonObjectData>) : List<V> {
 
@@ -93,7 +93,7 @@ class ExternalRList<V>(private val sourceList: RList<JsonObjectData>) : List<V> 
 }
 
 fun <K, R> RedissonClient.getExternalMap(name: String): ExternalRMap<K, R> =
-    ExternalRMap(ICoreAPI.INSTANCE.getRedisConnection().getRedissonClient().getMap(name))
+    ExternalRMap(ICoreAPI.INSTANCE.redisConnection.getRedissonClient().getMap(name))
 
 class ExternalRMap<K, V>(private val sourceMap: RMap<K, JsonObjectData>) : MutableMap<K, V> {
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>> get() = sourceMap.entries.map {

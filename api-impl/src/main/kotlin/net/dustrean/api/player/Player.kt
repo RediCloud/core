@@ -41,7 +41,7 @@ data class Player(
     class PlayerCacheHandler(val lastServer: () -> NetworkComponentInfo) : AbstractCacheHandler(),
         ICacheValidator<AbstractDataObject> {
 
-        override fun isValid(): Boolean = lastServer() == ICoreAPI.INSTANCE.getNetworkComponentInfo()
+        override fun isValid(): Boolean = lastServer() == ICoreAPI.INSTANCE.networkComponentInfo
         override suspend fun getCacheNetworkComponents(): Set<NetworkComponentInfo> = setOf(lastServer())
     }
 
@@ -65,8 +65,8 @@ data class Player(
         add(Placeholder("coins", { "$coins" }))
         add(
             Placeholder("language", {
-                ICoreAPI.INSTANCE.getLanguageManager().getLanguage(languageId)?.name
-                    ?: ICoreAPI.INSTANCE.getLanguageManager().getDefaultLanguage().name
+                ICoreAPI.INSTANCE.languageManager.getLanguage(languageId)?.name
+                    ?: ICoreAPI.INSTANCE.languageManager.getDefaultLanguage().name
             })
         )
     }
@@ -86,7 +86,7 @@ data class Player(
     override val validator
         get() = playerCacheHandler!!
 
-    override suspend fun update(): Player = ICoreAPI.getInstance<CoreAPI>().getPlayerManager().updatePlayer(this)
+    override suspend fun update(): Player = ICoreAPI.getInstance<CoreAPI>().playerManager.updatePlayer(this)
 
     override fun getCurrentSession(): PlayerSession? {
         val session = sessions.lastOrNull() ?: return null
@@ -97,11 +97,11 @@ data class Player(
         return sessions.lastOrNull { !it.isActive() }
     }
 
-    override fun isOnCurrent(): Boolean = when (ICoreAPI.INSTANCE.getNetworkComponentInfo().type) {
+    override fun isOnCurrent(): Boolean = when (ICoreAPI.INSTANCE.networkComponentInfo.type) {
         NetworkComponentType.STANDALONE -> connected
-        NetworkComponentType.VELOCITY -> lastProxy == ICoreAPI.INSTANCE.getNetworkComponentInfo()
-        NetworkComponentType.MINESTOM -> lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
-        NetworkComponentType.PAPER -> lastServer == ICoreAPI.INSTANCE.getNetworkComponentInfo()
+        NetworkComponentType.VELOCITY -> lastProxy == ICoreAPI.INSTANCE.networkComponentInfo
+        NetworkComponentType.MINESTOM -> lastServer == ICoreAPI.INSTANCE.networkComponentInfo
+        NetworkComponentType.PAPER -> lastServer == ICoreAPI.INSTANCE.networkComponentInfo
     }
 
     override suspend fun connect(service: NetworkComponentInfo) {
@@ -116,8 +116,8 @@ data class Player(
     override fun sendMessage(provider: ChatComponentProvider.() -> Unit): Deferred<Component> = defaultScope.async {
         val built = ChatComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
-        val component = ICoreAPI.INSTANCE.getLanguageManager().getChatMessage(languageId, built)
-        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendMessage(this@Player, built, component) ?:
+        val component = ICoreAPI.INSTANCE.languageManager.getChatMessage(languageId, built)
+        return@async ICoreAPI.INSTANCE.languageBridge.sendMessage(this@Player, built, component) ?:
         throw IllegalStateException("Player is not connected")
     }
 
@@ -125,32 +125,32 @@ data class Player(
         defaultScope.async {
             val built = TabListComponentProvider().apply(provider)
             if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
-            val component = ICoreAPI.INSTANCE.getLanguageManager().getTabList(languageId, built)
-            return@async ICoreAPI.INSTANCE.getLanguageBridge().sendTabList(this@Player, built, component) ?:
+            val component = ICoreAPI.INSTANCE.languageManager.getTabList(languageId, built)
+            return@async ICoreAPI.INSTANCE.languageBridge.sendTabList(this@Player, built, component) ?:
             throw IllegalStateException("Player is not connected")
     }
 
     override fun sendTitle(provider: TitleComponentProvider.() -> Unit, fadeIn: Duration, stay: Duration, fadeOut: Duration): Deferred<Title> = defaultScope.async {
         val built = TitleComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
-        val component = ICoreAPI.INSTANCE.getLanguageManager().getTitle(languageId, built)
-        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendTitle(this@Player, built, component, fadeIn, stay, fadeOut) ?:
+        val component = ICoreAPI.INSTANCE.languageManager.getTitle(languageId, built)
+        return@async ICoreAPI.INSTANCE.languageBridge.sendTitle(this@Player, built, component, fadeIn, stay, fadeOut) ?:
         throw IllegalStateException("Player is not connected")
     }
 
     override fun openBook(provider: BookComponentProvider.() -> Unit): Deferred<Book> = defaultScope.async {
         val built = BookComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
-        val component = ICoreAPI.INSTANCE.getLanguageManager().getBook(languageId, built)
-        return@async ICoreAPI.INSTANCE.getLanguageBridge().openBook(this@Player, built, component) ?:
+        val component = ICoreAPI.INSTANCE.languageManager.getBook(languageId, built)
+        return@async ICoreAPI.INSTANCE.languageBridge.openBook(this@Player, built, component) ?:
         throw IllegalStateException("Player is not connected")
     }
 
     override fun sendBossBar(provider: BossBarComponentProvider.() -> Unit, overlay: BossBar.Overlay, color: BossBar.Color, progress: Float): Deferred<BossBar> = defaultScope.async {
         val built = BossBarComponentProvider().apply(provider)
         if (built.key.isNullOrBlank()) throw IllegalArgumentException("Key not set")
-        val component = ICoreAPI.INSTANCE.getLanguageManager().getBossBar(languageId, built)
-        return@async ICoreAPI.INSTANCE.getLanguageBridge().sendBossBar(this@Player, built, component, overlay, color, progress) ?:
+        val component = ICoreAPI.INSTANCE.languageManager.getBossBar(languageId, built)
+        return@async ICoreAPI.INSTANCE.languageBridge.sendBossBar(this@Player, built, component, overlay, color, progress) ?:
         throw IllegalStateException("Player is not connected")
     }
 

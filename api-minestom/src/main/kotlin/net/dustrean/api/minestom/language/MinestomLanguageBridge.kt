@@ -32,12 +32,12 @@ class MinestomLanguageBridge : CloudLanguageBridge() {
         val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val title = Title.title(
-            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+            ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
                 titleComponent.rawTitle,
                 titleComponent.serializerType,
                 placeholderProvider.parse(titleComponent.rawTitle)
             ),
-            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+            ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
                 titleComponent.rawSubtitle,
                 titleComponent.serializerType,
                 placeholderProvider.parse(titleComponent.rawSubtitle)
@@ -53,12 +53,12 @@ class MinestomLanguageBridge : CloudLanguageBridge() {
     ): Pair<Component, Component>? {
         val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
-        val header = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+        val header = ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
             tabListComponent.rawHeader,
             tabListComponent.serializerType,
             placeholderProvider.parse(tabListComponent.rawHeader)
         )
-        val footer = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+        val footer = ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
             tabListComponent.rawFooter,
             tabListComponent.serializerType,
             placeholderProvider.parse(tabListComponent.rawFooter)
@@ -75,18 +75,18 @@ class MinestomLanguageBridge : CloudLanguageBridge() {
         val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val book = Book.book(
-            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+            ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
                 bookComponent.rawTitle,
                 bookComponent.serializerType,
                 placeholderProvider.parse(bookComponent.rawTitle)
             ),
-            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+            ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
                 bookComponent.rawAuthor,
                 bookComponent.serializerType,
                 placeholderProvider.parse(bookComponent.rawAuthor)
             ),
             *bookComponent.rawPages.map { page ->
-                ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+                ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
                     page,
                     bookComponent.serializerType,
                     placeholderProvider.parse(page)
@@ -108,7 +108,7 @@ class MinestomLanguageBridge : CloudLanguageBridge() {
         val minestomPlayer = MinecraftServer.getConnectionManager().getPlayer(player.uuid) ?: return null
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val bossBar = BossBar.bossBar(
-            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+            ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
                 bossBarComponent.rawName,
                 bossBarComponent.serializerType,
                 placeholderProvider.parse(bossBarComponent.rawName)

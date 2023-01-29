@@ -60,8 +60,8 @@ abstract class AbstractDataManager<T : AbstractDataObject>(
 
     init {
         MANAGERS[prefix] = this
-        ICoreAPI.INSTANCE.getPacketManager().registerPacket(DataCachePacket())
-        ICoreAPI.INSTANCE.getPacketManager().registerPacket(DataObjectPacket())
+        ICoreAPI.INSTANCE.packetManager.registerPacket(DataCachePacket())
+        ICoreAPI.INSTANCE.packetManager.registerPacket(DataObjectPacket())
     }
     val cachedObjects = mutableMapOf<UUID, T>()
     private val logger = LoggerFactory.getLogger(this::class.java)

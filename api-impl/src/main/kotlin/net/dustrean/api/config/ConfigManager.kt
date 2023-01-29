@@ -61,8 +61,8 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
         packet.key = key
         packet.delete = true
         packet.configData = JsonObjectData("", "")
-        ICoreAPI.INSTANCE.getNetworkComponentManager().getComponentInfos().forEach {
-            if (it == ICoreAPI.INSTANCE.getNetworkComponentInfo())
+        ICoreAPI.INSTANCE.networkComponentManager.getComponentInfos().forEach {
+            if (it == ICoreAPI.INSTANCE.networkComponentInfo)
                 packet.packetData.addReceiver(it)
         }
         packet.sendPacket()
@@ -79,8 +79,8 @@ class ConfigManager(private val redisConnection: RedisConnection) : IConfigManag
         val packet = ConfigUpdatePacket()
         packet.key = config.key
         packet.configData = configData
-        ICoreAPI.INSTANCE.getNetworkComponentManager().getComponentInfos().forEach { componentInfo ->
-            if (componentInfo.equals(ICoreAPI.INSTANCE.getNetworkComponentInfo())) return@forEach
+        ICoreAPI.INSTANCE.networkComponentManager.getComponentInfos().forEach { componentInfo ->
+            if (componentInfo.equals(ICoreAPI.INSTANCE.networkComponentInfo)) return@forEach
             packet.packetData.addReceiver(componentInfo)
         }
         packet.sendPacket()

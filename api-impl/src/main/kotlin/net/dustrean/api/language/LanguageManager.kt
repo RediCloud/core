@@ -34,7 +34,7 @@ import org.redisson.api.RLocalCachedMap
 
 class LanguageManager(core: CoreAPI) : ILanguageManager {
 
-    private val languages: RLocalCachedMap<Int, Language> = core.getRedisConnection().redisClient.getLocalCachedMap(
+    private val languages: RLocalCachedMap<Int, Language> = core.redisConnection.redisClient.getLocalCachedMap(
         "language:languages",
         LocalCachedMapOptions.defaults<Int?, Language?>().storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
             .syncStrategy(LocalCachedMapOptions.SyncStrategy.UPDATE)
@@ -51,7 +51,7 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         }
         languages.keys.forEach { languageId ->
             LanguageType.values().forEach {type ->
-                val map = core.getRedisConnection().redisClient.getLocalCachedMap(
+                val map = core.redisConnection.redisClient.getLocalCachedMap(
                     "language:${type.name.lowercase()}",
                     LocalCachedMapOptions.defaults<String?, ILanguageComponent?>()
                         .storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)

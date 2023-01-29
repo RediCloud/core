@@ -16,7 +16,7 @@ abstract class Packet(
     abstract fun received()
 
     suspend fun sendPacket() {
-        ICoreAPI.INSTANCE.getPacketManager().sendPacket(this)
+        ICoreAPI.INSTANCE.packetManager.sendPacket(this)
     }
 
 }

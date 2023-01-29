@@ -19,7 +19,7 @@ import net.dustrean.api.utils.ExceptionHandler
 import net.dustrean.api.utils.coreVersion
 
 abstract class CoreAPI(
-    private val networkComponentInfo: NetworkComponentInfo
+    final override val networkComponentInfo: NetworkComponentInfo
 ) : ICoreAPI {
 
     init {
@@ -27,16 +27,16 @@ abstract class CoreAPI(
         ExceptionHandler
     }
 
-    private var redisConnection: RedisConnection = RedisConnection()
-    private var packetManager: PacketManager = PacketManager(networkComponentInfo, redisConnection)
-    private var eventManager: EventManager = EventManager()
-    private var networkComponentManager: NetworkComponentManager = NetworkComponentManager(redisConnection).also {
+    final override val redisConnection: RedisConnection = RedisConnection()
+    override val packetManager: PacketManager = PacketManager(networkComponentInfo, redisConnection)
+    override val eventManager: EventManager = EventManager()
+    override val networkComponentManager: NetworkComponentManager = NetworkComponentManager(redisConnection).also {
         it.networkComponents[networkComponentInfo.getKey()] = networkComponentInfo
     }
-    private var configManager: ConfigManager = ConfigManager(redisConnection)
-    private var playerManager: PlayerManager = PlayerManager(this)
-    private var languageManager: LanguageManager = LanguageManager(this)
-    private var moduleManager: ModuleManager = ModuleManager(this).also { it.enableModules() }
+    override val configManager: ConfigManager = ConfigManager(redisConnection)
+    override val playerManager: PlayerManager = PlayerManager(this)
+    override val languageManager: LanguageManager = LanguageManager(this)
+    override val moduleManager: ModuleManager = ModuleManager(this).also { it.enableModules() }
 
     override fun shutdown() {
         moduleManager.disableModules()
@@ -48,24 +48,5 @@ abstract class CoreAPI(
             redisConnection.disconnect()
         }
     }
-
-    override fun getRedisConnection(): RedisConnection = redisConnection
-    override fun getNetworkComponentInfo(): NetworkComponentInfo = networkComponentInfo
-
-    override fun getPacketManager(): IPacketManager = packetManager
-
-    override fun getCoreVersion(): String = coreVersion
-
-    override fun getEventManager(): IEventManager = eventManager
-
-    override fun getModuleHandler(): IModuleManager = moduleManager
-
-    override fun getNetworkComponentManager(): INetworkComponentManager = networkComponentManager
-
-    override fun getConfigManager(): ConfigManager = configManager
-
-    override fun getPlayerManager(): PlayerManager = playerManager
-
-    override fun getLanguageManager(): LanguageManager = languageManager
 
 }

@@ -22,29 +22,17 @@ interface ICoreAPI {
         }
     }
 
-    fun getRedisConnection(): IRedisConnection
-
-    fun getConfigManager(): IConfigManager
-
-    fun getNetworkComponentInfo(): NetworkComponentInfo
-
-    fun getCoreVersion(): String
-
-    fun getModuleHandler(): IModuleManager
-
-    fun getPacketManager(): IPacketManager
-
-    fun getEventManager(): IEventManager
-
-    fun getCommandManager(): ICommandManager
-
-    fun getNetworkComponentManager(): INetworkComponentManager
-
-    fun getPlayerManager(): IPlayerManager
-
-    fun getLanguageManager(): ILanguageManager
-
-    fun getLanguageBridge(): ILanguageBridge
+    val redisConnection: IRedisConnection
+    val configManager: IConfigManager
+    val networkComponentInfo: NetworkComponentInfo
+    val moduleManager: IModuleManager
+    val packetManager: IPacketManager
+    val eventManager: IEventManager
+    val commandManager: ICommandManager
+    val networkComponentManager: INetworkComponentManager
+    val playerManager: IPlayerManager
+    val languageManager: ILanguageManager
+    val languageBridge: ILanguageBridge
 
     fun shutdown()
 }

@@ -21,7 +21,7 @@ class RegisterCommand : Command("register", commandDescription = "Register your 
 
     init {
         runBlocking {
-            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig("player-authentication", PlayerAuthConfig::class.java)
+            authConfig = ICoreAPI.INSTANCE.configManager.getConfig("player-authentication", PlayerAuthConfig::class.java)
         }
     }
 
@@ -31,7 +31,7 @@ class RegisterCommand : Command("register", commandDescription = "Register your 
         @CommandArgument("<password>") password: String,
         @CommandArgument("<passwordConfirm>") passwordConfirm: String
     ) = runBlocking {
-        if (VelocityCoreAPI.getPlayerManager().existsObject(actor.uuid)) {
+        if (VelocityCoreAPI.playerManager.existsObject(actor.uuid)) {
             actor.sendMessage("§cYou are already registered!")
             return@runBlocking
         }
@@ -78,16 +78,16 @@ class RegisterCommand : Command("register", commandDescription = "Register your 
                 this.start = System.currentTimeMillis()
                 this.authenticated = true
                 this.premium = false
-                this.proxyId = VelocityCoreAPI.getNetworkComponentInfo()
+                this.proxyId = VelocityCoreAPI.networkComponentInfo
             }
             this.authentication = authentication
             this.sessions.add(session)
-            this.lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
+            this.lastProxy = ICoreAPI.INSTANCE.networkComponentInfo
             nameHistory.add(System.currentTimeMillis() to proxyPlayer.username)
         }
         UniqueIdFetcher.registerCache(player.uuid, player.name)
-        VelocityCoreAPI.getPlayerManager().createObject(player)
-        ICoreAPI.INSTANCE.getPlayerManager().nameFetcher[proxyPlayer.username.lowercase()] = actor.uuid
+        VelocityCoreAPI.playerManager.createObject(player)
+        ICoreAPI.INSTANCE.playerManager.nameFetcher[proxyPlayer.username.lowercase()] = actor.uuid
 
         actor.sendMessage("§aYou are now registered!")
         player.connectToFallback()

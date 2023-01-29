@@ -13,7 +13,7 @@ class PlayerChangeServicePacket : Packet() {
 
     override fun received() {
         scope.launch {
-            val player = ICoreAPI.INSTANCE.getPlayerManager().getPlayerByUUID(uniqueId)
+            val player = ICoreAPI.INSTANCE.playerManager.getPlayerByUUID(uniqueId)
             if (player == null) throw NullPointerException("Player with UUID $uniqueId not found!")
             player.connect(networkComponentInfo)
         }
