@@ -1,6 +1,7 @@
 package net.dustrean.api.paper
 
 import net.dustrean.api.cloud.CloudCoreAPI
+import net.dustrean.api.command.ICommandManager
 import net.dustrean.api.language.ILanguageBridge
 import net.dustrean.api.paper.command.PaperCommandManager
 import net.dustrean.api.paper.event.PlayerEvents
@@ -14,7 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin
 object CorePaperAPI : CloudCoreAPI() {
 
 
-    private val languageBridge = PaperLanguageBridge()
+    override val languageBridge = PaperLanguageBridge()
+    override val commandManager: ICommandManager = PaperCommandManager
     lateinit var plugin: JavaPlugin
         private set
 
@@ -27,8 +29,4 @@ object CorePaperAPI : CloudCoreAPI() {
         StringParser.customTypeParsers.add(PlayerParser())
         Bukkit.getPluginManager().registerEvents(PlayerEvents(), plugin)
     }
-
-    override fun getLanguageBridge(): PaperLanguageBridge = languageBridge
-
-    override fun getCommandManager() = PaperCommandManager
 }

@@ -21,12 +21,12 @@ fun main(args: Array<String>) {
             val command = readlnOrNull()!!
             when (command.lowercase()) {
                 "list" -> println(ModuleState.values().joinToString(separator = "\n") {
-                    "${it.name}:    ${coreAPI.getModuleHandler().getModules(it).joinToString()}"
+                    "${it.name}:    ${coreAPI.moduleManager.getModules(it).joinToString()}"
                 })
 
                 "reload" -> {
                     println("Reloading modules...")
-                    coreAPI.getModuleHandler().reloadModules()
+                    coreAPI.moduleManager.reloadModules()
                     println("Modules reloaded!")
                 }
 

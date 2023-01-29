@@ -21,7 +21,7 @@ class ChangePasswordCommand : Command(
 
     init {
         runBlocking {
-            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig("player-authentication", PlayerAuthConfig::class.java)
+            authConfig = ICoreAPI.INSTANCE.configManager.getConfig("player-authentication", PlayerAuthConfig::class.java)
         }
     }
 
@@ -40,7 +40,7 @@ class ChangePasswordCommand : Command(
             actor.sendMessage("§cYou are a premium player!")
             return@runBlocking
         }
-        val player = VelocityCoreAPI.getPlayerManager().getPlayerByUUID(actor.uuid)
+        val player = VelocityCoreAPI.playerManager.getPlayerByUUID(actor.uuid)
         if (player == null) {
             actor.sendMessage("§cYou are not registered!")
             return@runBlocking

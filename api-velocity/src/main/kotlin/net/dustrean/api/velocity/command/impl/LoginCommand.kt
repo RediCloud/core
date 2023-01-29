@@ -21,7 +21,7 @@ class LoginCommand : Command("login", commandDescription = "Login to your accoun
 
     init {
         runBlocking {
-            authConfig = ICoreAPI.INSTANCE.getConfigManager().getConfig("player-authentication", PlayerAuthConfig::class.java)
+            authConfig = ICoreAPI.INSTANCE.configManager.getConfig("player-authentication", PlayerAuthConfig::class.java)
         }
     }
 
@@ -39,7 +39,7 @@ class LoginCommand : Command("login", commandDescription = "Login to your accoun
             actor.sendMessage("§cYou are a premium player!")
             return@runBlocking
         }
-        val player = VelocityCoreAPI.getPlayerManager().getPlayerByUUID(actor.uuid)
+        val player = VelocityCoreAPI.playerManager.getPlayerByUUID(actor.uuid)
         if (player == null) {
             actor.sendMessage("§cYou are not registered!")
             return@runBlocking
@@ -52,23 +52,23 @@ class LoginCommand : Command("login", commandDescription = "Login to your accoun
             proxyPlayer.disconnect(Component.text("§cWrong password!"))
             return@runBlocking
         }
-        VelocityCoreAPI.getPlayerManager().onlineFetcher.add(actor.uuid)
+        VelocityCoreAPI.playerManager.onlineFetcher.add(actor.uuid)
         val session = PlayerSession().apply {
             ip = proxyPlayer.remoteAddress.address.hostAddress
             start = System.currentTimeMillis()
             authenticated = true
             premium = true
-            proxyId = ICoreAPI.INSTANCE.getNetworkComponentInfo()
+            proxyId = ICoreAPI.INSTANCE.networkComponentInfo
         }
         if (player.name != proxyPlayer.username) {
-            VelocityCoreAPI.getPlayerManager().nameFetcher.remove(player.name.lowercase())
-            VelocityCoreAPI.getPlayerManager().nameFetcher[proxyPlayer.username.lowercase()] = proxyPlayer.uniqueId
+            VelocityCoreAPI.playerManager.nameFetcher.remove(player.name.lowercase())
+            VelocityCoreAPI.playerManager.nameFetcher[proxyPlayer.username.lowercase()] = proxyPlayer.uniqueId
             player.nameHistory.add(System.currentTimeMillis() to proxyPlayer.username)
             player.name = proxyPlayer.username
             // TODO: PlayerNameUpdate Event CoreAPI
         }
         player.authentication.lastVerify = System.currentTimeMillis()
-        player.lastProxy = ICoreAPI.getInstance<CoreAPI>().getNetworkComponentInfo()
+        player.lastProxy = ICoreAPI.getInstance<CoreAPI>().networkComponentInfo
         player.connected = true
         player.sessions.add(session)
         player.update()

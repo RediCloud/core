@@ -1,7 +1,7 @@
 package net.dustrean.api.module
 
 import com.google.gson.Gson
-import net.dustrean.api.ICoreAPI
+import net.dustrean.api.CoreAPI
 import net.dustrean.api.utils.getModuleFolder
 import net.dustrean.libloader.boot.Bootstrap
 import net.dustrean.libloader.boot.apply.impl.JarResourceLoader
@@ -10,7 +10,7 @@ import java.io.File
 import java.util.jar.JarFile
 
 class ModuleManager(
-    var api: ICoreAPI
+    private val core: CoreAPI
 ) : IModuleManager {
 
     private val logger = LoggerFactory.getLogger(ModuleManager::class.java)
@@ -60,10 +60,10 @@ class ModuleManager(
 
         val loader = ModuleClassLoader(arrayOf(file.toURI().toURL()), listOf(this.javaClass.classLoader))
 
-        if(description.mainClasses[api.getNetworkComponentInfo().type] == null) return false
+        if(description.mainClasses[core.networkComponentInfo.type] == null) return false
 
         val module =
-            loader.loadClass(description.mainClasses[api.getNetworkComponentInfo().type]).getDeclaredConstructor().newInstance() as Module
+            loader.loadClass(description.mainClasses[core.networkComponentInfo.type]).getDeclaredConstructor().newInstance() as Module
 
         try {
             Bootstrap().apply(loader, loader, JarResourceLoader(description.name, file))
@@ -80,7 +80,7 @@ class ModuleManager(
         }
 
         try {
-            module.onLoad(api)
+            module.onLoad(core)
             moduleLoaders[module] = loader
         } catch (e: Exception) {
             logger.error("Failed to load module ${description.name}", e)
@@ -96,7 +96,7 @@ class ModuleManager(
     override fun unloadModule(module: Module): Boolean {
         if (module.state == ModuleState.ENABLED) {
             try {
-                module.onDisable(api)
+                module.onDisable(core)
                 logger.info("Disabled module ${module.description.name}")
             } catch (e: Exception) {
                 logger.error("Failed to disable module ${module.description.name}", e)
@@ -113,7 +113,7 @@ class ModuleManager(
         val module = getModule(name) ?: return false
         if (module.state == ModuleState.ENABLED) {
             try {
-                module.onDisable(api)
+                module.onDisable(core)
                 logger.info("Disabled module ${module.description.name}")
             } catch (e: Exception) {
                 logger.error("Failed to disable module ${module.description.name}", e)
@@ -129,7 +129,7 @@ class ModuleManager(
         detectModules(getModuleFolder())
         modules.filter { it.state == ModuleState.LOADED }.forEach {
             try {
-                it.onEnable(api)
+                it.onEnable(core)
                 logger.info("Enabled module ${it.description.name}")
             } catch (e: Exception) {
                 logger.error("Failed to enable module ${it.description.name}", e)
@@ -143,7 +143,7 @@ class ModuleManager(
     override fun disableModules() {
         modules.filter { it.state == ModuleState.LOADED || it.state == ModuleState.ENABLED }.forEach {
             try {
-                it.onDisable(api)
+                it.onDisable(core)
                 logger.info("Disabled module ${it.description.name}")
             } catch (e: Exception) {
                 logger.error("Failed to disable module ${it.description.name}", e)

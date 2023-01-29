@@ -23,7 +23,7 @@ abstract class CloudLanguageBridge : ILanguageBridge {
         chatComponent: ChatComponent
     ): Component? {
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
-        val textComponent = ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+        val textComponent = ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
             chatComponent.rawMessage,
             chatComponent.serializerType,
             placeholderProvider.parse(chatComponent.rawMessage)
@@ -42,12 +42,12 @@ abstract class CloudLanguageBridge : ILanguageBridge {
     ): Title? {
         val placeholderProvider = PlaceholderProvider().apply(provider.placeholderProvider)
         val title = Title.title(
-            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+            ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
                 titleComponent.rawTitle,
                 titleComponent.serializerType,
                 placeholderProvider.parse(titleComponent.rawTitle)
             ),
-            ICoreAPI.getInstance<CoreAPI>().getLanguageManager().deserialize(
+            ICoreAPI.getInstance<CoreAPI>().languageManager.deserialize(
                 titleComponent.rawSubtitle,
                 titleComponent.serializerType,
                 placeholderProvider.parse(titleComponent.rawSubtitle)

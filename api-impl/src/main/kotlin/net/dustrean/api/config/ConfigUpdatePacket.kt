@@ -12,7 +12,7 @@ class ConfigUpdatePacket : Packet() {
     var delete = false
 
     override fun received() {
-        ICoreAPI.getInstance<CoreAPI>().getConfigManager().readUpdate(key, configData, delete)
+        ICoreAPI.getInstance<CoreAPI>().configManager.readUpdate(key, configData, delete)
     }
 
 }

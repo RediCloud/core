@@ -20,7 +20,7 @@ class DataObjectPacket : Packet() {
         when(type) {
             DataActionType.UPDATE -> {
                 val obj = manager.deserialize(json)
-                ICoreAPI.INSTANCE.getEventManager().callEvent(
+                ICoreAPI.INSTANCE.eventManager.callEvent(
                     manager.getUpdateEvent(obj)
                 )
             }

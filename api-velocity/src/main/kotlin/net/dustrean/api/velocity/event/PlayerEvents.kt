@@ -34,15 +34,15 @@ class PlayerEvents(private val playerManager: PlayerManager) {
 
     init {
         runBlocking {
-            authConfig = ICoreAPI.INSTANCE.getConfigManager()
+            authConfig = ICoreAPI.INSTANCE.configManager
                 .getConfigOrPut("player-authentication", PlayerAuthConfig::class.java) {
                     PlayerAuthConfig("player-authentication")
                 }
 
             if (authConfig.crackAllowed) {
-                ICoreAPI.INSTANCE.getCommandManager().registerCommand(RegisterCommand())
-                ICoreAPI.INSTANCE.getCommandManager().registerCommand(LoginCommand())
-                ICoreAPI.INSTANCE.getCommandManager().registerCommand(ChangePasswordCommand())
+                ICoreAPI.INSTANCE.commandManager.registerCommand(RegisterCommand())
+                ICoreAPI.INSTANCE.commandManager.registerCommand(LoginCommand())
+                ICoreAPI.INSTANCE.commandManager.registerCommand(ChangePasswordCommand())
             }
         }
     }
@@ -114,7 +114,7 @@ class PlayerEvents(private val playerManager: PlayerManager) {
             start = System.currentTimeMillis()
             authenticated = true
             premium = true
-            proxyId = ICoreAPI.INSTANCE.getNetworkComponentInfo()
+            proxyId = ICoreAPI.INSTANCE.networkComponentInfo
         }
 
         if (player != null) {
@@ -126,19 +126,19 @@ class PlayerEvents(private val playerManager: PlayerManager) {
                 // TODO: PlayerNameUpdate Event CoreAPI
             }
             player.authentication = authentication
-            player.lastProxy = ICoreAPI.getInstance<CoreAPI>().getNetworkComponentInfo()
+            player.lastProxy = ICoreAPI.getInstance<CoreAPI>().networkComponentInfo
             player.connected = true
             player.sessions.add(session)
             player.update()
             return@j
         }
         playerManager.nameFetcher[event.player.username.lowercase()] = event.player.uniqueId
-        ICoreAPI.getInstance<CoreAPI>().getPlayerManager().createObject(Player(
+        ICoreAPI.getInstance<CoreAPI>().playerManager.createObject(Player(
             event.player.uniqueId, event.player.username, connected = true
         ).apply {
             nameHistory.add(System.currentTimeMillis() to event.player.username)
             this.authentication = authentication
-            lastProxy = ICoreAPI.INSTANCE.getNetworkComponentInfo()
+            lastProxy = ICoreAPI.INSTANCE.networkComponentInfo
             sessions.add(session)
         })
     }
@@ -156,7 +156,7 @@ class PlayerEvents(private val playerManager: PlayerManager) {
     fun onPreServerConnect(event: ServerPreConnectEvent) {
         val target = event.originalServer
         val player = runBlocking {
-            ICoreAPI.INSTANCE.getPlayerManager().getPlayerByUUID(event.player.uniqueId)
+            ICoreAPI.INSTANCE.playerManager.getPlayerByUUID(event.player.uniqueId)
         }
         if (player?.authentication?.isLoggedIn(player) == true) return
         if (!target.serverInfo.name.startsWith(authConfig.verifyTask)) {

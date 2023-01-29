@@ -72,7 +72,7 @@ class GsonCodec(val classLoaders: MutableList<ClassLoader>) : BaseCodec() {
                     let {
                         val loaders = mutableListOf<ClassLoader>()
                         loaders.addAll(classLoaders)
-                        loaders.addAll(ICoreAPI.INSTANCE.getModuleHandler().getModuleLoaders())
+                        loaders.addAll(ICoreAPI.INSTANCE.moduleManager.getModuleLoaders())
                         for (classLoader in loaders) {
                             try {
                                 return@let classLoader.loadClass(name)
