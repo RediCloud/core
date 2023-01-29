@@ -35,4 +35,7 @@ interface ICoreAPI {
     val languageBridge: ILanguageBridge
 
     fun shutdown()
+
+    fun <T: ICoreAPI> asCore(): T = this as T
+
 }
