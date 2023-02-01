@@ -4,6 +4,7 @@ import eu.cloudnetservice.driver.inject.InjectionLayer
 import eu.cloudnetservice.driver.provider.CloudServiceProvider
 import eu.cloudnetservice.driver.provider.GroupConfigurationProvider
 import eu.cloudnetservice.driver.provider.ServiceTaskProvider
+import eu.cloudnetservice.driver.registry.ServiceRegistry
 import eu.cloudnetservice.driver.service.ServiceEnvironmentType
 import eu.cloudnetservice.driver.service.ServiceInfoSnapshot
 import eu.cloudnetservice.modules.bridge.player.PlayerManager
@@ -15,7 +16,7 @@ import net.dustrean.api.network.NetworkComponentType
 val cloudServiceProvider: CloudServiceProvider = InjectionLayer.ext().instance(CloudServiceProvider::class.java)
 val cloudTaskProvider: ServiceTaskProvider = InjectionLayer.ext().instance(ServiceTaskProvider::class.java)
 val cloudGroupConfigurationProvider: GroupConfigurationProvider = InjectionLayer.ext().instance(GroupConfigurationProvider::class.java)
-val cloudPlayerManager: PlayerManager = InjectionLayer.ext().instance(PlayerManager::class.java)
+val cloudPlayerManager: PlayerManager = ServiceRegistry.first(PlayerManager::class.java)
 val cloudServiceInfoHolder: ServiceInfoHolder = InjectionLayer.ext().instance(ServiceInfoHolder::class.java)
 
 fun getCurrentNetworkComponent(): NetworkComponentInfo {
