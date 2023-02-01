@@ -1,5 +1,8 @@
 {
   "entrypoint": "net.dustrean.api.minestom.bootstrap.MinestomBootstrap",
   "name": "core",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "dependencies": [
+    "CloudNet_Bridge"
+  ]
 }

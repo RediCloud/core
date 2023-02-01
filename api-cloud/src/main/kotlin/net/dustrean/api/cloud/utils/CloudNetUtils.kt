@@ -11,7 +11,7 @@ import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
 
 fun getCurrentNetworkComponent(): NetworkComponentInfo {
-    val serviceInfo = Wrapper.instance().lastServiceInfo()
+    val serviceInfo = CloudNetDriver.instance<Wrapper>().lastServiceInfo()
     val environment: NetworkComponentType = when (serviceInfo.serviceId().environment()) {
         ServiceEnvironmentType.MINESTOM -> NetworkComponentType.MINESTOM
         ServiceEnvironmentType.VELOCITY -> NetworkComponentType.VELOCITY
