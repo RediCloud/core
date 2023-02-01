@@ -1,17 +1,25 @@
 package net.dustrean.api.cloud.utils
 
-import eu.cloudnetservice.driver.CloudNetDriver
+import eu.cloudnetservice.driver.inject.InjectionLayer
 import eu.cloudnetservice.driver.provider.CloudServiceProvider
 import eu.cloudnetservice.driver.provider.GroupConfigurationProvider
 import eu.cloudnetservice.driver.provider.ServiceTaskProvider
 import eu.cloudnetservice.driver.service.ServiceEnvironmentType
+import eu.cloudnetservice.driver.service.ServiceInfoSnapshot
 import eu.cloudnetservice.modules.bridge.player.PlayerManager
-import eu.cloudnetservice.wrapper.Wrapper
+import eu.cloudnetservice.wrapper.holder.ServiceInfoHolder
 import net.dustrean.api.network.NetworkComponentInfo
 import net.dustrean.api.network.NetworkComponentType
 
+
+val cloudServiceProvider: CloudServiceProvider = InjectionLayer.ext().instance(CloudServiceProvider::class.java)
+val cloudTaskProvider: ServiceTaskProvider = InjectionLayer.ext().instance(ServiceTaskProvider::class.java)
+val cloudGroupConfigurationProvider: GroupConfigurationProvider = InjectionLayer.ext().instance(GroupConfigurationProvider::class.java)
+val cloudPlayerManager: PlayerManager = InjectionLayer.ext().instance(PlayerManager::class.java)
+val cloudServiceInfoHolder: ServiceInfoHolder = InjectionLayer.ext().instance(ServiceInfoHolder::class.java)
+
 fun getCurrentNetworkComponent(): NetworkComponentInfo {
-    val serviceInfo = CloudNetDriver.instance<Wrapper>().lastServiceInfo()
+    val serviceInfo = cloudServiceInfoHolder.lastServiceInfo()
     val environment: NetworkComponentType = when (serviceInfo.serviceId().environment()) {
         ServiceEnvironmentType.MINESTOM -> NetworkComponentType.MINESTOM
         ServiceEnvironmentType.VELOCITY -> NetworkComponentType.VELOCITY
@@ -22,17 +30,8 @@ fun getCurrentNetworkComponent(): NetworkComponentInfo {
     return NetworkComponentInfo(environment, serviceInfo.serviceId().uniqueId())
 }
 
-fun getCloudServiceProvider(): CloudServiceProvider = CloudNetDriver.instance<CloudNetDriver>().cloudServiceProvider()
-
-fun getCloudTaskProvider(): ServiceTaskProvider = CloudNetDriver.instance<CloudNetDriver>().serviceTaskProvider()
-
-fun getCurrentServerInfo() = Wrapper.instance().currentServiceInfo()
-
-fun getCloudGroupProvider(): GroupConfigurationProvider =
-    CloudNetDriver.instance<CloudNetDriver>().groupConfigurationProvider()
-
-fun getCloudPlayerManager(): PlayerManager =
-    CloudNetDriver.instance<CloudNetDriver>().serviceRegistry().firstProvider(PlayerManager::class.java)
+val currentCloudServiceInfo: ServiceInfoSnapshot
+    get() = cloudServiceInfoHolder.serviceInfo()
 
 fun translateServiceEnvironment(environment: ServiceEnvironmentType): NetworkComponentType {
     var componentType: NetworkComponentType? = null

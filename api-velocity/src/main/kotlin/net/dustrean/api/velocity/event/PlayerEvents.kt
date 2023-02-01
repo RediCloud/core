@@ -10,8 +10,8 @@ import com.velocitypowered.api.event.player.ServerPreConnectEvent
 import kotlinx.coroutines.runBlocking
 import net.dustrean.api.CoreAPI
 import net.dustrean.api.ICoreAPI
-import net.dustrean.api.cloud.utils.getCloudServiceProvider
-import net.dustrean.api.cloud.utils.getCloudTaskProvider
+import net.dustrean.api.cloud.utils.cloudServiceProvider
+import net.dustrean.api.cloud.utils.cloudTaskProvider
 import net.dustrean.api.player.Player
 import net.dustrean.api.player.PlayerAuthentication
 import net.dustrean.api.player.PlayerManager
@@ -160,8 +160,8 @@ class PlayerEvents(private val playerManager: PlayerManager) {
         }
         if (player?.authentication?.isLoggedIn(player) == true) return
         if (!target.serverInfo.name.startsWith(authConfig.verifyTask)) {
-            val task = getCloudTaskProvider().serviceTask(authConfig.verifyTask)
-            if (task == null || getCloudServiceProvider().servicesByTask(authConfig.verifyTask).isEmpty()) {
+            val task = cloudTaskProvider.serviceTask(authConfig.verifyTask)
+            if (task == null || cloudServiceProvider.servicesByTask(authConfig.verifyTask).isEmpty()) {
                 event.player.sendMessage(Component.text("§cThe authentication server is currently not available!"))
                 event.result = ServerPreConnectEvent.ServerResult.denied()
                 return
