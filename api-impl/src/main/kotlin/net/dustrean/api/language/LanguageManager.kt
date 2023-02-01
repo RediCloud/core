@@ -268,16 +268,12 @@ class LanguageManager(core: CoreAPI) : ILanguageManager {
         val language = getLanguage(languageId) ?: getDefaultLanguage()
         val components = getMap(language.id, provider.type)
         if(!components.containsKey(provider.key)) {
-            val rawItems = mutableMapOf<Int, String>()
-            rawItems.putAll(provider.itemComponents.mapValues { it.value.key })
-            rawItems.putAll(provider.itemProvider.mapValues { it.value.key })
             val fallbackComponent = InventoryComponent(
                 provider.key,
                 language.id,
                 provider.type,
                 ILanguageManager.DEFAULT_SERIALIZER_TYPE,
-                serialize(provider.title, ILanguageManager.DEFAULT_SERIALIZER_TYPE),
-                rawItems.toMap()
+                serialize(provider.title, ILanguageManager.DEFAULT_SERIALIZER_TYPE)
             )
             components[provider.key] = fallbackComponent
             return fallbackComponent
