@@ -118,6 +118,8 @@ allprojects {
         compileOnly("eu.cloudnetservice.cloudnet:bridge:4.0.0-RC7")
         compileOnly("eu.cloudnetservice.cloudnet:wrapper-jvm:4.0.0-RC7")
         compileOnly("eu.cloudnetservice.cloudnet:cloudperms:4.0.0-RC7")
+        compileOnly("eu.cloudnetservice.cloudnet:platform-inject-api:4.0.0-RC7")
+        annotationProcessor("eu.cloudnetservice.cloudnet:platform-inject-processor:4.0.0-RC7")
 
         implementation2("net.kyori:adventure-api:4.12.0")
         implementation2("net.kyori:adventure-text-serializer-gson:4.12.0")
