@@ -10,7 +10,6 @@ class InventoryComponent(
     override val type: LanguageType,
     override val serializerType: LanguageSerializerType,
     val rawTitle: String,
-    val rawItems: Map<Int, String>
 ) : ILanguageComponent
 
 enum class InventoryType(val maxSize: Int){

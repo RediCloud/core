@@ -8,6 +8,4 @@ import net.kyori.adventure.text.Component
 
 class InventoryComponentProvider : LanguageComponentProvider(LanguageType.INVENTORY) {
     var title: Component = Component.empty()
-    val itemProvider: MutableMap<Int, ItemComponentProvider> = mutableMapOf()
-    val itemComponents: MutableMap<Int, ItemComponent> = mutableMapOf()
 }
