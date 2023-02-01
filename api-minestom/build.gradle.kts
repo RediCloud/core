@@ -16,7 +16,7 @@ dependencies {
     shade(project(":api-impl"))
     shade(project(":api-cloud"))
 
-    compileOnly("com.github.Minestom.Minestom:Minestom:d37f40a1bb")
+    compileOnly("com.github.Minestom.Minestom:Minestom:1.19.3-SNAPSHOT")
 }
 
 tasks {
