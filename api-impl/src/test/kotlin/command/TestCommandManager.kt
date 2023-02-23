@@ -1,12 +1,12 @@
 package command
 
-import net.dustrean.api.command.ICommandActor
-import net.dustrean.api.command.CommandManager
-import net.dustrean.api.command.ICommand
-import net.dustrean.api.command.annotations.CommandArgument
-import net.dustrean.api.command.annotations.CommandSubPath
-import net.dustrean.api.command.data.CommandData
-import net.dustrean.api.command.data.CommandParameterData
+import dev.redicloud.api.command.ICommandActor
+import dev.redicloud.api.command.CommandManager
+import dev.redicloud.api.command.ICommand
+import dev.redicloud.api.command.annotations.CommandArgument
+import dev.redicloud.api.command.annotations.CommandSubPath
+import dev.redicloud.api.command.data.CommandData
+import dev.redicloud.api.command.data.CommandParameterData
 import org.jetbrains.annotations.NotNull
 import kotlin.reflect.jvm.kotlinFunction
 

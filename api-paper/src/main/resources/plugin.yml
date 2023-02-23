@@ -1,6 +1,6 @@
 name: core
-main: net.dustrean.api.paper.bootstrap.PaperBootstrap
+main: dev.redicloud.api.paper.bootstrap.PaperBootstrap
 version: 1.0-SNAPSHOT
-author: Dustrean-Team
-description: Core plugin for the Dustrean API
-website: https://dustrean.net
+author: RediCloud-Team
+description: Core plugin for the RC-API
+website: https://redicloud.dev

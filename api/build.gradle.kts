@@ -10,10 +10,10 @@ repositories {
 val libloaderVersion: String by project
 dependencies{
     implementation2("org.mindrot:jbcrypt:0.4")
-    compileOnly("net.dustrean.libloader:libloader-bootstrap:${libloaderVersion}")
+    compileOnly("dev.redicloud.libloader:libloader-bootstrap:${libloaderVersion}")
 }
 
-the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
+the(dev.redicloud.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
     .doBootstrapShade.set(false)
 
 java {

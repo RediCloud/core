@@ -1,18 +1,15 @@
-import net.dustrean.libloader.plugin.LibraryLoader
-
 plugins {
     kotlin("jvm")
 }
 
-
-the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
+the(dev.redicloud.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
     .doBootstrapShade.set(false)
 
 val projects by extra(listOf("api"))
 
 val libloaderVersion: String by project
 dependencies {
-    compileOnly("net.dustrean.libloader:libloader-bootstrap:${libloaderVersion}")
+    compileOnly("dev.redicloud.libloader:libloader-bootstrap:${libloaderVersion}")
     compileOnly(project(":api"))
     implementation2("com.google.guava:guava:31.1-jre")
 

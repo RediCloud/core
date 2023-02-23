@@ -11,24 +11,12 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         maven("https://papermc.io/repo/repository/maven-public/")
-        maven {
-            name = "dustrean"
-            url = uri("https://repo.dustrean.net/releases")
-            credentials {
-                val DUSTREAN_REPO_USERNAME: String? by settings
-                val DUSTREAN_REPO_PASSWORD: String? by settings
-                username = DUSTREAN_REPO_USERNAME ?: System.getenv("DUSTREAN_REPO_USERNAME")
-                password = DUSTREAN_REPO_PASSWORD ?: System.getenv("DUSTREAN_REPO_PASSWORD")
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
-        }
+        maven("https://repo.redicloud.dev/releases")
     }
     val libloaderVersion: String by settings
     val kotlinVersion: String by settings
     plugins {
         kotlin("jvm") version kotlinVersion
-        id("net.dustrean.libloader") version libloaderVersion
+        id("dev.redicloud.libloader") version libloaderVersion
     }
 }

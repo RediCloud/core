@@ -1,5 +1,5 @@
 {
-  "entrypoint": "net.dustrean.api.minestom.bootstrap.MinestomBootstrap",
+  "entrypoint": "dev.redicloud.api.minestom.bootstrap.MinestomBootstrap",
   "name": "core",
   "version": "1.0.0",
   "dependencies": [

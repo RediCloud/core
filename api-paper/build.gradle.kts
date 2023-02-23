@@ -15,6 +15,7 @@ dependencies {
     shade(project(":api-cloud"))
 
     paperDevBundle("1.19.2-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.2-R0.1-SNAPSHOT")
 }
 
 tasks.jar {

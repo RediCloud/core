@@ -1,7 +1,7 @@
 package command
 
-import net.dustrean.api.command.ICommandActor
-import net.dustrean.api.command.provider.CommandSuggestionProvider
+import dev.redicloud.api.command.ICommandActor
+import dev.redicloud.api.command.provider.CommandSuggestionProvider
 import java.util.*
 
 class TestCommandSuggestionProvider : CommandSuggestionProvider {

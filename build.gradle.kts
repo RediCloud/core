@@ -1,14 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
-    id("net.dustrean.libloader")
+    id("dev.redicloud.libloader")
 }
 
 if (System.getenv("CI") == "true")
     tasks.replace("build").dependsOn("buildInOrder")
 tasks.create("buildInOrder") {
     dependsOn(
-        ":api:build", ":api:publishApiPublicationToDustreanRepository",
+        ":api:build", ":api:publishApiPublicationToRedicloudRepository",
         ":api-impl:build",
         ":api-standalone:build",
         ":api-cloud:build",
@@ -19,10 +19,10 @@ tasks.create("buildInOrder") {
 }
 allprojects {
     apply(plugin = "kotlin")
-    apply(plugin = "net.dustrean.libloader")
+    apply(plugin = "dev.redicloud.libloader")
     apply(plugin = "maven-publish")
 
-    group = "net.dustrean.api"
+    group = "dev.redicloud.api"
     version = "1.0.0-SNAPSHOT"
 
     val isCi by extra(System.getenv("CI") == "true")
@@ -35,23 +35,11 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven {
-            url = uri("https://repo.dustrean.net/snapshots/")
-            credentials {
-                username = findProperty("DUSTREAN_REPO_USERNAME") as String? ?: System.getenv("DUSTREAN_REPO_USERNAME")
-                password = findProperty("DUSTREAN_REPO_PASSWORD") as String? ?: System.getenv("DUSTREAN_REPO_PASSWORD")
-            }
-        }
+        maven ("https://repo.redicloud.dev/snapshots/")
         gradlePluginPortal()
         maven("https://repo.cloudnetservice.eu/repository/releases/")
         maven("https://jitpack.io")
-        maven {
-            url = uri("https://repo.dustrean.net/releases/")
-            credentials {
-                username = findProperty("DUSTREAN_REPO_USERNAME") as String? ?: System.getenv("DUSTREAN_REPO_USERNAME")
-                password = findProperty("DUSTREAN_REPO_PASSWORD") as String? ?: System.getenv("DUSTREAN_REPO_PASSWORD")
-            }
-        }
+        maven("https://repo.redicloud.dev/releases/")
     }
     afterEvaluate {
         if (try {
@@ -63,17 +51,17 @@ allprojects {
             (extensions["publishing"] as PublishingExtension).apply {
                 repositories {
                     maven {
-                        name = "dustrean"
+                        name = "redicloud"
                         url = uri(
                             if (!project.version.toString()
                                     .endsWith("-SNAPSHOT")
-                            ) "https://repo.dustrean.net/releases" else "https://repo.dustrean.net/snapshots"
+                            ) "https://repo.redicloud.dev/releases" else "https://repo.redicloud.dev/snapshots"
                         )
                         credentials {
-                            username = findProperty("DUSTREAN_REPO_USERNAME") as String?
-                                ?: System.getenv("DUSTREAN_REPO_USERNAME")
-                            password = findProperty("DUSTREAN_REPO_PASSWORD") as String?
-                                ?: System.getenv("DUSTREAN_REPO_PASSWORD")
+                            username = findProperty("REDI_CLOUD_REPO_USERNAME") as String?
+                                ?: System.getenv("REDI_CLOUD_REPO_USERNAME")
+                            password = findProperty("REDI_CLOUD_REPO_PASSWORD") as String?
+                                ?: System.getenv("REDI_CLOUD_REPO_PASSWORD")
                         }
                         authentication {
                             create<BasicAuthentication>("basic")
@@ -89,7 +77,7 @@ allprojects {
                     }
                 }
             }
-        the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class).apply {
+        the(dev.redicloud.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class).apply {
             val projects: List<String?> = try {
                 extra.get("projects") as List<String>?
             } catch (e: Exception) {
@@ -103,7 +91,7 @@ allprojects {
         }
     }
 
-    the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class).apply {
+    the(dev.redicloud.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class).apply {
         this.libraryFolder.set(project.projectDir.path + "/libraries")
         this.configurationName.set("implementation2")
     }

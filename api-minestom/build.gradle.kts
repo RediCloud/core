@@ -1,4 +1,4 @@
-import net.dustrean.libloader.plugin.LibraryLoader
+import dev.redicloud.libloader.plugin.LibraryLoader
 
 plugins {
     kotlin("jvm")

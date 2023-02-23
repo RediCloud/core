@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm")
 }
 
-the(net.dustrean.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
+the(dev.redicloud.libloader.plugin.LibraryLoader.LibraryLoaderConfig::class)
     .doBootstrapShade.set(false)
 
 val projects by extra(listOf("api"))

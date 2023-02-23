@@ -1,6 +1,6 @@
 package command
 
-import net.dustrean.api.command.ICommandActor
+import dev.redicloud.api.command.ICommandActor
 import java.util.*
 
 class TestCommandActor(override val uuid: UUID) : ICommandActor {

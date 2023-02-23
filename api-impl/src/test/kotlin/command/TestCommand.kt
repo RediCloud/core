@@ -1,12 +1,12 @@
 package command
 
-import net.dustrean.api.command.Command
-import net.dustrean.api.command.ICommandActor
-import net.dustrean.api.command.annotations.CommandArgument
-import net.dustrean.api.command.annotations.CommandSubPath
+import dev.redicloud.api.command.Command
+import dev.redicloud.api.command.ICommandActor
+import dev.redicloud.api.command.annotations.CommandArgument
+import dev.redicloud.api.command.annotations.CommandSubPath
 import java.util.*
 
-open class TestCommand() : Command("test", arrayOf("t"), "test command", "test.command") {
+open class TestCommand() : Command("test", arrayOf("t"), "test command", "redicloud.test") {
 
     fun execute(sender: ICommandActor, args: Array<String>) {
         TestCommandManager.handleCommand(sender, this, args.toList())
@@ -24,7 +24,7 @@ object CoinsCommand : TestCommand() {
         println("Command without arguments: ${player.uuid}")
     }
 
-    @CommandSubPath("<amount>", "dustrean.staff")
+    @CommandSubPath("<amount>", "redicloud.staff")
     fun get(player: ICommandActor, @CommandArgument("amount") test: Int) {
 
         println("Command with arguments: ${player.uuid} $test")
