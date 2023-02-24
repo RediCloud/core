@@ -13,8 +13,8 @@ object ExceptionHandler {
     private val gson = Gson()
 
     var service = "undefined"
-    private val hasteURL: String = System.getenv("EXCEPTION_HASTE_URL")
-    private val webhookURL = URL(System.getenv("EXCEPTION_SERVICE_WEB_HOOK_URL"))
+    private val hasteURL: String = System.getenv("EXCEPTION_HASTE_URL") ?: "https://hastebin.de"
+    private val webhookURL: URL? = if (System.getenv().containsKey("EXCEPTION_SERVICE_WEB_HOOK_URL")) { URL(System.getenv("EXCEPTION_SERVICE_WEB_HOOK_URL")) } else null
 
     init {
         fun stackTraceToString(exception: Throwable): String {
@@ -38,15 +38,10 @@ object ExceptionHandler {
             msg.append(stackTraceToString(exception))
 
 
-            val pasteBuilder =
-                StringBuilder("_________________________________________________________________\n\n")
+            val pasteBuilder = StringBuilder("_________________________________________________________________\n\n")
 
             pasteBuilder.append(
-                " ____            _                                     _   \n" +
-                "|  _ \\ _   _ ___| |_ _ __ ___  __ _ _ __    _ __   ___| |_ \n" +
-                "| | | | | | / __| __| '__/ _ \\/ _` | '_ \\  | '_ \\ / _ \\ __|\n" +
-                "| |_| | |_| \\__ \\ |_| | |  __/ (_| | | | |_| | | |  __/ |_ \n" +
-                "|____/ \\__,_|___/\\__|_|  \\___|\\__,_|_| |_(_)_| |_|\\___|\\__|\n\n"
+                "     _______                 __   _      ______  __                         __  \n" + "    |_   __ \\\\               |  ] (_)   .' ___  |[  |                       |  ] \n" + "      | |__) |  .---.   .--.| |  __   / .'   \\\\_| | |  .--.   __   _    .--.| |  \n" + "      |  __ /  / /__\\\\\\\\/ /'`\\\\' | [  |  | |        | |/ .'`\\\\ \\\\[  | | | / /'`\\\\' |  \n" + "     _| |  \\\\ \\\\_| \\\\__.,| \\\\__/  |  | |  \\\\ `.___.'\\\\ | || \\\\__. | | \\\\_/ |,| \\\\__/  |  \n" + "    |____| |___|'.__.' '.__.;__][___]  `.____ .'[___]'.__.'  '.__.'_/ '.__.;__] " + "\n\n"
             )
             pasteBuilder.append("Service: $service\n")
             pasteBuilder.append(msg.toString())
@@ -63,8 +58,9 @@ object ExceptionHandler {
      */
     private fun send(hasteURL: URL) {
 
-        val request = HttpRequest.newBuilder(webhookURL.toURI())
-            .header("Content-type", "application/json")
+        if (webhookURL == null) return
+
+        val request = HttpRequest.newBuilder(webhookURL.toURI()).header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString("{ \"username\": \"Exception Log\", \"avatar_url\": \"\", \"content\": \"Server Throwed Exception on Service: $service -> ${hasteURL}\" }"))
             .build()
         client.send(request, HttpResponse.BodyHandlers.ofString())
