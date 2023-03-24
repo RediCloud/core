@@ -1,5 +1,4 @@
-@file:Repository("https://repo.maven.apache.org/maven2/")
-@file:DependsOn("com.jcraft:jsch:0.1.55")
+@file:Repository("https://repo.maven.apache.org/maven2/") @file:DependsOn("com.jcraft:jsch:0.1.55")
 
 import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.ChannelSftp
@@ -7,8 +6,12 @@ import com.jcraft.jsch.JSch
 import java.io.File
 
 val jsch = JSch()
-jsch.addIdentity("node01-ssh-key", System.getenv("NODE01_SSH_KEY").toByteArray(), null, null)
-val session = jsch.getSession("root", "node01.hosting.suqatri.net", 22).apply {
+jsch.addIdentity("node01-ssh-key", System.getenv("NODE_01_SSH_KEY").toByteArray(), null, null)
+val session = jsch.getSession(
+    System.getenv("NODE_01_USER").toString(),
+    System.getenv("NODE_01_HOSTNAME").toString(),
+    System.getenv("NODE_01_PORT").toInt()
+).apply {
     setConfig("StrictHostKeyChecking", "no")
     connect()
 }
@@ -16,8 +19,7 @@ val sftp = session.openChannel("sftp").apply {
     connect()
 } as ChannelSftp
 
-fun deploy(from: String, to: String) =
-    sftp.put(from, to, ChannelSftp.OVERWRITE)
+fun deploy(from: String, to: String) = sftp.put(from, to, ChannelSftp.OVERWRITE)
 
 fun Deploy_main.runCommandSync(it: String) {
     (session.openChannel("exec") as ChannelExec).apply {
@@ -49,4 +51,3 @@ files.forEach {
 }
 sftp.disconnect()
 session.disconnect()
-
