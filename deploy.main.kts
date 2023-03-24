@@ -43,6 +43,7 @@ val files = listOf(
     "api-paper/build/libs/" to "/home/cloudnet/local/templates/Core/paper/plugins/core-paper.jar",
     "api-standalone/build/libs/" to "/home/core/standalone/core-standalone.jar"
 )
+runCommandSync("service core-standalone stop")
 files.forEach {
     runCommandSync("mkdir -p ${it.second.substringBeforeLast("/")}")
     deploy(File(it.first).listFiles { file ->
@@ -50,4 +51,5 @@ files.forEach {
     }[0].absolutePath.also { s -> println("Deploying $s to ${it.second}")}, it.second)
 }
 sftp.disconnect()
+runCommandSync("service core-standalone start")
 session.disconnect()
