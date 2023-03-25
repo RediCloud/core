@@ -10,7 +10,9 @@ import net.minestom.server.extensions.Extension
 import net.minestom.server.extensions.ExtensionClassLoader
 
 class MinestomBootstrap : Extension() {
+
     lateinit var classLoader: ExtensionClassLoader
+
     override fun preInitialize() {
         classLoader = this.javaClass.classLoader as ExtensionClassLoader
         Bootstrap().apply({
