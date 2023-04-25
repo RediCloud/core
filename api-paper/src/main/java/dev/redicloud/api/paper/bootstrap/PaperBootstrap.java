@@ -18,6 +18,7 @@ public class PaperBootstrap extends JavaPlugin {
             new Bootstrap().apply(new URLClassLoaderJarLoader((URLClassLoader) this.getClass().getClassLoader()));
             CorePaperAPI.INSTANCE.init(this);
             ((GsonCodec) CorePaperAPI.INSTANCE.getRedisConnection().redisClient.getConfig().getCodec()).getClassLoaders().add(this.getClass().getClassLoader());
+            CorePaperAPI.INSTANCE.initialized();
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }

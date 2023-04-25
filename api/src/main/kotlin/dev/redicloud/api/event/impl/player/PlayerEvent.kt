@@ -1,4 +1,4 @@
-package dev.redicloud.api.event.impl
+package dev.redicloud.api.event.impl.player
 
 import dev.redicloud.api.event.CoreEvent
 import dev.redicloud.api.event.EventType

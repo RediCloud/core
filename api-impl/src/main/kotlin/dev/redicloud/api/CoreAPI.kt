@@ -10,7 +10,6 @@ import dev.redicloud.api.network.NetworkComponentManager
 import dev.redicloud.api.packet.PacketManager
 import dev.redicloud.api.player.PlayerManager
 import dev.redicloud.api.redis.RedisConnection
-import dev.redicloud.api.utils.ExceptionHandler
 
 abstract class CoreAPI(
     final override val networkComponentInfo: NetworkComponentInfo
@@ -18,7 +17,6 @@ abstract class CoreAPI(
 
     init {
         ICoreAPI.INSTANCE = this
-        ExceptionHandler
     }
 
     final override val redisConnection: RedisConnection = RedisConnection()

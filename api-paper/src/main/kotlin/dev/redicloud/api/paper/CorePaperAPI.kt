@@ -1,5 +1,6 @@
 package dev.redicloud.api.paper
 
+import dev.redicloud.api.cloud.CloudCoreAPI
 import dev.redicloud.api.command.ICommandManager
 import dev.redicloud.api.paper.command.PaperCommandManager
 import dev.redicloud.api.paper.event.PlayerEvents
@@ -10,7 +11,7 @@ import dev.redicloud.api.utils.parser.string.StringParser
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
-object CorePaperAPI : dev.redicloud.api.cloud.CloudCoreAPI() {
+object CorePaperAPI : CloudCoreAPI() {
 
 
     override val languageBridge = PaperLanguageBridge()

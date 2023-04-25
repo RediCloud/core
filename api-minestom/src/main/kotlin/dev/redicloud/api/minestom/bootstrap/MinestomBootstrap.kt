@@ -25,6 +25,7 @@ class MinestomBootstrap : Extension() {
         (ICoreAPI.getInstance<CoreAPI>().redisConnection.redisClient.config.codec as GsonCodec).classLoaders.add(
             classLoader
         )
+        MinestomCoreAPI.initialized()
     }
 
     override fun terminate() {

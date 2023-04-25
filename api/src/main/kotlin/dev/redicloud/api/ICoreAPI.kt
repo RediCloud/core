@@ -3,6 +3,7 @@ package dev.redicloud.api
 import dev.redicloud.api.command.ICommandManager
 import dev.redicloud.api.config.IConfigManager
 import dev.redicloud.api.event.IEventManager
+import dev.redicloud.api.event.impl.CoreInitializedEvent
 import dev.redicloud.api.language.ILanguageBridge
 import dev.redicloud.api.language.ILanguageManager
 import dev.redicloud.api.module.IModuleManager
@@ -37,5 +38,9 @@ interface ICoreAPI {
     fun shutdown()
 
     fun <T: ICoreAPI> asCore(): T = this as T
+
+    fun initialized() {
+        this.eventManager.callEvent(CoreInitializedEvent(this))
+    }
 
 }

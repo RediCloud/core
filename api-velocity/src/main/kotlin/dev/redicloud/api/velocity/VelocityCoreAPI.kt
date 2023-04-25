@@ -27,5 +27,6 @@ object VelocityCoreAPI : CloudCoreAPI() {
 
         StringParser.customTypeParsers.add(PlayerParser())
         proxyServer.eventManager.register(plugin, PlayerEvents(playerManager))
+
     }
 }

@@ -13,6 +13,7 @@ fun main(args: Array<String>) {
         coreAPI.shutdown()
         println("API Standalone stopped!")
     })
+    coreAPI.initialized()
     println("API Standalone started!")
     if (System.getProperty("redicloud.service") == null)
     while (true) {
