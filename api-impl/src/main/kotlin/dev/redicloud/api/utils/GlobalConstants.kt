@@ -1,5 +1,7 @@
 package dev.redicloud.api.utils
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 
 fun getManageFolder(): File {
@@ -19,3 +21,5 @@ fun getModuleFolder(): File {
 }
 
 val coreVersion = ""
+
+val defaultScope = CoroutineScope(Dispatchers.Default)
