@@ -2,6 +2,7 @@ package dev.redicloud.api.module
 
 import com.google.gson.Gson
 import dev.redicloud.api.CoreAPI
+import dev.redicloud.api.utils.defaultScope
 import dev.redicloud.api.utils.getModuleFolder
 import dev.redicloud.libloader.boot.Bootstrap
 import dev.redicloud.libloader.boot.apply.impl.JarResourceLoader
@@ -24,6 +25,8 @@ class ModuleManager(
             if (file.isDirectory) return@forEach
             if (file.extension != "jar") return@forEach
 
+            var name = file.nameWithoutExtension
+
             try {
                 val jar = JarFile(file)
                 val entry = jar.getJarEntry("module.json")
@@ -33,12 +36,13 @@ class ModuleManager(
                 }
                 val inputStream = jar.getInputStream(entry)
                 val description = gson.fromJson(inputStream.reader().readText(), ModuleDescription::class.java)
+                name = description.name
 
                 if (!loadModule(description, file)) return@forEach
-                logger.info("Loaded module ${file.name}")
+                logger.info("Loaded module ${description.name}")
 
             } catch (e: Exception) {
-                logger.error("Failed to load module ${file.name}", e)
+                logger.error("Failed to load module ${name}", e)
                 e.printStackTrace()
             }
         }
@@ -58,22 +62,24 @@ class ModuleManager(
 
     override fun loadModule(description: ModuleDescription, file: File): Boolean {
 
-        val loader = ModuleClassLoader(arrayOf(file.toURI().toURL()), listOf(this.javaClass.classLoader))
+        val loader = ModuleClassLoader(description.name, arrayOf(file.toURI().toURL()), this.javaClass.classLoader)
 
         if(description.mainClasses[core.networkComponentInfo.type] == null) return false
-
-        val module =
-            loader.loadClass(description.mainClasses[core.networkComponentInfo.type]).getDeclaredConstructor().newInstance() as Module
 
         try {
             Bootstrap().apply(loader, loader, JarResourceLoader(description.name, file))
         } catch (e: Throwable) {
-            logger.info("No libloader implementation found, continuing", e)
+            logger.warn("No libloader implementation found, continuing", e)
         }
 
+        val moduleInstance =
+            loader.loadClass(description.mainClasses[core.networkComponentInfo.type]).getDeclaredConstructor().newInstance()
+        if (moduleInstance !is Module) {
+            return false
+        }
+        val module = Module::class.java.cast(moduleInstance)
 
-
-        module::class.java.superclass.getDeclaredField("description").apply {
+        Module::class.java.getDeclaredField("description").apply {
             isAccessible = true
             set(module, description)
             isAccessible = false
@@ -87,10 +93,26 @@ class ModuleManager(
             return false
         }
 
-        module.state = ModuleState.LOADED
+        setState(module, ModuleState.LOADED)
         modules.add(module)
 
         return true
+    }
+
+    private fun setState(module: Module, state: ModuleState) {
+        Module::class.java.getDeclaredField("state").apply {
+            isAccessible = true
+            set(module, state)
+            isAccessible = false
+        }
+    }
+
+    private fun getSuperClass(module: Any): Class<*> {
+        var superClass: Class<*>? = module::class.java.superclass
+        while (superClass != null && superClass != Module::class.java) {
+            superClass = superClass.superclass
+        }
+        return superClass ?: throw IllegalStateException("Module class not found")
     }
 
     override fun unloadModule(module: Module): Boolean {
@@ -104,7 +126,7 @@ class ModuleManager(
         }
         moduleLoaders.remove(module)
         modules.remove(module)
-        module.state = ModuleState.DISABLED
+        setState(module, ModuleState.DISABLED)
         logger.info("Unloaded module ${module.description.name}")
         return true
     }
@@ -119,7 +141,7 @@ class ModuleManager(
                 logger.error("Failed to disable module ${module.description.name}", e)
             }
         }
-        module.state = ModuleState.DISABLED
+        setState(module, ModuleState.DISABLED)
         modules.remove(module)
         logger.info("Unloaded module $name")
         return true
@@ -133,10 +155,10 @@ class ModuleManager(
                 logger.info("Enabled module ${it.description.name}")
             } catch (e: Exception) {
                 logger.error("Failed to enable module ${it.description.name}", e)
-                it.state = ModuleState.ERROR
+                setState(it, ModuleState.ERROR)
                 return@forEach
             }
-            it.state = ModuleState.ENABLED
+            setState(it, ModuleState.ENABLED)
         }
     }
 
@@ -148,7 +170,7 @@ class ModuleManager(
             } catch (e: Exception) {
                 logger.error("Failed to disable module ${it.description.name}", e)
             }
-            it.state = ModuleState.DISABLED
+            setState(it, ModuleState.DISABLED)
         }
     }
 
