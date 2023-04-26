@@ -4,9 +4,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import dev.redicloud.api.ICoreAPI
 import dev.redicloud.api.data.AbstractDataManager
-import dev.redicloud.api.packet.PacketManager
+import dev.redicloud.api.event.impl.CoreInitializedEvent
+import dev.redicloud.api.event.listenCoreEvent
 import dev.redicloud.api.packet.connect.PlayerChangeServicePacket
+import dev.redicloud.api.utils.defaultScope
 import dev.redicloud.api.utils.fetcher.UniqueIdFetcher
+import kotlinx.coroutines.launch
 import org.redisson.api.LocalCachedMapOptions
 import java.util.*
 
@@ -15,7 +18,12 @@ class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player
 ) {
 
     init {
-        PacketManager.INSTANCE.registerPacket(PlayerChangeServicePacket())
+        defaultScope.launch {
+            listenCoreEvent<CoreInitializedEvent> {
+                core.packetManager.registerPacket(PlayerChangeServicePacket())
+
+            }
+        }
     }
 
     private val scope = CoroutineScope(Dispatchers.IO)
