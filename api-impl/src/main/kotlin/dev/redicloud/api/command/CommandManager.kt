@@ -7,6 +7,7 @@ import dev.redicloud.api.command.annotations.CommandArgument
 import dev.redicloud.api.command.annotations.CommandSubPath
 import dev.redicloud.api.command.data.CommandData
 import dev.redicloud.api.command.data.CommandParameterData
+import dev.redicloud.api.utils.parser.string.IStringTypeParser
 import dev.redicloud.api.utils.parser.string.StringParser
 import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
@@ -220,4 +221,9 @@ abstract class CommandManager : ICommandManager {
     abstract override fun registerCommand(command: ICommand)
 
     abstract fun getPlayer(clazz: Class<*>, player: ICommandActor): Any?
+
+    override fun registerTypeParser(typeParser: IStringTypeParser<*>) {
+        StringParser.customTypeParsers.add(typeParser)
+    }
+
 }
