@@ -1,18 +1,13 @@
 package dev.redicloud.api.event
 
-import dev.redicloud.api.ICoreAPI
+import java.lang.reflect.Method
 
 interface IEventManager {
     suspend fun registerListener(listener: Any)
 
     suspend fun unregisterListener(listener: Any)
 
-    fun callEvent(event: CoreEvent)
-}
+    suspend fun registerListenerMethode(eventClass: Class<out CoreEvent>, method: Method, prio: Byte)
 
-suspend inline fun <reified T : CoreEvent> listenCoreEvent(crossinline block: T.() -> Unit) {
-    ICoreAPI.INSTANCE.eventManager.registerListener(object {
-        @CoreListener
-        fun onEvent(event: T) = block(event)
-    })
+    fun callEvent(event: CoreEvent)
 }

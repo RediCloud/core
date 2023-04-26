@@ -2,10 +2,12 @@ package dev.redicloud.api.module
 
 import com.google.gson.Gson
 import dev.redicloud.api.CoreAPI
-import dev.redicloud.api.utils.defaultScope
+import dev.redicloud.api.event.CoreListener
+import dev.redicloud.api.event.impl.CoreInitializedEvent
 import dev.redicloud.api.utils.getModuleFolder
 import dev.redicloud.libloader.boot.Bootstrap
 import dev.redicloud.libloader.boot.apply.impl.JarResourceLoader
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.jar.JarFile
@@ -13,6 +15,17 @@ import java.util.jar.JarFile
 class ModuleManager(
     private val core: CoreAPI
 ) : IModuleManager {
+
+    init {
+        runBlocking {
+            core.eventManager.registerListener(this@ModuleManager)
+        }
+    }
+
+    @CoreListener
+    fun onCoreInitialized(event: CoreInitializedEvent) {
+        enableModules()
+    }
 
     private val logger = LoggerFactory.getLogger(ModuleManager::class.java)
     private val gson = Gson()
@@ -64,7 +77,7 @@ class ModuleManager(
 
         val loader = ModuleClassLoader(description.name, arrayOf(file.toURI().toURL()), this.javaClass.classLoader)
 
-        if(description.mainClasses[core.networkComponentInfo.type] == null) return false
+        if (description.mainClasses[core.networkComponentInfo.type] == null) return false
 
         try {
             Bootstrap().apply(loader, loader, JarResourceLoader(description.name, file))
@@ -73,7 +86,8 @@ class ModuleManager(
         }
 
         val moduleInstance =
-            loader.loadClass(description.mainClasses[core.networkComponentInfo.type]).getDeclaredConstructor().newInstance()
+            loader.loadClass(description.mainClasses[core.networkComponentInfo.type]).getDeclaredConstructor()
+                .newInstance()
         if (moduleInstance !is Module) {
             return false
         }

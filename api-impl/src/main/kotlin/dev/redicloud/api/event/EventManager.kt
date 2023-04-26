@@ -37,6 +37,20 @@ class EventManager : IEventManager {
         }
     }
 
+    override suspend fun registerListenerMethode(eventClass: Class<out CoreEvent>, method: Method, prio: Byte) {
+        listenerLock.withLock {
+            val handlers = mutableMapOf<Class<*>, MutableMap<Byte, MutableSet<Method>>>()
+            val prioritiesMap = handlers.computeIfAbsent(eventClass) { mutableMapOf() }
+            val priority = prioritiesMap.computeIfAbsent(prio) { mutableSetOf() }
+            priority.add(method)
+
+            val prioritiesMap1 = byListenerAndPriority.computeIfAbsent(eventClass) { mutableMapOf() }
+            val currentPriorityMap = prioritiesMap1.computeIfAbsent(prio) { mutableMapOf() }
+            currentPriorityMap[method] = arrayOf(method)
+            bakeHandlers(eventClass)
+        }
+    }
+
     override suspend fun unregisterListener(listener: Any) {
         listenerLock.withLock {
             val handler = findHandlers(listener)
@@ -96,8 +110,7 @@ class EventManager : IEventManager {
             addAll(listener::class.java.declaredMethods)
         }
         methods.forEach { method ->
-            val annotation = method.getAnnotation(CoreListener::class.java)
-            if (annotation == null) return@forEach
+            val annotation = method.getAnnotation(CoreListener::class.java) ?: return@forEach
             val parameters = method.parameterTypes
             if (parameters.size != 1) return@forEach
             val prioritiesMap = handlers.computeIfAbsent(parameters[0]) { mutableMapOf() }
@@ -120,8 +133,7 @@ class EventManager : IEventManager {
         var value = Byte.MIN_VALUE
 
         do {
-            val handlersByListener: MutableMap<Any, Array<Method>>? = handlersByPriority[value]
-            if (handlersByListener == null) continue
+            val handlersByListener: MutableMap<Any, Array<Method>> = handlersByPriority[value] ?: continue
             handlersByListener.forEach { (listener, methods) ->
                 methods.forEach { method ->
                     handlerList.add(EventInvoker(listener, method))

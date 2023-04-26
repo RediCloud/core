@@ -1,29 +1,30 @@
 package dev.redicloud.api.player
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import dev.redicloud.api.ICoreAPI
 import dev.redicloud.api.data.AbstractDataManager
+import dev.redicloud.api.event.CoreListener
 import dev.redicloud.api.event.impl.CoreInitializedEvent
-import dev.redicloud.api.event.listenCoreEvent
 import dev.redicloud.api.packet.connect.PlayerChangeServicePacket
-import dev.redicloud.api.utils.defaultScope
 import dev.redicloud.api.utils.fetcher.UniqueIdFetcher
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.redisson.api.LocalCachedMapOptions
 import java.util.*
 
-class PlayerManager(core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player>(
+class PlayerManager(val core: ICoreAPI) : IPlayerManager, AbstractDataManager<Player>(
     "player", core.redisConnection, Player::class.java
 ) {
 
     init {
-        defaultScope.launch {
-            listenCoreEvent<CoreInitializedEvent> {
-                core.packetManager.registerPacket(PlayerChangeServicePacket())
-
-            }
+        runBlocking {
+            core.eventManager.registerListener(this@PlayerManager)
         }
+    }
+
+    @CoreListener
+    fun onCoreInitialized(event: CoreInitializedEvent) {
+        core.packetManager.registerPacket(PlayerChangeServicePacket())
     }
 
     private val scope = CoroutineScope(Dispatchers.IO)
