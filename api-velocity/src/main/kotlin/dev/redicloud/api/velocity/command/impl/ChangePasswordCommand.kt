@@ -9,11 +9,12 @@ import dev.redicloud.api.command.annotations.CommandSubPath
 import dev.redicloud.api.utils.crypt.UpdatableBCrypt
 import dev.redicloud.api.velocity.VelocityCoreAPI
 import dev.redicloud.api.velocity.config.PlayerAuthConfig
+import dev.redicloud.clients.velocity.command.InternalVelocityCommand
 
-class ChangePasswordCommand : Command(
-    commandName = "changepassword",
-    commandDescription = "Change your password",
-    commandAliases = arrayOf("cp", "changepw", "cpw")
+class ChangePasswordCommand : InternalVelocityCommand(
+    name = "changepassword",
+    description = "Change your password",
+    aliases = arrayOf("cp", "changepw", "cpw")
 ) {
 
 

@@ -14,8 +14,9 @@ import dev.redicloud.api.utils.crypt.UpdatableBCrypt
 import dev.redicloud.api.utils.fetcher.UniqueIdFetcher
 import dev.redicloud.api.velocity.VelocityCoreAPI
 import dev.redicloud.api.velocity.config.PlayerAuthConfig
+import dev.redicloud.clients.velocity.command.InternalVelocityCommand
 
-class RegisterCommand : Command("register", commandDescription = "Register your account") {
+class RegisterCommand : InternalVelocityCommand("register", description = "Register your account") {
 
     private var authConfig: PlayerAuthConfig
 

@@ -13,9 +13,10 @@ import dev.redicloud.api.utils.crypt.UpdatableBCrypt
 import dev.redicloud.api.utils.fetcher.UniqueIdFetcher
 import dev.redicloud.api.velocity.VelocityCoreAPI
 import dev.redicloud.api.velocity.config.PlayerAuthConfig
+import dev.redicloud.clients.velocity.command.InternalVelocityCommand
 import net.kyori.adventure.text.Component
 
-class LoginCommand : Command("login", commandDescription = "Login to your account") {
+class LoginCommand : InternalVelocityCommand("login", description = "Login to your account") {
 
     private var authConfig: PlayerAuthConfig
 

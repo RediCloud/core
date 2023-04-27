@@ -1,19 +1,18 @@
 package dev.redicloud.api.command
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import dev.redicloud.api.command.annotations.CommandArgument
 import dev.redicloud.api.command.annotations.CommandSubPath
 import dev.redicloud.api.command.data.CommandData
 import dev.redicloud.api.command.data.CommandParameterData
 import dev.redicloud.api.utils.parser.string.IStringTypeParser
 import dev.redicloud.api.utils.parser.string.StringParser
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 import kotlin.reflect.jvm.kotlinFunction
 
 @DelicateCoroutinesApi
@@ -43,7 +42,7 @@ abstract class CommandManager : ICommandManager {
             if (playerObject != null) {
                 list.add(playerObject)
             } else {
-                logger.error("Player class ${playerClass.name} is not assignable from ${player.baseClass.name} and no player object was found.")
+                logger.error("Player class ${playerClass.name} is not assignable from ${player.baseClass.name} or no player object was found.")
                 return
             }
         }
@@ -119,7 +118,9 @@ abstract class CommandManager : ICommandManager {
             }
         }
 
-        return suggestions.filter { it.lowercase(Locale.getDefault()).startsWith(messageArray.last().lowercase(Locale.getDefault())) }
+        return suggestions.filter {
+            it.lowercase(Locale.getDefault()).startsWith(messageArray.last().lowercase(Locale.getDefault()))
+        }
     }
 
     fun loadSubCommands(command: ICommand) {
@@ -167,6 +168,7 @@ abstract class CommandManager : ICommandManager {
                 }
             }
         }
+        command.loadedSubCommands()
     }
 
     private fun getAvailableArgsMatchingCommandData(message: String, command: ICommand): List<CommandData> {
@@ -207,12 +209,11 @@ abstract class CommandManager : ICommandManager {
 
         return commandDataList.firstOrNull { commandData ->
 
-            println(commandData.method.name)
-
             val pathArray = commandData.path.split(" ")
 
-            pathArray.withIndex()
+            val t = pathArray.withIndex()
                 .all { isParameter(it.value) || it.value.equals(args[it.index], ignoreCase = true) }
+            t
         }
     }
 

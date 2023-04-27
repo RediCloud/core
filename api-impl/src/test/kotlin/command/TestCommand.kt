@@ -14,6 +14,8 @@ open class TestCommand() : Command("test", arrayOf("t"), "test command", "redicl
 
     fun suggest(sender: ICommandActor, args: Array<String>): List<String> =
         TestCommandManager.handleTabComplete(sender, this, args.joinToString())
+
+    override fun loadedSubCommands() {}
 }
 
 object CoinsCommand : TestCommand() {

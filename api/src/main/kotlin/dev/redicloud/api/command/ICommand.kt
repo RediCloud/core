@@ -10,4 +10,7 @@ interface ICommand {
     val commandAliases: Array<String>
     val commandDescription: String
     val commandPermission: String
+
+    fun loadedSubCommands()
+
 }
